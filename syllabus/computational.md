@@ -4,6 +4,7 @@
 This course is designed to introduce students to modern data analysis techniques and methods. Some programming experience recommended but not required. The course uses Python and looks at a variety of common Scientific Python libraries; though the aim of the course is to teach students how to solve problems and what to look for when searching for tools, rather than to teach the details of specific tools. Common data manipulation and numerical analysis techniques will be investigated, with a strong focus on visualizing the results.
 
 ## Prereqs: Calculus 1
+Required textbook: Computational Physics: Problem Solving with Python, 3rd edition, by Landau, Páez, and Bordeianu
 Recommended textbook: Python For Data Analysis, 2nd Edition, by Wes McKinney (Author of the Pandas library)
 
 ## Topics:
@@ -37,6 +38,25 @@ A brief intro to Machine Learning, including a look at one of the toolkits for M
 
 #### Term Project
 Students will select and solve a specific problem and present the results.
+
+Schedule:
+
+* 8-27:   Introduction to Python
+* 9-03':  Uncertainties and error
+* 9-10:   Numerical computing
+* 9-17:   Monte-Carlo methods
+* 9-24:   Numerical differentiation and integration
+* 10-01:  Linear algebra
+* 10-08': Statistical distributions and data wrangling
+* 10-15:  Performing fits
+* 10-22:  Differential equations
+* 10-29:  ODE's
+* 11-05:  High performance computing
+* 11-12:  Fourier analysis
+* 11-19': Introduction to ML tools
+* 11-26': ML in problems
+* 12-03:  Term project presentations, designing a software package
+* 12-10:  Final examinations
 
 
 ---
