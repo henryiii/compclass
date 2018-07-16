@@ -12,9 +12,9 @@ Recommended textbook: Python For Data Analysis, 2nd Edition, by Wes McKinney (Au
 ## Topics:
 
 #### Scientific computing in Python
-The course will cover basics needed for modern scientific computing, including the shell, git, python, and packaging. Students will learn to manipulate non-uniform data (in Pandas - this is often the “R” section of similar courses) and visualizing results (Matplotlib). Students will learn how to design a solution to a problem and package it for reuse by others. The course will also cover performance topics; students will learn to watch for slow code and optimize code performance.
+The course will cover basics needed for modern scientific computing, including the shell, git, python, and packaging. Students will learn to manipulate non-uniform data and visualizing results (Matplotlib). Students will learn how to design a solution to a problem and package it for reuse by others. The course will also cover performance topics; students will learn to watch for slow code and optimize code performance.
 
-#### Mathematics
+#### Mathematical topics that will be covered
 Uncertainty and error: A look at making a calculation based on physical measurements and interpreting the results.
 
 Linear algebra: An introduction to vector and matrix manipulations (Numpy) and some linear algebra topics.
