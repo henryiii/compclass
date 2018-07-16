@@ -1,7 +1,7 @@
 # Computational Physics
 
 ## Introduction:
-This course is designed to introduce students to modern data analysis techniques and methods. Some programming experience recommended but not required. The course uses Python and looks at a variety of common Scientific Python libraries; though the aim of the course is to teach students how to solve problems and what to look for when searching for tools, rather than to teach all the details of specific tools. Common data manipulation and numerical analysis techniques will be investigated, with a strong focus on visualizing the results.
+This course is designed to introduce students to modern computational methods for physics data analysis and modeling. Some programming experience will be useful, but it is not required. The course uses Python and looks at a variety of common Scientific Python libraries. The aim of the course is to teach students how to solve problems and what to look for when searching for tools, rather than to teach all the details of specific tools. Common data manipulation and numerical analysis techniques will be investigated, with a strong focus on visualizing the results.
 
 ## Prereqs: Calculus 1
 Required textbook: Computational Physics: Problem Solving with Python, 3rd edition, by Landau, Páez, and Bordeianu
