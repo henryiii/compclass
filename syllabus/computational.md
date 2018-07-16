@@ -7,6 +7,7 @@ This course is designed to introduce students to modern computational methods fo
 
 ## Textbooks
 Required textbook: Computational Physics: Problem Solving with Python, 3rd edition, by Landau, Páez, and Bordeianu (free Enlarged eTextbook Python Third Edition)
+
 Recommended textbook: Python For Data Analysis, 2nd Edition, by Wes McKinney (Author of the Pandas library)
 
 ## Topics:
