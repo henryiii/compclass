@@ -1,7 +1,7 @@
 # Computational Physics
 
 ## Introduction:
-This course is designed to introduce students to modern data analysis techniques and methods. Some programming experience recommended but not required. The course uses Python and looks at a variety of common Scientific Python libraries; though the aim of the course is to teach students how to solve problems and what to look for when searching for tools, rather than to teach the details of specific tools. Common data manipulation and numerical analysis techniques will be investigated, with a strong focus on visualizing the results.
+This course is designed to introduce students to modern data analysis techniques and methods. Some programming experience recommended but not required. The course uses Python and looks at a variety of common Scientific Python libraries; though the aim of the course is to teach students how to solve problems and what to look for when searching for tools, rather than to teach all the details of specific tools. Common data manipulation and numerical analysis techniques will be investigated, with a strong focus on visualizing the results.
 
 ## Prereqs: Calculus 1
 Required textbook: Computational Physics: Problem Solving with Python, 3rd edition, by Landau, Páez, and Bordeianu
@@ -9,37 +9,28 @@ Recommended textbook: Python For Data Analysis, 2nd Edition, by Wes McKinney (Au
 
 ## Topics:
 
-Intro to Scientific Computing (Essentials Kit - like content)
-Probably including basics of shell, git, python, and packaging. Depends a bit on whether I can run everything on OSC resources, which I’m hoping I can. This will mostly be “just enough” to get going, then will be included as necessary afterwords. This is “Essentials Kit” like content.
+#### Scientific computing in Python
+The course will cover basics needed for modern scientific computing, including the shell, git, python, and packaging. Students will learn to manipulate non-uniform data (in Pandas - this is often the “R” section of similar courses) and visualizing results (Matplotlib). Students will learn how to design a solution to a problem and package it for reuse by others. The course will also cover performance topics; students will learn to watch for slow code and optimize code performance.
 
-#### Linear Algebra
-An introduction to vector and matrix manipulations (Numpy) and some linear algebra topics.
+#### Mathematics
+Uncertainty and error: A look at making a calculation based on physical measurements and interpreting the results.
 
-#### Data manipulation and visualization 
-Moving into non-uniform data manipulation (Pandas - this is often the “R” section of similar courses) and plotting (Matplotlib). Quite a few examples here, such as making a selection, grouping, and categorizing.
+Linear algebra: An introduction to vector and matrix manipulations (Numpy) and some linear algebra topics.
 
-#### Integration
-Monte-carlo method, using SciPy integrators.
+Differentiation and Integration:  The Monte Carlo integration method by hand, as well as using packages.
 
-#### Performance
-How to avoid slow code and optimize code performance. Loops vs. Vectors, brief look at adding Numba decorators to make even the “dumb” solution fast.
+Statistical distributions and fitting: Manually performing a linear regression, then using commonly used packages to perform the fitting. A look at correlation coefficients and visualization.
 
-#### Fitting
-Manually performing a linear regression, then using SciPy.Optimize [along with mention of other tools]. A look at correlation coefficients and visualization.
+Differential equations and ODEs
 
-#### FFT
-Numpy.fft
+Fourier analysis
 
-#### How to design a solution
-A brief excursion into thinking of data as an object (a taste of OOP) and how to design a library to solve a specific problem. This topic will be very brief, and is intended to give the interested student an idea of what to look for and where.
-
-#### ML
-A brief intro to Machine Learning, including a look at one of the toolkits for ML. This is intended as a followup to the previous section, illustrating a good design, packaging conceptual ideas into ML layers.
+ML: A brief intro to Machine Learning, including a look at one of the toolkits for ML. This is intended as a followup to the previous section, illustrating a good design, packaging conceptual ideas into ML layers.
 
 #### Term Project
 Students will select and solve a specific problem and present the results.
 
-Schedule:
+## Schedule:
 
 * 8-27:   Introduction to Python
 * 9-03':  Uncertainties and error
@@ -60,6 +51,7 @@ Schedule:
 
 
 ---
+The following are responces I've recieved to emails, to make sure I am addressing the comments.
 
 # Slava:
 
