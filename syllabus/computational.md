@@ -1,14 +1,20 @@
-# Computational Physics
+# Computational Physics (early draft)
+
+## Meeting:
+M, W, F from 8:55 - 9:50 AM
 
 ## Introduction:
 This course is designed to introduce students to modern computational methods for physics data analysis and modeling. Some programming experience will be useful, but it is not required. The course uses Python and looks at a variety of common Scientific Python libraries. The aim of the course is to teach students how to solve problems and what to look for when searching for tools, rather than to teach all the details of specific tools. Common data manipulation and numerical analysis techniques will be investigated, with a strong focus on visualizing the results.
 
-## Prereqs: Some knowledge of multi-dimensional calculus, linear algebra, and ordinary differential equations.
+## Prereqs:
+
+Some knowledge of multi-dimensional calculus, linear algebra, and ordinary differential equations.
 
 ## Textbooks
 Required textbook: Computational Physics: Problem Solving with Python, 3rd edition, by Landau, Páez, and Bordeianu (free Enlarged eTextbook Python Third Edition)
-
 Recommended textbook: Python For Data Analysis, 2nd Edition, by Wes McKinney (Author of the Pandas library)
+
+> Solve a significant problem, use scipy tools, use git, be able to prepare a package. 
 
 ## Topics:
 
@@ -40,20 +46,20 @@ Students will select and solve a specific problem and present the results.
 * 9-10:   Numerical computing
 * 9-17:   Monte-Carlo methods
 * 9-24:   Numerical differentiation and integration
-* 10-01:  Linear algebra
+* 10-01:  Vectorization and linear algebra
 * 10-08': Statistical distributions and data wrangling
 * 10-15:  Performing fits
-* 10-22:  Differential equations
-* 10-29:  ODE's
+* 10-22:  Differential equations - ODE's
+* 10-29:  
 * 11-05:  High performance computing
-* 11-12:  Fourier analysis
+* 11-12': Fourier analysis
 * 11-19': Introduction to ML tools
-* 11-26': ML in problems
-* 12-03:  Term project presentations, designing a software package
+* 11-26:  ML in problems
+* 12-03:  Term project presentations
 * 12-10:  Final examinations
 
 
----
+<!--
 The following are responces I've recieved to emails, to make sure I am addressing the comments.
 
 # Slava:
@@ -97,4 +103,4 @@ The computational techniques used for each exercise are
 
 I would be interested in seeing your syllabus once you have it.
 
-
+-->
