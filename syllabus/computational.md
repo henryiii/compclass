@@ -1,66 +1,76 @@
-# Computational Physics (early draft)
+# Computational Physics (draft syllabus)
 
-## Meeting:
+## Class times:
 M, W, F from 8:55 - 9:50 AM
 
 ## Introduction:
-This course is designed to introduce students to modern computational methods for physics data analysis and modeling. Some programming experience will be useful, but it is not required. The course uses Python and looks at a variety of common Scientific Python libraries. The aim of the course is to teach students how to solve problems and what to look for when searching for tools, rather than to teach all the details of specific tools. Common data manipulation and numerical analysis techniques will be investigated, with a strong focus on visualizing the results.
+This course is designed to introduce students to modern computational methods for physics data analysis and modeling. Some programming experience will be useful, but is not required. The course uses Python and looks at a variety of common Scientific Python libraries. The aim of the course is to teach students how to solve problems and what to look for when searching for tools, rather than to teach all the details of specific tools. Common data manipulation and numerical analysis techniques will be investigated, with a strong focus on visualizing the results.
 
-## Prereqs:
+## Prerequisites:
 
 Some knowledge of multi-dimensional calculus, linear algebra, and ordinary differential equations.
 
 ## Textbooks
-Required textbook: Computational Physics: Problem Solving with Python, 3rd edition, by Landau, Páez, and Bordeianu (free Enlarged eTextbook Python Third Edition)
-Recommended textbook: Python For Data Analysis, 2nd Edition, by Wes McKinney (Author of the Pandas library)
+Required textbook: *Computational Physics: Problem Solving with Python*, 3rd edition, by Landau, Páez, and Bordeianu [(free Enlarged eTextbook Python Third Edition)](https://www.eidos.ic.i.u-tokyo.ac.jp/~tau/lecture/computational_physics/docs/computational_physics.pdf)
 
-> Solve a significant problem, use scipy tools, use git, be able to prepare a package. 
+Recommended textbook: *Python For Data Analysis*, 2nd Edition, by Wes McKinney (Author of the Pandas library). This book covers modern Python syntax and the Numpy, Matplotlib, and Pandas libraries from a data scientist's perspective.
+
+## Expected outcome
+
+Students should be able to solve a significant problem, use scientific Python tools, use git, and present their work. 
 
 ## Topics:
 
 #### Scientific computing in Python
-The course will cover basics needed for modern scientific computing, including the shell, git, python, and packaging. Students will learn to manipulate non-uniform data and visualizing results (Matplotlib). Students will learn how to design a solution to a problem and package it for reuse by others. The course will also cover performance topics; students will learn to watch for slow code and optimize code performance.
+The course will cover basics needed for modern scientific computing, including the shell, git, and Python. Students will learn to manipulate non-uniform data and visualize the results. Students will learn how to design a solution to a problem and present it to others. The course will also cover performance topics; students will learn to watch for slow code and optimize code performance.
 
 #### Mathematical topics that will be covered
 Uncertainty and error: A look at making a calculation based on physical measurements and interpreting the results.
 
-Linear algebra: An introduction to vector and matrix manipulations (Numpy) and some linear algebra topics.
+Linear algebra: An introduction to vector and matrix manipulations and some assorted linear algebra topics.
 
-Differentiation and Integration:  The Monte Carlo integration method by hand, as well as using packages.
+Differentiation and Integration:  Covering several integration and differentiation methods, Monte Carlo integration, as well as using packages.
 
 Statistical distributions and fitting: Manually performing a linear regression, then using commonly used packages to perform the fitting. A look at correlation coefficients and visualization.
 
-Differential equations and ODEs
+Differential equations.
 
-Fourier analysis
+Fourier analysis and filtering signals.
 
-ML: A brief intro to Machine Learning, including a look at one of the toolkits for ML. This is intended as a followup to the previous section, illustrating a good design, packaging conceptual ideas into ML layers.
+Machine Learning: A brief intro to Machine Learning, including a look at the toolkits for ML.
 
 #### Term Project
+
 Students will select and solve a specific problem and present the results.
 
 ## Schedule:
 
-* 8-27:   Introduction to Python
-* 9-03':  Uncertainties and error
-* 9-10:   Numerical computing
-* 9-17:   Monte-Carlo methods
-* 9-24:   Numerical differentiation and integration
-* 10-01:  Vectorization and linear algebra
-* 10-08': Statistical distributions and data wrangling
-* 10-15:  Performing fits
-* 10-22:  Differential equations - ODE's
-* 10-29:  
-* 11-05:  High performance computing
-* 11-12': Fourier analysis
-* 11-19': Introduction to ML tools
-* 11-26:  ML in problems
-* 12-03:  Term project presentations
-* 12-10:  Final examinations
+Chapters in the required book are noted when applicable.
+
+| Week | Monday                       | Wednesday                  | Friday              |
+|------|------------------------------|----------------------------|---------------------|
+| 1  | 8-27  Introduction             | 8-29 Using Python          | 8-31 OO programming (4) |
+| 2  | 9-03  *Labor day*              | 9-05 Numerical tools       | 9-07 Error accumulation (2) |
+| 3  | 9-10  Plotting (3)             | 9-12 Advanced plotting (3) |  9-14 Using git |
+| 4  | 9-17  Random numbers (5)       | 9-19 Monte Carlo (5)       | 9-21  **Project selection** |
+| 5  | 9-24  Integration rules (6)    | 9-26 MC Integration (6)    | 9-28 Numerical differentiation (7) |
+| 6  | 10-01 Vectorization (8)        | 10-03 Linear algebra (8)   | 10-05 Linear regression (8) |
+| 7  | 10-08 Structured tabular data  | 10-10 Cuts and histograms  | 10-12 *Fall reading days* |
+| 8  | 10-15 Generating distributions | 10-17 Minimization and fitting | 10-19 Fitting tools |
+| 9  | 10-22 Confidence intervals     | 10-24 Markov Chain Monte Carlo | 10-26 Performance computing (14) |
+| 10 | 10-29 Intro to ODEs (9)        | 10-31 Runge–Kutta algorithm (9) | 11-02 Solving ODE problems (9) |
+| 11 | 11-05 Fourier Series (10)      | 11-07 Fourier transforms (10) | 11-09 **Project progress report** |
+| 12 | 11-12 *Veterans day*           | 11-14 Filtering signals (10) | 11-16 Fast Fourier transform (10) |
+| 13 | 11-19 **Review** | 11-21 **Student requested topics** | 11-23 *Thanksgiving* |
+| 14 | 11-26 Static computation graphs | 11-28 Applied ML topics | 11-30 Sharing and documenting code |
+| 15 | 12-03 **Term project presentations** | 12-05 **Term project presentations** | 12-07 **Term project presentations** |
+
+Examinations week of 12-10.
+
 
 
 <!--
-The following are responces I've recieved to emails, to make sure I am addressing the comments.
+The following are responses I've received to emails, to make sure I am addressing the comments.
 
 # Slava:
 
