@@ -48,7 +48,7 @@ Students will select and solve a specific problem and present the results.
 * Final project:
     * Oral presentation: 20%
     * Writeup: 20%
-* Pre-class quiz: 15%
+* Quizes: 15%
 
 ## Schedule:
 
