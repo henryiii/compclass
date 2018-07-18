@@ -17,7 +17,7 @@ Recommended textbook: *Python For Data Analysis*, 2nd Edition, by Wes McKinney (
 
 ## Expected outcome
 
-Students should be able to solve a significant problem, use scientific Python tools, use git, and present their work. 
+Students should be able to solve a significant problem, use scientific Python tools, use the git version control system, and present their work. 
 
 ## Topics:
 
@@ -43,6 +43,13 @@ Machine Learning: A brief intro to Machine Learning, including a look at the too
 
 Students will select and solve a specific problem and present the results.
 
+## Grading
+* Weekly problem set: 45% (3% each)
+* Final project:
+    * Oral presentation: 20%
+    * Writeup: 20%
+* Pre-class quiz: 15%
+
 ## Schedule:
 
 Chapters in the required book are noted when applicable.
@@ -65,7 +72,7 @@ Chapters in the required book are noted when applicable.
 | 14 | 11-26 Static computation graphs | 11-28 Applied ML topics | 11-30 Sharing and documenting code |
 | 15 | 12-03 **Term project presentations** | 12-05 **Term project presentations** | 12-07 **Term project presentations** |
 
-Examinations week of 12-10.
+Final writeup due during examinations week of 12-10.
 
 
 
