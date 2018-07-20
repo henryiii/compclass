@@ -1,7 +1,7 @@
 # PHYS 5041/6041: Computational Physics (draft syllabus)
 
 ## Class times:
-M, W, F from 8:55 - 9:50 AM
+M, W, F from 8:55 - 9:50 AM in Geo/Phys Room 300/Hauck
 
 ## Introduction:
 This course is designed to introduce students to modern computational methods for physics data analysis and modeling. The course is intended for upper-level undergraduates and graduate students. The course was designed for physics students, but should also be appropriate for students in mathematics and other physical sciences.  Some programming experience will be useful, but is not required. The course uses Python and looks at a variety of common problems and Scientific Python libraries. The aim of the course is to teach students how to solve problems and what to look for when searching for tools, rather than to teach all the details of specific tools. Common data manipulation and numerical analysis techniques will be investigated, with a strong focus on visualizing the results.
