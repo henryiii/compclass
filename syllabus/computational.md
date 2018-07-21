@@ -1,7 +1,10 @@
 # PHYS 5041/6041: Computational Physics (draft syllabus)
 
-## Class times:
-M, W, F from 8:55 - 9:50 AM in Geo/Phys Room 300/Hauck
+## Class information:
+* Instructor: Henry Schreiner @ CERN in Geneva, Switzerland via WebEx.
+* M, W, F from 8:55 - 9:50 AM in Geo/Phys Room 300/Hauck. Remote attendance (by request) and recorded lectures will be available.
+* Office hours: 10AM-11AM Monday and Friday via video chat (WebEx or Skype, TBD).
+* Course websites: Blackboard and [github.com/henryiii/compclass](https://github.com/henryiii/compclass).
 
 ## Introduction:
 This course is designed to introduce students to modern computational methods for physics data analysis and modeling. The course is intended for upper-level undergraduates and graduate students. The course was designed for physics students, but should also be appropriate for students in mathematics and other physical sciences.  Some programming experience will be useful, but is not required. The course uses Python and looks at a variety of common problems and Scientific Python libraries. The aim of the course is to teach students how to solve problems and what to look for when searching for tools, rather than to teach all the details of specific tools. Common data manipulation and numerical analysis techniques will be investigated, with a strong focus on visualizing the results.
@@ -44,11 +47,13 @@ Machine Learning: A brief intro to Machine Learning, including a look at the too
 Students will select and solve a specific problem and present the results.
 
 ## Grading
-* Weekly problem set: 45% (3% each)
-* Final project:
+* Weekly problem set: 45%
+* Term project:
     * Oral presentation: 20%
     * Writeup: 20%
-* Quizes: 15%
+* JiTT Quizzes: 15%
+
+Just in Time Teaching (JiTT) quizzes will be due by the beginning of the class. A portion of the grade for the JiTT quizzes will be based solely on completion.
 
 ## Schedule:
 
@@ -76,48 +81,3 @@ Final writeup due during examinations week of 12-10.
 
 
 
-<!--
-The following are responses I've received to emails, to make sure I am addressing the comments.
-
-# Slava:
-
-Needs of my students may not be typical but here they are:
-
-1. Statistical methods and distributions fitting, including MLE, KS and chi squared, Bayesian and MCMC, bootstrap and jackknife, distributions algebra (products, etc.)
-2. Programming in Mathematica and Matlab, including writing a toolbox, when necessary, such as for the confluent HypergeometricU function that my student just did.
-3. Programming in high-level languages, such as Julia, C++, etc.
-
-# Richard Gass
-
-I tried to cover the numeric topics that I thought were most relevant to physics. I talked about numerical differentiation and integration, solution of ODE’s, root finding, and solving PDE’s by finite differences. I did not do finite elements but I might if I taught the course again.I tried to use examples that were reverent to physics. As you know Mathematica has a lot  of high level functions should a NIntegrate and these can be “black boxy”,  although no more in my option than a numerical library, so I tried to introduce each topic with a simple method such as Simpsons rule for numerical integration and then move on to using NIntegrate and talking about what could go wrong and how we would know that we should be suspicious. I talked a lot about sanity checking your results, testing against special cases an so-on. I tried to stick a balance between teaching computation and physics and I was never sure that I got it right or even if the was a "right” . I am in Maine for another week but I would be happy to talk at greater length when I get back.
-
-# Colin Bishoff
-
-Sorry for the slow reply. I was on vacation and just got back today. I did chat a bit with Mike this afternoon.
-
-Here are some of the topics that I think are important to include:
-
-* Plotting / data visualization, including time series, correlation (scatter) plots, histograms, etc.
-* Non-linear curve fitting / chi^2 minimization
-* FFT
-
-A more advanced topic that could be a good fit is Markov Chain Monte Carlo (MCMC).
-
-Not sure if you are planning to get into statistical methods, but on the data analysis side I could imagine getting into likelihood vs pdf, credible vs confidence intervals, Feldman-Cousins interval construction, etc.
-
-A tool that is useful in astronomy is HEALPix (Hierarchical Equal-Area isoLatitude Pixelization), which is a nice way to pixelize the sphere that lends itself to efficient spherical harmonic transforms. There is a pretty good python module (https://healpy.readthedocs.io). Healpix can be used to visualize and manipulate maps of the sky that are sufficiently wide area that they can’t be treated as flat.
-
-I think I sent you this link before, but here are the notebooks that I wrote for my astrophysics class last year:
-https://github.com/cbischoff/phys4025
-
-The computational techniques used for each exercise are
-
-* color_vs_temperature: manipulating numpy arrays
-* stellar_structure: numerical integration
-* ligo: FFT
-* kepler: curve fitting
-
-
-I would be interested in seeing your syllabus once you have it.
-
--->
