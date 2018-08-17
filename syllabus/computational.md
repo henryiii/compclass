@@ -53,7 +53,7 @@ Students will select and solve a specific problem and present the results.
     * Writeup: 20%
 * JiTT Quizzes: 15%
 
-Just in Time Teaching (JiTT) quizzes will be due by the beginning of the class. A portion of the grade for the JiTT quizzes will be based solely on completion.
+Just in Time Teaching (JiTT) quizzes will be due at midnight before the class they cover. 25% of the grade for the JiTT quizzes will be based solely on on-time completion. These will test preparation (reading the material in the book or other recommended sources) before the class begins, and will help shape the lecture to provide the most relevant information.
 
 ## Schedule:
 
@@ -80,4 +80,6 @@ Chapters in the required book are noted when applicable.
 Final writeup due during examinations week of 12-10.
 
 
+## Conduct
 
+The University Rules, including the Student Code of Conduct, are applicable and should be followed in this class. Any violation will be dealt with on an individual basis according to the severity of the misconduct. For example, any material found in outside sources should be attributed in a code comment or similar manor.
