@@ -55,9 +55,24 @@ Students will select and solve a specific problem and present the results.
 
 Just in Time Teaching (JiTT) quizzes will be due at midnight before the class they cover. 25% of the grade for the JiTT quizzes will be based solely on on-time completion. These will test preparation (reading the material in the book or other recommended sources) before the class begins, and will help shape the lecture to provide the most relevant information.
 
+## Classroom Procedures/Policies
+
+#### Technology use during/for class
+
+The class will be interactive; registered students have access to OSC computing resources. Students are expected to either use the computers in the classroom or their personal devices. Lectures are designed as notebook that students can follow along with during the class.
+
+#### Attendance Policy
+
+You are expected to attend each class if you can, and watch the recording if you are not available (with prior permission). All materials should be turned in promptly before the set deadlines - please contact me if you need an extension *before* a deadline is passed.
+
+#### Conduct
+
+The University Rules, including the Student Code of Conduct, are applicable and should be followed in this class. Any violation will be dealt with on an individual basis according to the severity of the misconduct. For example, any material based heavily on outside sources should be attributed in a code comment or a similar manor.
+
+
 ## Schedule:
 
-Chapters in the required book are noted when applicable.
+Chapters in the required book are noted when applicable. This is a tentative schedule and subject to change.
 
 | Week | Monday                       | Wednesday                  | Friday              |
 |------|------------------------------|----------------------------|---------------------|
@@ -79,7 +94,6 @@ Chapters in the required book are noted when applicable.
 
 Final writeup due during examinations week of 12-10.
 
+------------------------- 
 
-## Conduct
-
-The University Rules, including the Student Code of Conduct, are applicable and should be followed in this class. Any violation will be dealt with on an individual basis according to the severity of the misconduct. For example, any material found in outside sources should be attributed in a code comment or similar manor.
+I reserve the right to update this syllabus as class needs arise. Be assured that I will communicate to you any changes to our schedule, syllabus or policies quickly and efficiently through Blackboard.
