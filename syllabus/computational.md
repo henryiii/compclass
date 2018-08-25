@@ -1,4 +1,4 @@
-# PHYS 5041/6041: Computational Physics (draft syllabus)
+# PHYS 5041/6041: Computational Physics
 
 ## Class information:
 * Instructor: Henry Schreiner @ CERN in Geneva, Switzerland via WebEx.
