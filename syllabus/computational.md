@@ -4,7 +4,10 @@
 * Instructor: Henry Schreiner @ CERN in Geneva, Switzerland via WebEx.
 * M, W, F from 8:55 - 9:50 AM in Geo/Phys Room 300/Hauck. Remote attendance (by request) and recorded lectures will be available.
 * Office hours: 10AM-11AM Monday and Friday via video chat (WebEx or Skype, TBD).
-* Course websites: Blackboard and [github.com/henryiii/compclass](https://github.com/henryiii/compclass).
+* Course websites:
+    - Blackboard: `meta_schreihf_2962 (Meta 18FS-Full) TOPICS IN PHYSICS (001)`
+    - Lecture recordings: [uc.box.com/v/PES0765](https://uc.box.com/v/PES0765)
+    - Source files: [github.com/henryiii/compclass](https://github.com/henryiii/compclass).
 
 ## Introduction:
 This course is designed to introduce students to modern computational methods for physics data analysis and modeling. The course is intended for upper-level undergraduates and graduate students. The course was designed for physics students, but should also be appropriate for students in mathematics and other physical sciences.  Some programming experience will be useful, but is not required. The course uses Python and looks at a variety of common problems and Scientific Python libraries. The aim of the course is to teach students how to solve problems and what to look for when searching for tools, rather than to teach all the details of specific tools. Common data manipulation and numerical analysis techniques will be investigated, with a strong focus on visualizing the results.
