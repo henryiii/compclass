@@ -3,3 +3,5 @@
 *~
 *.swp
 *.ipynb_checkpoints*
+*.docx
+*.pdf
