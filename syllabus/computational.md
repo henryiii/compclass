@@ -79,9 +79,9 @@ Chapters in the required book are noted when applicable. This is a tentative sch
 
 | Week | Monday                       | Wednesday                  | Friday              |
 |------|------------------------------|----------------------------|---------------------|
-| 1  | 8-27  Introduction             | 8-29 Using Python          | 8-31 OO programming (4) |
-| 2  | 9-03  *Labor day*              | 9-05 Numerical tools       | 9-07 Error accumulation (2) |
-| 3  | 9-10  Plotting (3)             | 9-12 Advanced plotting (3) |  9-14 Using git |
+| 1  | 8-27  Introduction             | 8-29 Using Python part 1   | 8-31 Using Python part 2 |
+| 2  | 9-03  *Labor day*              | 9-05 OO programming (4)    | 9-07 Error accumulation (2) |
+| 3  | 9-10  Numerical tools          | 9-12 Plotting (3)          | 9-14 Using git |
 | 4  | 9-17  Random numbers (5)       | 9-19 Monte Carlo (5)       | 9-21  **Project selection** |
 | 5  | 9-24  Integration rules (6)    | 9-26 MC Integration (6)    | 9-28 Numerical differentiation (7) |
 | 6  | 10-01 Vectorization (8)        | 10-03 Linear algebra (8)   | 10-05 Linear regression (8) |
@@ -91,7 +91,7 @@ Chapters in the required book are noted when applicable. This is a tentative sch
 | 10 | 10-29 Intro to ODEs (9)        | 10-31 Runge–Kutta algorithm (9) | 11-02 Solving ODE problems (9) |
 | 11 | 11-05 Fourier Series (10)      | 11-07 Fourier transforms (10) | 11-09 **Project progress report** |
 | 12 | 11-12 *Veterans day*           | 11-14 Filtering signals (10) | 11-16 Fast Fourier transform (10) |
-| 13 | 11-19 **Review** | 11-21 **Student requested topics** | 11-23 *Thanksgiving* |
+| 13 | 11-19 **Review**               | 11-21 **Student requested topics** | 11-23 *Thanksgiving* |
 | 14 | 11-26 Static computation graphs | 11-28 Applied ML topics | 11-30 Sharing and documenting code |
 | 15 | 12-03 **Term project presentations** | 12-05 **Term project presentations** | 12-07 **Term project presentations** |
 
