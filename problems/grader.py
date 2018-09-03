@@ -17,6 +17,7 @@ class Score:
     def empty(cls):
         self = cls(0)
         self.maxscore = 0
+        self.times = 0
         return self
 
     def __init__(self, score=1):
@@ -62,6 +63,7 @@ class Score:
 class Grader(cli.Application):
     full = cli.Flag('--full', help="Run the full notebook instead of just definitions")
     hide = cli.Flag('--hide', help="Hide the output (usually combined with --full)")
+    verbose = cli.Flag('--verbose', help="Add a printout for each success, too")
 
     def main(self, infile: cli.ExistingFile):
         base = 'ipynb.fs.' + ('full' if self.full else 'defs') + '.' + infile.stem
@@ -73,10 +75,10 @@ class Grader(cli.Application):
             self.mod = import_module(base)
 
         (colors.info | colors.bold).print(self.mod.EID, ":", self.mod.NAME)
-        self.total_score = Score()
+        self.total_score = Score.empty()
         for i in range(10):
             if hasattr(self, f'process{i}'):
-                self.score = Score()
+                self.score = Score.empty()
                 colors.info.print(f'Problem set {i}:')
 
                 getattr(self, f'process{i}')()
@@ -91,6 +93,8 @@ class Grader(cli.Application):
 
     def success(self, *, msg=None, factor=1):
         self.score += Score() * factor
+        if self.verbose:
+            colors.success.print('Scoring problem', self.score.times, 'with', factor, 'points')
 
     def failure(self, error, *, score=0, msg=None, factor=1):
         self.score += Score(score)
