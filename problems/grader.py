@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 
-from plumbum import cli, colors
+from plumbum import cli
 from importlib import import_module
 from contextlib import redirect_stdout
 from io import StringIO
 import copy
+import math
+
+from plumbum import colors
+from plumbum.colorlib import htmlcolors
 
 import sys
 if '.' not in sys.path:
@@ -45,7 +49,10 @@ class Score:
         return out
 
     def __str__(self):
-        return f'{self.curscore} of {self.maxscore} ({self.curscore/self.maxscore:2.0%})'
+        if self.maxscore > 0:
+            return f'{self.curscore} of {self.maxscore} ({self.curscore/self.maxscore:2.0%})'
+        else:
+            return f'{self.curscore} of ???'
 
     def __repr__(self):
         return f'{self.__class__.__name__}({self.curscore},{self.maxscore})'
@@ -53,12 +60,12 @@ class Score:
 
     @property
     def color(self):
-        if self.curscore == self.maxscore:
-            return colors.green
-        elif self.curscore == 0:
-            return colors.red
+        if self.maxscore == 0 or self.curscore == 0:
+            return self.colors.red
+        elif self.curscore == self.maxscore:
+            return self.colors.green
         else:
-            return colors.yellow
+            return self.colors.yellow
 
     def nullify(self):
         self.curscore = 0
@@ -68,18 +75,32 @@ class Grader(cli.Application):
     full = cli.Flag('--full', help="Run the full notebook instead of just definitions")
     hide = cli.Flag('--hide', help="Hide the output (usually combined with --full)")
     verbose = cli.Flag('--verbose', help="Add a printout for each success, too")
+    html = cli.Flag('--html', help="Use HTML for colors")
+
+    @property
+    def colors(self):
+        return htmlcolors if self.html else colors
+
+    @property
+    def indent(self):
+        return "&nbsp;&nbsp;" if self.html else " "
 
     def main(self, *infiles: cli.ExistingFile):
         for infile in infiles:
+            (colors.blue | colors.bold).print(infile.stem)
+            print()
             try:
                 self.each(infile)
-            except:
+            except Exception as e:
                 if len(infiles) > 1:
-                    print("Failed:", infile)
+                    self.colors.fatal.print("Failed:", infile.stem)
+                    self.colors.fatal.print(self.indent, e)
                 else:
                     raise
+            print()
 
     def each(self, infile: cli.ExistingFile):
+        Score.colors = self.colors
         self.total_score = Score.empty()
 
         base = 'ipynb.fs.' + ('full' if self.full else 'defs') + '.' + infile.stem
@@ -90,7 +111,7 @@ class Grader(cli.Application):
         else:
             self.mod = import_module(base)
 
-        (colors.info | colors.bold).print(
+        (self.colors.info | self.colors.bold).print(
                 getattr(self.mod, 'EID', 'None'), ":",
                 getattr(self.mod, 'NAME', 'None'))
 
@@ -100,35 +121,66 @@ class Grader(cli.Application):
         if not hasattr(self.mod, 'NAME'):
             self.penalty('NAME missing!', 1)
 
+        if getattr(self.mod, "SYNTAX", "") == "FAILURE":
+            self.penalty("File would not run without changes!", 2)
+
         for i in range(10):
             if hasattr(self, f'process{i}'):
                 self.score = Score.empty()
-                colors.info.print(f'Problem set {i}:')
+                self.colors.info.print(f'Problem set {i}:')
 
-                getattr(self, f'process{i}')()
+                try:
+                    getattr(self, f'process{i}')()
+                except Exception as e:
+                    self.colors.fatal.print(self.indent, f'Failed to run problem {i}: {e.__class__.__name__}("{e}")')
+                    self.score.maxscore = 0
                 color = self.score.color
-                color.print(f'  Score', self.score)
+                color.print(self.indent, f'Score', self.score)
 
                 self.total_score += self.score
                 del self.score
 
+        if(hasattr, self.__class__, "TOTAL"):
+            self.total_score.maxscore = self.__class__.TOTAL
+
         color = self.total_score.color
         color.print('Score', self.total_score)
+
+    def get_class(self, name):
+        if not hasattr(self.mod, name):
+            return lambda *args, **kargs: object
+        else:
+            return getattr(self.mod, name)
+
+    def get_function(self, name):
+        if not hasattr(self.mod, name):
+            return lambda *args, **kargs: None
+        else:
+            funct = getattr(self.mod, name)
+
+        if self.hide:
+            def funct_wrapper(*args, **kargs):
+                tmp = StringIO()
+                with redirect_stdout(tmp):
+                    return funct(*args, **kargs)
+            return funct_wrapper
+        else:
+            return funct
 
     def success(self, *, msg=None, factor=1):
         self.score += Score() * factor
         if self.verbose:
-            colors.success.print('Scoring problem', self.score.times, 'with', factor, 'points')
+            self.colors.success.print('Scoring problem', self.score.times, 'with', factor, 'points')
 
     def failure(self, error, *, score=0, msg=None, factor=1):
         self.score += Score(score) * factor
-        colors.fatal.print(f'  Test case {self.score.times} ({score}/{factor}): {error}')
+        self.colors.fatal.print(self.indent, f'Test case {self.score.times} ({score}/{factor}): {error}')
         if msg:
-            colors.fatal.print('    ' + msg)
+            self.colors.fatal.print(self.indent, self.indent, msg)
 
     def penalty(self, msg, factor=1):
         self.total_score.curscore -= factor
-        colors.fatal.print(f'  {msg}: {-factor}')
+        self.colors.fatal.print(self.indent, f'{msg}: {-factor}')
 
 
     # Comparison methods
@@ -149,6 +201,12 @@ class Grader(cli.Application):
         else:
             return self.failure(f'"{item}" != "{other}"', msg=msg, factor=factor)
 
+    def compare_close(self, item, other, *, msg=None, factor=1, rel_tol=1e-9, abs_tol=0.0):
+        if math.isclose(item, other, rel_tol=rel_tol, abs_tol=abs_tol):
+            return self.success(msg=msg, factor=factor)
+        else:
+            return self.failure(f'"{item}" != "{other} within allowed limits"', msg=msg, factor=factor)
+
     def valid(self, item, *, msg=None, factor=1):
         if item:
             return self.success(msg=msg, factor=factor)
@@ -159,15 +217,15 @@ class Grader(cli.Application):
         'Call a function with arguments, half score if some other exception is raised'
         try:
             function(*args, **kargs)
-            return self.failure(f'  Expected {function.__name__} to raise {exception.__name__} and it didn\'t raise anything', msg=msg, factor=factor)
+            return self.failure(self.indent, f'Expected {function.__name__} to raise {exception.__name__} and it didn\'t raise anything', msg=msg, factor=factor)
         except exception as e:
             return self.success(factor=factor, msg=msg)
-        return self.failure(f'  Expected {function.__name__} to raise {exception} and it raised something else (half credit)', score=.5, msg=msg, factor=factor)
+        return self.failure(self.indent, f'Expected {function.__name__} to raise {exception} and it raised something else (half credit)', score=.5, msg=msg, factor=factor)
 
     def nullify(self, *, msg=None):
         'Clear the score with optional message'
         self.score.nullify()
-        colors.red.print('  Problem failed')
+        self.colors.red.print(self.indent, 'Problem failed')
         if msg:
-            colors.red.print(f'    {msg}')
+            self.colors.red.print(self.indent, self.indent, f'{msg}')
 
