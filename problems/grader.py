@@ -6,6 +6,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 import copy
 import math
+import numpy as np
 
 from plumbum import colors
 from plumbum.colorlib import htmlcolors
@@ -140,7 +141,7 @@ class Grader(cli.Application):
                 self.total_score += self.score
                 del self.score
 
-        if(hasattr, self.__class__, "TOTAL"):
+        if hasattr(self.__class__, "TOTAL"):
             self.total_score.maxscore = self.__class__.TOTAL
 
         color = self.total_score.color
@@ -166,6 +167,17 @@ class Grader(cli.Application):
             return funct_wrapper
         else:
             return funct
+        
+    def get_variable(self, name):
+        return getattr(self.mod, name, "")
+    
+    def get_answer(self, name, points):
+        pts = self.get_variable(name)
+        failed = points - pts
+        if pts:
+            self.success(msg="Instructor grade", factor=pts)
+        if failed:
+            self.failure("Instructor grade", factor=failed)
 
     def success(self, *, msg=None, factor=1):
         self.score += Score() * factor
@@ -196,13 +208,19 @@ class Grader(cli.Application):
             return self.failure(f'"{inside}" not in "{item}"', msg=msg, factor=factor)
 
     def compare(self, item, other, *, msg=None, factor=1):
-        if item == other:
+        ans = item == other
+        if isinstance(ans, np.ndarray):
+            ans = np.all(ans)
+        if ans:
             return self.success(msg=msg, factor=factor)
         else:
             return self.failure(f'"{item}" != "{other}"', msg=msg, factor=factor)
 
     def compare_close(self, item, other, *, msg=None, factor=1, rel_tol=1e-9, abs_tol=0.0):
-        if math.isclose(item, other, rel_tol=rel_tol, abs_tol=abs_tol):
+        ans = np.isclose(item, other, rtol=rel_tol, atol=abs_tol)
+        if isinstance(ans, np.ndarray):
+            ans = np.all(ans)
+        if ans:
             return self.success(msg=msg, factor=factor)
         else:
             return self.failure(f'"{item}" != "{other} within allowed limits"', msg=msg, factor=factor)
