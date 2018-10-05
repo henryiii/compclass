@@ -29,11 +29,11 @@ class Score:
         self.times = 0
         return self
 
-    def __init__(self, score=1):
-        if score < 0 or score > 1:
+    def __init__(self, score=1, maxscore=1):
+        if score < 0 or score > maxscore:
             raise ValueError(f"Score not in range 0 <= {score} <= 1")
         self.curscore = score
-        self.maxscore = 1
+        self.maxscore = maxscore
         self.times = 1
 
     def __mul__(self, value):
@@ -136,10 +136,16 @@ class Grader(cli.Application):
                     self.colors.fatal.print(self.indent, f'Failed to run problem {i}: {e.__class__.__name__}("{e}")')
                     self.score.maxscore = 0
                 color = self.score.color
+
+                msg = getattr(self.mod, f"PROBLEM_{i}_MSG", "")
+                if msg:
+                    color.print(self.indent, msg)
+
                 color.print(self.indent, f'Score', self.score)
 
                 self.total_score += self.score
                 del self.score
+
 
         if hasattr(self.__class__, "TOTAL"):
             self.total_score.maxscore = self.__class__.TOTAL
@@ -167,25 +173,25 @@ class Grader(cli.Application):
             return funct_wrapper
         else:
             return funct
-        
+
     def get_variable(self, name):
         return getattr(self.mod, name, "")
-    
+
     def get_answer(self, name, points):
-        pts = self.get_variable(name)
-        failed = points - pts
-        if pts:
+        pts = self.get_variable(name + "_PTS")
+        if points == pts:
             self.success(msg="Instructor grade", factor=pts)
-        if failed:
-            self.failure("Instructor grade", factor=failed)
+        else:
+            msg = getattr(self.mod, name + "_MSG", "Instructor grade")
+            self.failure(error=msg, score=pts, factor=points)
 
     def success(self, *, msg=None, factor=1):
-        self.score += Score() * factor
+        self.score += Score(factor, factor)
         if self.verbose:
             self.colors.success.print('Scoring problem', self.score.times, 'with', factor, 'points')
 
     def failure(self, error, *, score=0, msg=None, factor=1):
-        self.score += Score(score) * factor
+        self.score += Score(score, factor)
         self.colors.fatal.print(self.indent, f'Test case {self.score.times} ({score}/{factor}): {error}')
         if msg:
             self.colors.fatal.print(self.indent, self.indent, msg)
