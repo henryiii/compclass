@@ -5,8 +5,9 @@ from importlib import import_module
 from contextlib import redirect_stdout
 from io import StringIO
 import copy
-import math
 import numpy as np
+import inspect
+from pathlib import Path
 
 from plumbum import colors
 from plumbum.colorlib import htmlcolors
@@ -87,11 +88,11 @@ class Grader(cli.Application):
         return "&nbsp;&nbsp;" if self.html else " "
 
     def main(self, *infiles: cli.ExistingFile):
-        for infile in infiles:
+        for i, infile in enumerate(infiles):
             (colors.blue | colors.bold).print(infile.stem)
             print()
             try:
-                self.each(infile)
+                self.each(infile, i)
             except Exception as e:
                 if len(infiles) > 1:
                     self.colors.fatal.print("Failed:", infile.stem)
@@ -99,12 +100,20 @@ class Grader(cli.Application):
                 else:
                     raise
             print()
+            Path(f'tempimport{i}.ipynb').unlink()
 
-    def each(self, infile: cli.ExistingFile):
+    def each(self, infile: cli.ExistingFile, i: int = 0):
+        # Support unusual filenames and filter out Magics
+        with infile.open() as f:
+            txt = f.read()
+        txt = txt.replace("%matplotlib", "#%matplotlib")
+        with open(f'tempimport{i}.ipynb', 'w') as f:
+            f.write(txt)
+
         Score.colors = self.colors
         self.total_score = Score.empty()
 
-        base = 'ipynb.fs.' + ('full' if self.full else 'defs') + '.' + infile.stem
+        base = 'ipynb.fs.' + ('full' if self.full else 'defs') + f'.tempimport{i}'
         if self.hide:
             tmp = StringIO()
             with redirect_stdout(tmp):
@@ -179,6 +188,10 @@ class Grader(cli.Application):
 
     def get_answer(self, name, points):
         pts = self.get_variable(name + "_PTS")
+        if pts is True:
+            pts = points
+        if pts is "":
+            raise RuntimeError(name + "_PTS missing, not graded")
         if points == pts:
             self.success(msg="Instructor grade", factor=pts)
         else:
@@ -206,6 +219,8 @@ class Grader(cli.Application):
     # as keyword only arguments
 
     def compare_in(self, item, inside, *, msg=None, factor=1):
+        if msg is None:
+            msg = ''.join(inspect.stack()[1].code_context).strip()
         if item is None:
             return self.failure(f'"{inside}" not in None', msg=msg, factor=factor)
         if inside in item:
@@ -215,6 +230,8 @@ class Grader(cli.Application):
 
     def compare(self, item, other, *, msg=None, factor=1):
         ans = item == other
+        if msg is None:
+            msg = ''.join(inspect.stack()[1].code_context).strip()
         if isinstance(ans, np.ndarray):
             ans = np.all(ans)
         if ans:
@@ -226,12 +243,16 @@ class Grader(cli.Application):
         ans = np.isclose(item, other, rtol=rel_tol, atol=abs_tol)
         if isinstance(ans, np.ndarray):
             ans = np.all(ans)
+        if msg is None:
+            msg = ''.join(inspect.stack()[1].code_context).strip()
         if ans:
             return self.success(msg=msg, factor=factor)
         else:
             return self.failure(f'"{item}" != "{other} within allowed limits"', msg=msg, factor=factor)
 
     def valid(self, item, *, msg=None, factor=1):
+        if msg is None:
+            msg = ''.join(inspect.stack()[1].code_context).strip()
         if item:
             return self.success(msg=msg, factor=factor)
         else:
@@ -242,7 +263,7 @@ class Grader(cli.Application):
         try:
             function(*args, **kargs)
             return self.failure(self.indent, f'Expected {function.__name__} to raise {exception.__name__} and it didn\'t raise anything', msg=msg, factor=factor)
-        except exception as e:
+        except:
             return self.success(factor=factor, msg=msg)
         return self.failure(self.indent, f'Expected {function.__name__} to raise {exception} and it raised something else (half credit)', score=.5, msg=msg, factor=factor)
 
@@ -252,4 +273,12 @@ class Grader(cli.Application):
         self.colors.red.print(self.indent, 'Problem failed')
         if msg:
             self.colors.red.print(self.indent, self.indent, f'{msg}')
+
+
+# Test: Doesn't seem to work with ipynb
+def patch_inf_function(function, iters: int):
+    src = inspect.getsource(function)
+    src = src.replace('while True', f'for _ in range({iters})')
+    exec(src)
+    return locals()[function.__name__]
 
