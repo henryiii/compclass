@@ -9,3 +9,6 @@ Welcome to computational physics! This is the repository with the [syllabus](./s
 * [My public blog, ISciNumPy](https://iscinumpy.gitlab.io)
 
 Enjoy!
+
+
+Binder live notebook: [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/henryiii/compclass/master) - this may take quite a while to load the first time someone clicks it after a new commit to the repository.
