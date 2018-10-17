@@ -1,0 +1,12 @@
+name: compclass
+dependencies:
+  - python
+  - numpy
+  - pandas
+  - scipy
+  - jupyter
+  - ipython
+  - pip:
+    - uncertainties
+    - uproot
+    - plumbum
