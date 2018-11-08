@@ -31,8 +31,6 @@ class Score:
         return self
 
     def __init__(self, score=1, maxscore=1):
-        if score < 0 or score > maxscore:
-            raise ValueError(f"Score not in range 0 <= {score} <= 1")
         self.curscore = score
         self.maxscore = maxscore
         self.times = 1
@@ -64,7 +62,7 @@ class Score:
     def color(self):
         if self.maxscore == 0 or self.curscore == 0:
             return self.colors.red
-        elif self.curscore == self.maxscore:
+        elif self.curscore >= self.maxscore:
             return self.colors.green
         else:
             return self.colors.yellow
@@ -179,6 +177,7 @@ class Grader(cli.Application):
                 tmp = StringIO()
                 with redirect_stdout(tmp):
                     return funct(*args, **kargs)
+            funct_wrapper.__doc__ = funct.__doc__
             return funct_wrapper
         else:
             return funct
@@ -240,7 +239,10 @@ class Grader(cli.Application):
             return self.failure(f'"{item}" != "{other}"', msg=msg, factor=factor)
 
     def compare_close(self, item, other, *, msg=None, factor=1, rel_tol=1e-9, abs_tol=0.0):
-        ans = np.isclose(item, other, rtol=rel_tol, atol=abs_tol)
+        try:
+            ans = np.isclose(item, other, rtol=rel_tol, atol=abs_tol)
+        except ValueError as e:
+            return self.failure(str(e), msg=msg, factor=factor)
         if isinstance(ans, np.ndarray):
             ans = np.all(ans)
         if msg is None:
