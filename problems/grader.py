@@ -7,7 +7,9 @@ from io import StringIO
 import copy
 import numpy as np
 import inspect
+import json
 from pathlib import Path
+import types
 
 from plumbum import colors
 from plumbum.colorlib import htmlcolors
@@ -76,6 +78,7 @@ class Grader(cli.Application):
     hide = cli.Flag('--hide', help="Hide the output (usually combined with --full)")
     verbose = cli.Flag('--verbose', help="Add a printout for each success, too")
     html = cli.Flag('--html', help="Use HTML for colors")
+    quick = cli.Flag('--quick', help="Only run minimal cells")
 
     @property
     def colors(self):
@@ -98,27 +101,21 @@ class Grader(cli.Application):
                 else:
                     raise
             print()
-            Path(f'tempimport{i}.ipynb').unlink()
 
     def each(self, infile: cli.ExistingFile, i: int = 0):
-        # Support unusual filenames and filter out Magics
-        with infile.open() as f:
-            txt = f.read()
-        txt = txt.replace("%matplotlib", "#%matplotlib")
-        with open(f'tempimport{i}.ipynb', 'w') as f:
-            f.write(txt)
-
         Score.colors = self.colors
         self.total_score = Score.empty()
-
-        base = 'ipynb.fs.' + ('full' if self.full else 'defs') + f'.tempimport{i}'
-        if self.hide:
-            tmp = StringIO()
-            with redirect_stdout(tmp):
-                self.mod = import_module(base)
+        
+        if infile.suffix == '.ipynb':
+            if self.quick:
+                self.mod = self.each_quick(infile)
+            else:
+                self.mod = self.each_ipynb(infile)
+        elif infile.suffix == '.py':
+            self.mod = self.each_py(infile)
         else:
-            self.mod = import_module(base)
-
+            print("Filetype not supported:", infile)
+            
         (self.colors.info | self.colors.bold).print(
                 getattr(self.mod, 'EID', 'None'), ":",
                 getattr(self.mod, 'NAME', 'None'))
@@ -144,7 +141,7 @@ class Grader(cli.Application):
                     self.score.maxscore = 0
                 color = self.score.color
 
-                msg = getattr(self.mod, f"PROBLEM_{i}_MSG", "")
+                msg = getattr(self.mod, f"PROBLEM_MSG", "")
                 if msg:
                     color.print(self.indent, msg)
 
@@ -159,6 +156,47 @@ class Grader(cli.Application):
 
         color = self.total_score.color
         color.print('Score', self.total_score)
+        
+    def each_ipynb(self, infile):
+        # Support unusual filenames and filter out Magics
+        with infile.open() as f:
+            txt = f.read()
+        txt = txt.replace("%matplotlib", "#%matplotlib")
+        with open('tempimport.ipynb', 'w') as f:
+            f.write(txt)
+
+        base = 'ipynb.fs.' + ('full' if self.full else 'defs') + '.tempimport'
+        if self.hide:
+            tmp = StringIO()
+            with redirect_stdout(tmp):
+                imp = import_module(base)
+        else:
+            imp = import_module(base)
+        
+        Path('tempimport.ipynb').unlink()
+        return imp
+        
+    def each_py(self, infile):
+        return __import__(infile)
+    
+    def each_quick(self, infile):
+        with open(infile) as f:
+            j = json.load(f)
+            mod = types.SimpleNamespace()
+            
+        for cell in j['cells']:
+            if cell['cell_type'] == 'code':
+                source = ''.join(cell['source'])
+                if 'NAME' in source or 'EID' in source or '_PTS' in source or '_MSG' in source:
+                    exec(source)
+                    loc = list(locals().keys())
+                    for item in loc:
+                        if item.endswith('_PTS') or item.endswith('_MSG') or item == "NAME" or item == "EID":
+                            setattr(mod, item, locals()[item])
+                            
+        return mod
+                    
+            
 
     def get_class(self, name):
         if not hasattr(self.mod, name):
@@ -187,14 +225,17 @@ class Grader(cli.Application):
 
     def get_answer(self, name, points):
         pts = self.get_variable(name + "_PTS")
+        msg = self.get_variable(name + "_MSG")
+        if not msg:
+            msg = "Instructor grade"
+            
         if pts is True:
             pts = points
         if pts is "":
             raise RuntimeError(name + "_PTS missing, not graded")
         if points == pts:
-            self.success(msg="Instructor grade", factor=pts)
+            self.success(msg=msg, factor=pts)
         else:
-            msg = getattr(self.mod, name + "_MSG", "Instructor grade")
             self.failure(error=msg, score=pts, factor=points)
 
     def success(self, *, msg=None, factor=1):
