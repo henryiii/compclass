@@ -8,6 +8,7 @@ import copy
 import numpy as np
 import inspect
 import json
+import warnings
 from pathlib import Path
 import types
 
@@ -105,17 +106,17 @@ class Grader(cli.Application):
     def each(self, infile: cli.ExistingFile, i: int = 0):
         Score.colors = self.colors
         self.total_score = Score.empty()
-        
+
         if infile.suffix == '.ipynb':
             if self.quick:
-                self.mod = self.each_quick(infile)
+                self.mod = self.each_quick(infile, i)
             else:
-                self.mod = self.each_ipynb(infile)
+                self.mod = self.each_ipynb(infile, i)
         elif infile.suffix == '.py':
-            self.mod = self.each_py(infile)
+            self.mod = self.each_py(infile, i)
         else:
             print("Filetype not supported:", infile)
-            
+
         (self.colors.info | self.colors.bold).print(
                 getattr(self.mod, 'EID', 'None'), ":",
                 getattr(self.mod, 'NAME', 'None'))
@@ -156,34 +157,35 @@ class Grader(cli.Application):
 
         color = self.total_score.color
         color.print('Score', self.total_score)
-        
-    def each_ipynb(self, infile):
+
+    def each_ipynb(self, infile, i):
         # Support unusual filenames and filter out Magics
         with infile.open() as f:
             txt = f.read()
         txt = txt.replace("%matplotlib", "#%matplotlib")
-        with open('tempimport.ipynb', 'w') as f:
+        with open(f'tempimport{i}.ipynb', 'w') as f:
             f.write(txt)
 
-        base = 'ipynb.fs.' + ('full' if self.full else 'defs') + '.tempimport'
+        base = 'ipynb.fs.' + ('full' if self.full else 'defs') + f'.tempimport{i}'
         if self.hide:
+            warnings.simplefilter("ignore")
             tmp = StringIO()
             with redirect_stdout(tmp):
                 imp = import_module(base)
         else:
             imp = import_module(base)
-        
-        Path('tempimport.ipynb').unlink()
+
+        Path(f'tempimport{i}.ipynb').unlink()
         return imp
-        
-    def each_py(self, infile):
+
+    def each_py(self, infile, i):
         return __import__(infile)
-    
-    def each_quick(self, infile):
+
+    def each_quick(self, infile, i):
         with open(infile) as f:
             j = json.load(f)
             mod = types.SimpleNamespace()
-            
+
         for cell in j['cells']:
             if cell['cell_type'] == 'code':
                 source = ''.join(cell['source'])
@@ -193,10 +195,10 @@ class Grader(cli.Application):
                     for item in loc:
                         if item.endswith('_PTS') or item.endswith('_MSG') or item == "NAME" or item == "EID":
                             setattr(mod, item, locals()[item])
-                            
+
         return mod
-                    
-            
+
+
 
     def get_class(self, name):
         if not hasattr(self.mod, name):
@@ -228,7 +230,7 @@ class Grader(cli.Application):
         msg = self.get_variable(name + "_MSG")
         if not msg:
             msg = "Instructor grade"
-            
+
         if pts is True:
             pts = points
         if pts is "":

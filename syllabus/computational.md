@@ -89,8 +89,8 @@ Chapters in the required book are noted when applicable. This is a tentative sch
 | 8  | 10-15 Generating distributions | 10-17 Minimization and fitting | 10-19 Fitting tools |
 | 9  | 10-22 Confidence intervals     | 10-24 Markov Chain Monte Carlo | 10-26 Performance computing (14) |
 | 10 | 10-29 Intro to ODEs (9)        | 10-31 Runge–Kutta algorithm (9) | 11-02 Solving ODE problems (9) |
-| 11 | 11-05 Fourier Series (10)      | 11-07 Fourier transforms (10) | 11-09 **Project progress report** |
-| 12 | 11-12 *Veterans day*           | 11-14 Filtering signals (10) | 11-16 Fast Fourier transform (10) |
+| 11 | 11-05 Fourier Series (10)      | 11-07 Fast Fourier Transform (10) | 11-09 **Project progress report** |
+| 12 | 11-12 *Veterans day*           | 11-14 **Project progress report** | 11-16 Filtering signals (10) |
 | 13 | 11-19 **Review**               | 11-21 **Student requested topics** | 11-23 *Thanksgiving* |
 | 14 | 11-26 Static computation graphs | 11-28 Applied ML topics | 11-30 Sharing and documenting code |
 | 15 | 12-03 **Term project presentations** | 12-05 **Term project presentations** | 12-07 **Term project presentations** |
