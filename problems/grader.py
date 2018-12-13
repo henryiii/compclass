@@ -163,6 +163,7 @@ class Grader(cli.Application):
         with infile.open() as f:
             txt = f.read()
         txt = txt.replace("%matplotlib", "#%matplotlib")
+        txt = txt.replace("%%timeit", "#%%timeit")
         with open(f'tempimport{i}.ipynb', 'w') as f:
             f.write(txt)
 
@@ -247,9 +248,10 @@ class Grader(cli.Application):
 
     def failure(self, error, *, score=0, msg=None, factor=1):
         self.score += Score(score, factor)
-        self.colors.fatal.print(self.indent, f'Test case {self.score.times} ({score}/{factor}): {error}')
+        color = self.colors.fatal if score < factor else (self.colors.success | self.colors.bold)
+        color.print(self.indent, f'Test case {self.score.times} ({score}/{factor}): {error}')
         if msg:
-            self.colors.fatal.print(self.indent, self.indent, msg)
+            color.print(self.indent, self.indent, msg)
 
     def penalty(self, msg, factor=1):
         self.total_score.curscore -= factor
