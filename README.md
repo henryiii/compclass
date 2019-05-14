@@ -26,28 +26,28 @@ These links open a static nbviewer. You can also open binder by clicking [![Bind
 * Week 4
     * [Random Numbers](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week4/1_random_numbers.ipynb)
     * [Monte Carlo](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week4/2_MC.ipynb)
-      [Random Walk](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week4/RandomWalk.ipynb)
+      • [Random Walk](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week4/RandomWalk.ipynb)
     * [Projects](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week4/3_projects.ipynb)
-      [IPython Magics](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week/IPython\ Magics.ipynb)
+      • [IPython Magics](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week/IPythonMagics.ipynb)
 * Week 5
     * [Integration rules](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week5/1_integration.ipynb)
-      [Notes](https://github.com/henryiii/compclass/blob/master/classes/week5/Week5Day1.pdf)
+      • [Notes](https://github.com/henryiii/compclass/blob/master/classes/week5/Week5Day1.pdf)
     * [Monte Carlo Integration](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week5/2_mcintegrate.ipynb)
-      [Notes](https://github.com/henryiii/compclass/blob/master/classes/week5/2_mcintegrate.pdf)
+      • [Notes](https://github.com/henryiii/compclass/blob/master/classes/week5/2_mcintegrate.pdf)
     * [Numerical Differentiation](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week5/3_differentiation.ipynb)
 * Week 6
     * [Vectorization](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week6/1_vectorization.ipynb.ipynb)
-      [Notes](https://github.com/henryiii/compclass/blob/master/classes/week6/Week6Day1.pdf)
+      • [Notes](https://github.com/henryiii/compclass/blob/master/classes/week6/Week6Day1.pdf)
     * [Linear Algebra](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week6/2_linearalgebra.ipynb.ipynb)
-      String masses:
+      • String masses:
       [Classic](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week6/2_string_masses_classic.ipynb)
-      [Final](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week6/2_string_masses_final.ipynb)
-      [Sympy](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week6/2_string_masses_sympy.ipynb)
+      • [Final](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week6/2_string_masses_final.ipynb)
+      • [Sympy](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week6/2_string_masses_sympy.ipynb)
     * [Linear Regression](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week6/3_fitting.ipynb)
-      [Spline Fit](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week6/3_spline_fit.ipynb)
+      • [Spline Fit](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week6/3_spline_fit.ipynb)
 * Week 7
     * [Structured tabular data](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week7/1_pandas.ipynb)
-      [worksheet](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week7/1_worksheet.ipynb)
+      • [worksheet](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week7/1_worksheet.ipynb)
     * [Histograms and Cuts](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week7/2_histograms_cuts.ipynb)
 * Week 8
     * [Generating Distributions](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week8/1_generation.ipynb)
@@ -59,7 +59,7 @@ These links open a static nbviewer. You can also open binder by clicking [![Bind
     * [Performance Computing](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week9/3_perfomance.ipynb)
 * Week 10
     * [Intro to ODEs](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week10/1_ode.ipynb)
-      [Profiling code](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week10/1_pro_file.ipynb)
+      • [Profiling code](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week10/1_pro_file.ipynb)
     * [The Runge–Kutta Algorithm](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week10/2_rk.ipynb)
     * [Solving ODE Problems](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week10/3_ode_problems.ipynb)
 * Week 11: Fourier Series
@@ -76,9 +76,8 @@ These links open a static nbviewer. You can also open binder by clicking [![Bind
 * Week 14
     * [Static Computation Graphs](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week14/1_graphs.ipynb)
     * [Machine Learning](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week14/2_ml.ipynb)
-      [MINST dataset](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week14/2_MNIST.ipynb)
+      • [MINST dataset](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week14/2_MNIST.ipynb)
     * [Sharing your Code](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week14/3_sharing.ipynb)
-
 * Optional
     * [Overview of Python](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/optional/PythonOptionalOverview.ipynb)
     * [Python 3 vs. Python 2](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/optional/python3.ipynb)
