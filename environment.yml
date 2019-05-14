@@ -1,14 +1,14 @@
 name: compclass
+channels:
+  - conda-forge
 dependencies:
-  - python
+  - python>=3.6
   - numpy
   - matplotlib
   - pandas
   - scipy
-  - jupyter
-  - ipython
-  - pip:
-    - uncertainties
-    - uproot
-    - plumbum
-    - lmfit
+  - jupyterlab
+  - uncertainties
+  - uproot
+  - plumbum
+  - lmfit
