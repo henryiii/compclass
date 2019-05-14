@@ -59,7 +59,7 @@ These links open a static nbviewer. You can also open binder by clicking [![Bind
     * [Performance Computing](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week9/3_perfomance.ipynb)
 * Week 10
     * [Intro to ODEs](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week10/1_ode.ipynb)
-      • [Profiling code](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week10/1_pro_file.ipynb)
+      • [Profiling Code, Reading and Writing Files](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week10/1_pro_file.ipynb)
     * [The Runge–Kutta Algorithm](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week10/2_rk.ipynb)
     * [Solving ODE Problems](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week10/3_ode_problems.ipynb)
 * Week 11: Fourier Series
