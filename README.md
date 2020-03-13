@@ -1,12 +1,21 @@
-## Computational Physics
+# Computational Physics
 
 Welcome to computational physics! This is the repository with the [syllabus](./syllabus/computational.md), [problem sets](./problems), and [lectures](./classes). Other useful links:
 
 * [This repository official location](https://github.com/henryiii/compclass)
-* [Course lecture recordings](https://uc.box.com/v/PES0765)
+* [Course lecture recordings](https://mailuc-my.sharepoint.com/:f:/g/personal/schreihf_ucmail_uc_edu/EgrKNRgtwTNEi6NGDOMFKZsBAmugjchAT-MetLXUszI_lg?e=LN22dH)
 * [UC Blackboard](https://canopy.uc.edu/) (look for `meta_schreihf_2962 (Meta 18FS-Full) TOPICS IN PHYSICS (001)`)
 * [My public blog, ISciNumPy](https://iscinumpy.gitlab.io)
 
+
+## Installing
+
+To install, download and install miniconda then:
+
+```bash
+conda env create
+conda activate compclass
+```
 
 ### Topics and links
 
