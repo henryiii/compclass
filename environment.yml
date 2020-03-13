@@ -4,7 +4,7 @@ channels:
 dependencies:
   - python >=3.6
   - numpy >=1.16
-  - matplotlib >=3.0
+  - matplotlib >=3.0,!=3.2.0
   - pandas >=1.0
   - scipy >=1.2
   - sympy >=1.5
