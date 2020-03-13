@@ -1,0 +1,47 @@
+name: CD
+
+on:
+  push:
+    branches: master
+
+jobs:
+  website:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: goanpeca/setup-miniconda@v1
+      with:
+        auto-update-conda: true
+        python-version: 3.8
+        environment-file: environment.yml
+        activate-environment: compclass
+
+    - name: Generate outputs
+      run: cat runnable.txt | xargs jupyter nbconvert --execute --inplace
+      shell: bash -l {0}
+
+    - name: Install JupyterBook
+      run: pip install jupyter-book
+      shell: bash -l {0}
+
+    - name: Make book
+      run: jupyter-book create compclass --config _config.yml --toc _data/toc.yml --content-folder classes --extra-files images
+      shell: bash -l {0}
+
+    - name: Build book
+      run: jupyter-book build compclass/
+      shell: bash -l {0}
+
+    - name: Deploy
+      if: success() && github.event_name == 'push' && github.ref == 'refs/heads/master'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_branch: gh-pages
+        publish_dir: compclass
+        force_orphan: true
+        enable_jekyll: true
+        cname: github.com
+    
