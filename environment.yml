@@ -2,14 +2,29 @@ name: compclass
 channels:
   - conda-forge
 dependencies:
-  - python>=3.6
-  - numpy>=1.16
-  - matplotlib>=3.0
-  - pandas>=0.24
-  - scipy>=1.2
-  - jupyterlab>=0.35
-  - uncertainties>=3.0
-  - uproot>=3.5
-  - plumbum>=1.6.6
-  - lmfit>=0.9
-  - goofit>=2.2.3
+  - python >=3.6
+  - numpy >=1.16
+  - matplotlib >=3.0
+  - pandas >=1.0
+  - scipy >=1.2
+  - sympy >=1.5
+  - jupyterlab >=1.2
+  - uncertainties >=3.0
+  - uproot >=3.5
+  - plumbum >=1.6.6
+  - lmfit >=0.9
+  - goofit >=2.2.3
+  - black ==19.10b0
+  - jupytext >=1.4
+  - seaborn >=0.10
+  - gammapy >=0.16
+  - line_profiler >=3.0
+  - h5py >=2.10
+  - pytables >=3.6
+  - numba >=0.48
+  - numexpr >=2.7
+  - bokeh >=2.0
+  - ipywidgets >=7.5
+  - cython >=0.29
+#  - pymc3 >=3.8
+#  - vpython >=7.6

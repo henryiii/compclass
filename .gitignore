@@ -7,3 +7,9 @@
 *.docx
 syllabus/computational.pdf
 /compclass/*
+
+/classes/week10/simple.py
+/classes/week10/tmp.h5
+/classes/week10/tmp.npz
+/classes/week10/tmpfile.txt
+/classes/week8/pytestexample.py
