@@ -19,7 +19,14 @@ jobs:
         activate-environment: compclass
 
     - name: Generate outputs
-      run: cat runnable.txt | xargs jupyter nbconvert --execute --inplace
+      run: >
+        cat runnable.txt |
+        xargs jupyter nbconvert
+        --InlineBackend.figure_formats={'svg', 'pdf'}
+        --InlineBackend.rc={'figure.dpi': 96}
+        --ExecutePreprocessor.timeout=90
+        --execute
+        --inplace
       shell: bash -l {0}
 
     - name: Install JupyterBook
