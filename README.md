@@ -56,7 +56,7 @@ These links open a static nbviewer. You can also open binder by clicking [![Bind
 * Week 9
     * [Confidence Intervals](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week9/1_confidence_intervals.ipynb)
     * [Markov Chain Monte Carlo](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week9/2_mcmc.ipynb)
-    * [Performance Computing](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week9/3_perfomance.ipynb)
+    * [Performance Computing](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week9/3_performance.ipynb)
 * Week 10
     * [Intro to ODEs](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week10/1_ode.ipynb)
       • [Profiling Code, Reading and Writing Files](https://nbviewer.jupyter.org/github/henryiii/compclass/blob/master/classes/week10/1_pro_file.ipynb)

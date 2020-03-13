@@ -12,3 +12,4 @@ dependencies:
   - uproot>=3.5
   - plumbum>=1.6.6
   - lmfit>=0.9
+  - goofit>=2.2.3
