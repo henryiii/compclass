@@ -33,7 +33,6 @@ classes/week10/2_rk.ipynb
 classes/week10/3_ode_problems.ipynb
 classes/week11/1_fourier_series.ipynb
 classes/week11/2_FFT.ipynb
-classes/week12/0_PyBindNumba.ipynb
 classes/week12/1_fitting.ipynb
 classes/week12/1_guis.ipynb
 classes/week12/2_signalfiltering.ipynb
