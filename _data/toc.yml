@@ -15,9 +15,15 @@
 # - header: My Header  # Will insert a header with no link in the sidebar
 
 
-- header: "Week 1: Basics"
+- header: "Starting the class"
+- url: /IntroToJupyterBook
+  title: Introduction to the CompClass
+- url: /syllabus
+  title: Syllabus
 - url: /week1/0_IntroductionAndLogin
-  title: Introduction
+  title: PHYS 5041/6041 Introduction
+
+- header: "Week 1: Basics"
 - url: /week1/1_ProgrammingBasics
   title: Basics of Programming
 
@@ -25,7 +31,7 @@
 - url: /week2/0_ObjectOriented
   title: Object Oriented Programming
 - url: /week2/1_errors
-  title: Errors Accumulation
+  title: Error Accumulation
 
 - header: "Week 3: Numerical Computing"
 - url: /week3/0_numerics
@@ -107,10 +113,10 @@
   sections:
     - url: /week10/1_pro_file
       title: Profiling Code, Reading and Writing Files
-- url: /week10/3_ode_problems
-  title: Solving ODE Problems
 - url: /week10/2_rk
   title: The Runge–Kutta Algorithm
+- url: /week10/3_ode_problems
+  title: Solving ODE Problems
 
 
 - header: "Week 11: Fourier Series"
@@ -151,4 +157,5 @@
 - url: /optional/PythonOptionalOverview
   title: Overview of Python
 - url: /optional/Python3
-  title: Python 2 vs. Python 2
+  title: Python 2 vs. Python 3
+
