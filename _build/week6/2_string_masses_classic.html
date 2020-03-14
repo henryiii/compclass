@@ -1,0 +1,298 @@
+---
+redirect_from:
+  - "/week6/2-string-masses-classic"
+interact_link: content/week6/2_string_masses_classic.ipynb
+kernel_name: compclass
+kernel_path: content/week6
+has_widgets: false
+title: |-
+  String Masses Classic
+pagenum: 17
+prev_page:
+  url: /week6/2_linearalgebra.html
+next_page:
+  url: /week6/2_string_masses_final.html
+suffix: .ipynb
+search: 
+
+comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
+---
+
+    <main class="jupyter-page">
+    <div id="page-info"><div id="page-title">String Masses Classic</div>
+</div>
+    <div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot; From &quot;COMPUTATIONAL PHYSICS&quot; &amp; &quot;COMPUTER PROBLEMS in PHYSICS&quot;</span>
+<span class="sd">    by RH Landau, MJ Paez, and CC Bordeianu (deceased)</span>
+<span class="sd">    Copyright R Landau, Oregon State Unv, MJ Paez, Univ Antioquia, </span>
+<span class="sd">    C Bordeianu, Univ Bucharest, 2017. </span>
+<span class="sd">    Please respect copyright &amp; acknowledge our work.&quot;&quot;&quot;</span>
+
+<span class="c1"># NewtonNDanimate.py:              MultiDimension Newton Search</span>
+
+<span class="c1"># This only works in the classic notebook, not lab or nbconvert</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">vpython</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No VPython available&quot;</span><span class="p">)</span>
+
+    <span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">MagicMock</span>
+
+    <span class="n">canvas</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+    <span class="n">sphere</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">curve</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">vector</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">rate</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">scene</span> <span class="o">=</span> <span class="n">canvas</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span>
+    <span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;String and masses configuration&quot;</span><span class="p">,</span>
+    <span class="n">background</span><span class="o">=</span><span class="n">vector</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>No VPython available
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">plotconfig</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">scene</span><span class="o">.</span><span class="n">objects</span><span class="p">:</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Erase previous configuration</span>
+    <span class="n">L1</span> <span class="o">=</span> <span class="mf">3.0</span>
+    <span class="n">L2</span> <span class="o">=</span> <span class="mf">4.0</span>
+    <span class="n">L3</span> <span class="o">=</span> <span class="mf">4.0</span>
+    <span class="n">xa</span> <span class="o">=</span> <span class="n">L1</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>  <span class="c1"># L1*cos(th1)</span>
+    <span class="n">ya</span> <span class="o">=</span> <span class="n">L1</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># L1 sin(th1)</span>
+    <span class="n">xb</span> <span class="o">=</span> <span class="n">xa</span> <span class="o">+</span> <span class="n">L2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>  <span class="c1"># L1*cos(th1)+L2*cos(th2)</span>
+    <span class="n">yb</span> <span class="o">=</span> <span class="n">ya</span> <span class="o">+</span> <span class="n">L2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># L1*sin(th1)+L2*sen(th2)</span>
+    <span class="n">xc</span> <span class="o">=</span> <span class="n">xb</span> <span class="o">+</span> <span class="n">L3</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>  <span class="c1"># L1*cos(th1)+L2*cos(th2)+L3*cos(th3)</span>
+    <span class="n">yc</span> <span class="o">=</span> <span class="n">yb</span> <span class="o">-</span> <span class="n">L3</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># L1*sin(th1)+L2*sen(th2)-L3*sin(th3)</span>
+    <span class="n">mx</span> <span class="o">=</span> <span class="mf">100.0</span>  <span class="c1"># for linear coordinate transformation</span>
+    <span class="n">bx</span> <span class="o">=</span> <span class="o">-</span><span class="mf">500.0</span>  <span class="c1"># from 0=&lt; x =&lt;10</span>
+    <span class="n">my</span> <span class="o">=</span> <span class="o">-</span><span class="mf">100.0</span>  <span class="c1"># to    -500 =&lt;x_window=&gt;500</span>
+    <span class="n">by</span> <span class="o">=</span> <span class="mf">400.0</span>  <span class="c1"># same transformation for y</span>
+    <span class="n">xap</span> <span class="o">=</span> <span class="n">mx</span> <span class="o">*</span> <span class="n">xa</span> <span class="o">+</span> <span class="n">bx</span>  <span class="c1"># to keep aspect ratio</span>
+    <span class="n">yap</span> <span class="o">=</span> <span class="n">my</span> <span class="o">*</span> <span class="n">ya</span> <span class="o">+</span> <span class="n">by</span>
+    <span class="n">ball1</span> <span class="o">=</span> <span class="n">sphere</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="n">vector</span><span class="p">(</span><span class="n">xap</span><span class="p">,</span> <span class="n">yap</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="o">.</span><span class="n">cyan</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="n">xbp</span> <span class="o">=</span> <span class="n">mx</span> <span class="o">*</span> <span class="n">xb</span> <span class="o">+</span> <span class="n">bx</span>
+    <span class="n">ybp</span> <span class="o">=</span> <span class="n">my</span> <span class="o">*</span> <span class="n">yb</span> <span class="o">+</span> <span class="n">by</span>
+    <span class="n">ball2</span> <span class="o">=</span> <span class="n">sphere</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="n">vector</span><span class="p">(</span><span class="n">xbp</span><span class="p">,</span> <span class="n">ybp</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="o">.</span><span class="n">cyan</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+    <span class="n">xcp</span> <span class="o">=</span> <span class="n">mx</span> <span class="o">*</span> <span class="n">xc</span> <span class="o">+</span> <span class="n">bx</span>
+    <span class="n">ycp</span> <span class="o">=</span> <span class="n">my</span> <span class="o">*</span> <span class="n">yc</span> <span class="o">+</span> <span class="n">by</span>
+    <span class="n">x0</span> <span class="o">=</span> <span class="n">mx</span> <span class="o">*</span> <span class="mi">0</span> <span class="o">+</span> <span class="n">bx</span>
+    <span class="n">y0</span> <span class="o">=</span> <span class="n">my</span> <span class="o">*</span> <span class="mi">0</span> <span class="o">+</span> <span class="n">by</span>
+
+    <span class="n">line1</span> <span class="o">=</span> <span class="n">curve</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="p">[(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">xap</span><span class="p">,</span> <span class="n">yap</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="o">.</span><span class="n">yellow</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">line2</span> <span class="o">=</span> <span class="n">curve</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="p">[(</span><span class="n">xap</span><span class="p">,</span> <span class="n">yap</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">xbp</span><span class="p">,</span> <span class="n">ybp</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="o">.</span><span class="n">yellow</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">line3</span> <span class="o">=</span> <span class="n">curve</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="p">[(</span><span class="n">xbp</span><span class="p">,</span> <span class="n">ybp</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">xcp</span><span class="p">,</span> <span class="n">ycp</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="o">.</span><span class="n">yellow</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">topline</span> <span class="o">=</span> <span class="n">curve</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="p">[(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">xcp</span><span class="p">,</span> <span class="n">ycp</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="o">.</span><span class="n">red</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">F</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+    <span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="mf">8.0</span>
+    <span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">f</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">10.0</span>
+    <span class="n">f</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+    <span class="n">f</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mf">20.0</span>
+    <span class="n">f</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    <span class="n">f</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="nb">pow</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span>
+    <span class="n">f</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="nb">pow</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span>
+    <span class="n">f</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="nb">pow</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">dFi_dXj</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">deriv</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="mf">1e-4</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">h</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="n">F</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+            <span class="n">deriv</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">h</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="n">F</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+            <span class="n">deriv</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">deriv</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="n">h</span>
+        <span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-3</span>
+<span class="n">deriv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="nb">float</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">),</span> <span class="nb">float</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">):</span>
+    <span class="n">rate</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>  <span class="c1"># 1 second between graphs</span>
+    <span class="n">F</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+    <span class="n">dFi_dXj</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">deriv</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+            <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span>
+            <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span>
+            <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">[</span><span class="mi">3</span><span class="p">]],</span>
+            <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">[</span><span class="mi">4</span><span class="p">]],</span>
+            <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">[</span><span class="mi">5</span><span class="p">]],</span>
+            <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">[</span><span class="mi">6</span><span class="p">]],</span>
+            <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">[</span><span class="mi">7</span><span class="p">]],</span>
+            <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">[</span><span class="mi">8</span><span class="p">]],</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">sol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">deriv</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">sol</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,),</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># First column of sol</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">dx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">plotconfig</span><span class="p">()</span>
+    <span class="n">errX</span> <span class="o">=</span> <span class="n">errF</span> <span class="o">=</span> <span class="n">errXi</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="n">errXi</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">errXi</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dx</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">errXi</span> <span class="o">&gt;</span> <span class="n">errX</span><span class="p">:</span>
+            <span class="n">errX</span> <span class="o">=</span> <span class="n">errXi</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">errF</span><span class="p">:</span>
+            <span class="n">errF</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">errX</span> <span class="o">&lt;=</span> <span class="n">eps</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">errF</span> <span class="o">&lt;=</span> <span class="n">eps</span><span class="p">):</span>
+            <span class="k">break</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of iterations = &quot;</span><span class="p">,</span> <span class="n">it</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final Solution:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">] = </span><span class="si">{</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Number of iterations =  99
+Final Solution:
+x[0] = 0.7610026921018715
+x[1] = 0.2649538102807026
+x[2] = 0.8357058293571064
+x[3] = 0.6487487207029422
+x[4] = 0.9642611048972873
+x[5] = 0.5491773545755062
+x[6] = 17.160209784607293
+x[7] = 11.545279684327761
+x[8] = 20.271578044639114
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+ 
+
+
+    </main>
+    

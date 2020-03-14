@@ -1,0 +1,82 @@
+---
+redirect_from:
+  - "/introtojupyterbook"
+title: |-
+  Introduction to the CompClass
+pagenum: 0
+prev_page:
+  url: 
+next_page:
+  url: /syllabus.html
+suffix: .md
+search: compclass week python not uses notebooks page environment ml run download conda github several install com henryiii frameworks ready class view take used usage button current really want miniconda brew git create using mcm systems requires notebook interactive logo images simplelogo png welcome website prepared year after finished order easier navigate course materials significant updates since taught much common starting hold default rendering though maximum syntax examples code compatible officially end life book created jupyterbook based original jupyter online any click interact minute start drop into jupyterlab session open here explore dont leave try thebelab cells editable runnable without leaving
+
+comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
+---
+
+    <main class="jupyter-page">
+    <div id="page-info"><div id="page-title">Introduction to the CompClass</div>
+</div>
+    <div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="images/SimpleLogo.png" alt="CompClass Logo"></p>
+<p>Welcome to the CompClass website! This was prepared about a year after the
+class was finished, in order to make it easier to navigate and view the course
+materials. There have been some significant updates since the class was taught;
+Python 3.7 is much more common and 3.8 is starting to take hold (and is used by
+default for the rendering, though 3.7 is the maximum syntax used in the
+examples and most code is 3.6 compatible). Python 2 is now officially at
+End-of-Life.</p>
+<p>This book was created with JupyterBook, and is based on the original Jupyter
+notebooks.</p>
+<h2 id="Usage:-online">Usage: online<a class="anchor-link" href="#Usage:-online"> </a></h2><p>On any page, you can click the "Interact" button. This may take a minute or two
+to start, but will drop you into a JupyterLab session with the current page
+open. From here, you can explore and all the notebooks.</p>
+<p>If you really don't want to leave the page, try the "Thebelab" button. That
+will make all cells in the current page editable and runnable without leaving
+the page.</p>
+<h2 id="Usage:-installing">Usage: installing<a class="anchor-link" href="#Usage:-installing"> </a></h2><p>If you want to run this locally, download
+<a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html#">miniconda</a>
+for your OS. If you are on macOS and you use brew, then <code>brew cask install
+miniconda</code> will do.</p>
+<p>Download the <a href="https://github.com/henryiii/compclass">github repository</a> with
+your favorite download method, such as <code>git clone
+https://github.com/henryiii/compclass</code> (or, if you use SSH, then
+<code>git@github.com:henryiii/compclass</code>).</p>
+<p>In the compclass directory, run:</p>
+<div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">env</span> <span class="n">create</span>
+</pre></div>
+<p>This will create the "compclass" environment from the file <code>environment.yml</code>. Then you can run:</p>
+<div class="highlight"><pre><span></span>conda activate compclass
+</pre></div>
+<p>To use the environment. It will have everything you need!</p>
+<h2 id="Using:-What-about-the-unrun-notebooks?">Using: What about the unrun notebooks?<a class="anchor-link" href="#Using:-What-about-the-unrun-notebooks?"> </a></h2><p>There are a small number of notebooks that are not run by the Continuous Integration (CI) that builds this site. The reasons are listed below:</p>
+<ul>
+<li><code>week9/2_mcmc</code>: Uses MCM3, which uses Theano, which is a discontinued ML
+tool. MCM3 is supposed to maintain it while using it, but I found it buggy on
+some systems.</li>
+<li><code>week12/0_cupy_fractal</code>: Requires CuPy and a GPU</li>
+<li><code>week12/1_PyBindNumba</code>: Requires IPyBind, which I didn't install (and
+building C++ on multiple systems is a bit tricky)</li>
+<li><code>week12/1_Fitting</code>: Uses several ML frameworks not ready for Python 3.8</li>
+<li><code>week12/1_guis</code>: Really not applicable to a notebook environment</li>
+<li><code>week14/1_graphs</code>: Uses several ML frameworks not ready for Python 3.8</li>
+<li><code>week14/2_ml</code>: Uses several ML frameworks not ready for Python 3.8</li>
+</ul>
+<p>Also, note that several notebooks use interactive features of MPL (like
+notebook/widget backends), and at least one uses Bokeh, which do not render
+properly in a static webpage environment - view them in an interactive backend
+for best effect.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+ 
+
+
+    </main>
+    

@@ -1,0 +1,1754 @@
+---
+redirect_from:
+  - "/optional/pythonoptionaloverview"
+interact_link: content/optional/PythonOptionalOverview.ipynb
+kernel_name: compclass
+kernel_path: content/optional
+has_widgets: false
+title: |-
+  Overview of Python
+pagenum: 47
+prev_page:
+  url: /week14/3_sharing.html
+next_page:
+  url: /optional/Python3.html
+suffix: .ipynb
+search: python package not packages code pip only org class functions function available import print object install ipython support html special list help strings f etc py overview tools also docs language x range item objects pypi set future source last library built else open get builtins loop instead iterator something exception run better great com libraries command jupyter project tab anaconda conda reference history vs features slides line variables typed values value arrays blocks classes create keyword into iterable common variable finally return def while before dir input property type n runs error everything methods lookup local init exceptions errors
+
+comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
+---
+
+    <main class="jupyter-page">
+    <div id="page-info"><div id="page-title">Overview of Python</div>
+</div>
+    <div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Overview-of-Python">Overview of Python<a class="anchor-link" href="#Overview-of-Python"> </a></h1><p>This is a sweeping overview of Python. This is best taken as a supplement to your study, or a reference guide.</p>
+<h2 id="Objectives:">Objectives:<a class="anchor-link" href="#Objectives:"> </a></h2><ul>
+<li>Birds-eye overview of Python syntax</li>
+<li>History of Python (2 vs. 3)</li>
+<li>Packages for Python</li>
+<li>Tools for Python</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Disclamer">Disclamer<a class="anchor-link" href="#Disclamer"> </a></h2><p>We are focusing on Python 3 for most of the course, but for reference, I'll note when features became available for this set of slides only. Most things are applicable to both versions. Also, if using Python 2, include the following line:</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">absolute_import</span>
+</pre></div>
+<blockquote><p>Python 3 came out 10 years ago. Python 2 <a href="https://pythonclock.org">is dying in 2020</a>. Packages are <a href="http://python3statement.org">dropping support</a>. Please convince everyone you work with to go to Python 3 if they can!</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Basics-of-Python">Basics of Python<a class="anchor-link" href="#Basics-of-Python"> </a></h1><ul>
+<li>The ultimate source: <a href="https://docs.python.org/3.6/index.html">Python docs</a></li>
+<li>Variables are dynamically typed</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">my_int</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># Python 2 has two integers, normal and long</span>
+<span class="n">my_float</span> <span class="o">=</span> <span class="mf">3.0</span>
+<span class="n">my_str</span> <span class="o">=</span> <span class="s2">&quot;hi&quot;</span>  <span class="c1"># Strings come in different flavors, like r&quot;raw&quot;.</span>
+<span class="n">my_complex</span> <span class="o">=</span> <span class="mi">1</span><span class="n">j</span>
+<span class="n">my_bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># None is it&#39;s own type. Odd.</span>
+
+<span class="n">my_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>  <span class="c1"># Can be changed later</span>
+<span class="n">my_tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;anything&quot;</span><span class="p">)</span>  <span class="c1"># Can&#39;t be changed later</span>
+<span class="n">my_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;one&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;two&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>  <span class="c1"># Order preserved in Python 3.6+</span>
+<span class="n">my_set</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">}</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ul>
+<li>Special values:</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">special_values</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">Ellipsis</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ul>
+<li>Last uncaptured value: <code>_</code></li>
+<li>Indexing arrays: <code>[value]</code><ul>
+<li>Multi-dimensional arrays supported by language, but not in standard library</li>
+</ul>
+</li>
+<li>Slicing arrays: <code>[first:last:step]</code><ul>
+<li>Can omit <code>:step</code> or either/both values</li>
+<li>Does not include final value</li>
+<li>The length of the result is <code>last - first</code></li>
+<li><code>...</code> means "all the rest"</li>
+</ul>
+</li>
+</ul>
+<p>See <a href="https://docs.python.org/3.6/tutorial/introduction.html">An informal introduction to Python</a></p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Overview of syntax:</p>
+<ul>
+<li>Indented blocks with <code>:</code></li>
+<li>Classes and functions create scope</li>
+<li>Function parameters can be optional or keyword only</li>
+<li>Iteration built into the language</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">:</span> <span class="o">...</span>
+<span class="n">listing</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">iterable</span> <span class="k">if</span> <span class="kc">True</span><span class="p">]</span>
+<span class="n">listing</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+</pre></div>
+<p>Common stumbling blocks:</p>
+<ul>
+<li>Mutable vs Immutable (only some built-ins immutable)</li>
+<li>Assignment <em>replaces</em> the variable</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span>
+<span class="n">x</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>What is printed with <code>print(x,y)</code> ?</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[3, 4] [3, 4]
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[5, 6] [3, 4]
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Keywords">Keywords<a class="anchor-link" href="#Keywords"> </a></h2><p><a href="https://docs.python.org/3.6/reference/lexical_analysis.html#identifiers">Exhaustive and complete</a> list:</p>
+<div class="highlight"><pre><span></span><span class="kc">False</span>      <span class="k">class</span>      <span class="nc">finally</span>    <span class="ow">is</span>         <span class="k">return</span>
+<span class="kc">None</span>       <span class="k">continue</span>   <span class="k">for</span>        <span class="k">lambda</span>     <span class="k">try</span>
+<span class="kc">True</span>       <span class="k">def</span>        <span class="nf">from</span>       <span class="k">nonlocal</span>   <span class="k">while</span>
+<span class="ow">and</span>        <span class="k">del</span>        <span class="k">global</span>     <span class="ow">not</span>        <span class="k">with</span>
+<span class="k">as</span>         <span class="k">elif</span>       <span class="k">if</span>         <span class="ow">or</span>         <span class="k">yield</span>
+<span class="k">assert</span>     <span class="k">else</span>       <span class="kn">import</span>     <span class="nn">pass</span>       <span class="k">async</span>
+<span class="k">break</span>      <span class="k">except</span>     <span class="ow">in</span>         <span class="k">raise</span>      <span class="k">await</span>
+</pre></div>
+<p>Python 2: add <code>print</code> and <code>exec</code>, remove <code>nonlocal</code>
+Python before 3.7: remove <code>async</code> and <code>await</code></p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Built-in-functions">Built in functions<a class="anchor-link" href="#Built-in-functions"> </a></h2><p><a href="https://docs.python.org/3.7/library/functions.html">Every function</a> Python 3.7 offers:</p>
+<table>
+<thead><tr>
+<th>...</th>
+<th>...</th>
+<th>...</th>
+<th>...</th>
+<th>...</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>abs()</code></td>
+<td><code>dict()</code></td>
+<td><code>help()</code></td>
+<td><code>min()</code></td>
+<td><code>setattr()</code></td>
+</tr>
+<tr>
+<td><code>all()</code></td>
+<td><code>dir()</code></td>
+<td><code>hex()</code></td>
+<td><code>next()</code></td>
+<td><code>slice()</code></td>
+</tr>
+<tr>
+<td><code>any()</code></td>
+<td><code>divmod()</code></td>
+<td><code>id()</code></td>
+<td><code>object()</code></td>
+<td><code>sorted()</code></td>
+</tr>
+<tr>
+<td><code>ascii()</code></td>
+<td><code>enumerate()</code></td>
+<td><code>input()</code></td>
+<td><code>oct()</code></td>
+<td><code>staticmethod()</code></td>
+</tr>
+<tr>
+<td><code>bin()</code></td>
+<td><code>eval()</code></td>
+<td><code>int()</code></td>
+<td><code>open()</code></td>
+<td><code>str()</code></td>
+</tr>
+<tr>
+<td><code>bool()</code></td>
+<td><code>exec()</code></td>
+<td><code>isinstance()</code></td>
+<td><code>ord()</code></td>
+<td><code>sum()</code></td>
+</tr>
+<tr>
+<td><code>bytearray()</code></td>
+<td><code>filter()</code></td>
+<td><code>issubclass()</code></td>
+<td><code>pow()</code></td>
+<td><code>super()</code></td>
+</tr>
+<tr>
+<td><code>bytes()</code></td>
+<td><code>float()</code></td>
+<td><code>iter()</code></td>
+<td><code>print()</code></td>
+<td><code>tuple()</code></td>
+</tr>
+<tr>
+<td><code>callable()</code></td>
+<td><code>format()</code></td>
+<td><code>len()</code></td>
+<td><code>property()</code></td>
+<td><code>type()</code></td>
+</tr>
+<tr>
+<td><code>chr()</code></td>
+<td><code>frozenset()</code></td>
+<td><code>list()</code></td>
+<td><code>range()</code></td>
+<td><code>vars()</code></td>
+</tr>
+<tr>
+<td><code>classmethod()</code></td>
+<td><code>getattr()</code></td>
+<td><code>locals()</code></td>
+<td><code>repr()</code></td>
+<td><code>zip()</code></td>
+</tr>
+<tr>
+<td><code>compile()</code></td>
+<td><code>globals()</code></td>
+<td><code>map()</code></td>
+<td><code>reversed()</code></td>
+<td><code>__import__()</code></td>
+</tr>
+<tr>
+<td><code>complex()</code></td>
+<td><code>hasattr()</code></td>
+<td><code>max()</code></td>
+<td><code>round()</code></td>
+<td><code>breakpoint()</code></td>
+</tr>
+<tr>
+<td><code>delattr()</code></td>
+<td><code>hash()</code></td>
+<td><code>memoryview()</code></td>
+<td><code>set()</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>You could even get this list in Python itself!</p>
+<div class="highlight"><pre><span></span><span class="c1"># All builtins are available in the builtins module</span>
+<span class="kn">import</span> <span class="nn">builtins</span>
+
+<span class="c1"># Iterate over the contents of the module</span>
+<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">builtins</span><span class="p">):</span>
+
+    <span class="c1"># Items are strings; only look at the ones]</span>
+    <span class="c1"># that start with a lower case letter</span>
+    <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Control-statements">Control statements<a class="anchor-link" href="#Control-statements"> </a></h1><p>The <code>if</code> statement:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">if</span> <span class="n">x</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;x was true&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;x was not true&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>x was true
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The for each loop:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="s2">&quot;abcdefg&quot;</span>
+<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">a</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>a
+b
+c
+d
+e
+f
+g
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>You can also use <code>for item in range(N)</code> to count over a range of values, or <code>while CONDITION:</code>.  You can use <code>for</code> (and <code>if</code>) inside <code>[]</code>, <code>()</code>, or <code>{}</code> to build the data structures mentioned above inplace.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">bad_way_to_make_a_set_of_tens</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">}</span>
+<span class="n">bad_way_to_make_a_set_of_tens</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{0, 10, 20, 30, 40, 50, 60, 70, 80, 90}</pre>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="With">With<a class="anchor-link" href="#With"> </a></h3><p>With lets you take code like this:</p>
+<div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+<span class="n">txt</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span> <span class="c1"># Don&#39;t forget me!</span>
+</pre></div>
+<p>and write instead:</p>
+<div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">txt</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="c1"># File automatically closed here!</span>
+</pre></div>
+<p>With simply runs code at the start and at the end of a block. It also promises the code at the end runs, even if there's an error!</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="More-Functions">More Functions<a class="anchor-link" href="#More-Functions"> </a></h2><p>You can define your own functions:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">my_function</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">another</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">another</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">another</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">value</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">my_function</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">my_function</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">my_function</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">another</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>2 4 4
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Special-function:-iterator">Special function: iterator<a class="anchor-link" href="#Special-function:-iterator"> </a></h4>
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">my_iterator</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">2</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">my_iterator</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>0
+2
+4
+6
+8
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Decorators are objects that can modify functions or classes:</p>
+<div class="highlight"><pre><span></span><span class="nd">@change_a_function</span>
+<span class="k">def</span> <span class="nf">something</span><span class="p">():</span>
+    <span class="k">return</span> <span class="mi">1</span>
+</pre></div>
+<p>is the same as</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">something</span><span class="p">():</span>
+    <span class="k">return</span> <span class="mi">1</span>
+
+<span class="n">something</span> <span class="o">=</span> <span class="n">change_a_function</span><span class="p">(</span><span class="n">something</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Types-and-classes">Types and classes<a class="anchor-link" href="#Types-and-classes"> </a></h2><ul>
+<li>Everything in Python is an object (an instance of a class)</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">MyFunctionLike</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">value</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">f2</span> <span class="o">=</span> <span class="n">MyFunctionLike</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">f3</span> <span class="o">=</span> <span class="n">MyFunctionLike</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">f2</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">f3</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>4 6
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ul>
+<li>Lots of special methods are available</li>
+<li>Can customize almost all behavior</li>
+<li>Lookup for normal members goes <code>object -&gt; class -&gt; parent class</code></li>
+<li>Lookup for special methods starts with the class</li>
+<li>Member lookup can be intercepted</li>
+</ul>
+<p>Creating an object looks like this:</p>
+<ol>
+<li>Capture the local variables in class statement</li>
+<li>Process the variables using metaclass (normally type) (improved in Python 3)</li>
+<li><code>class.__new__</code> <code>-&gt;</code> create object</li>
+<li><code>object.__init__</code> : prepare object</li>
+</ol>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Special decorators:</p>
+<ul>
+<li><code>@property</code>: Make a property function</li>
+<li><code>@classmethod</code>: Make a method runnable from the class</li>
+<li><code>@staticmethod</code>: Make a method not depend on anything in class</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">MyTest</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">3</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">y</span><span class="p">():</span>
+        <span class="k">return</span> <span class="mi">2</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">MyTest</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span> <span class="n">MyTest</span><span class="p">()</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>2 3
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Reflection">Reflection<a class="anchor-link" href="#Reflection"> </a></h2><p>Python knows everything about objects (basically)</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">simple</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="s2">&quot;This is help&quot;</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">dir</span><span class="p">(</span><span class="n">simple</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[&#39;__annotations__&#39;, &#39;__call__&#39;, &#39;__class__&#39;, &#39;__closure__&#39;, &#39;__code__&#39;, &#39;__defaults__&#39;, &#39;__delattr__&#39;, &#39;__dict__&#39;, &#39;__dir__&#39;, &#39;__doc__&#39;, &#39;__eq__&#39;, &#39;__format__&#39;, &#39;__ge__&#39;, &#39;__get__&#39;, &#39;__getattribute__&#39;, &#39;__globals__&#39;, &#39;__gt__&#39;, &#39;__hash__&#39;, &#39;__init__&#39;, &#39;__init_subclass__&#39;, &#39;__kwdefaults__&#39;, &#39;__le__&#39;, &#39;__lt__&#39;, &#39;__module__&#39;, &#39;__name__&#39;, &#39;__ne__&#39;, &#39;__new__&#39;, &#39;__qualname__&#39;, &#39;__reduce__&#39;, &#39;__reduce_ex__&#39;, &#39;__repr__&#39;, &#39;__setattr__&#39;, &#39;__sizeof__&#39;, &#39;__str__&#39;, &#39;__subclasshook__&#39;]
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">help</span><span class="p">(</span><span class="n">simple</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Help on function simple in module __main__:
+
+simple(x)
+    This is help
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">inspect</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">simple</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>def simple(x):
+    &#34;This is help&#34;
+    return x * 2
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Signature details are available in Python 2, but are much more elegant in Python 3.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">simple</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;Signature (x)&gt;</pre>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">inspect</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">inspect</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&#39;/usr/share/miniconda/envs/compclass/lib/python3.7/inspect.py&#39;</pre>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exceptions">Exceptions<a class="anchor-link" href="#Exceptions"> </a></h2><p>Errors are usually exceptions in Python.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">make_an_error</span><span class="p">():</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;I&#39;m an error!&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># Try uncommenting this</span>
+<span class="c1"># make_an_error()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">make_an_error</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s2">&quot;But I don&#39;t care, continuing anyway&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>I&#39;m an error! But I don&#39;t care, continuing anyway
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>You can catch errors like <code>ImportError</code> and then fix the problem, etc.</p>
+<p>The only exception: segfault (C error) (but can still get some info about it in Python 3)</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>There are two blocks that also show up in Python: <code>finally</code> and <code>else</code>. Finally will run regardless of if an exception was caught or not, and else will run only if an exception was not caught. You can also use <code>else</code> on a loop, where it only runs if <code>break</code> was not used to exit the loop. (While we are at it, Python provides <code>continue</code> to keep going in the loop as well)</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Breaking out:&quot;</span><span class="p">)</span>
+    <span class="c1"># break</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Did not break out&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Breaking out:
+Breaking out:
+Breaking out:
+Breaking out:
+Breaking out:
+Breaking out:
+Breaking out:
+Breaking out:
+Breaking out:
+Breaking out:
+Did not break out
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Anatomy-of-a-package">Anatomy of a package<a class="anchor-link" href="#Anatomy-of-a-package"> </a></h2><p>Folders and packages are intrinsically linked in Python.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">one</span>
+<span class="kn">from</span> <span class="nn">two</span> <span class="kn">import</span> <span class="n">three</span>
+<span class="kn">from</span> <span class="nn">four.five</span> <span class="kn">import</span> <span class="n">six</span>
+</pre></div>
+<ul>
+<li><code>one</code> could be <code>one.py</code> or <code>one/__init__.py</code></li>
+<li><code>three</code> could be in a package or another package</li>
+<li>All package <strong>folders</strong> should contain <code>__init__.py</code></li>
+<li>Relative imports <code>from .one</code> are available <strong>inside</strong> a package</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Making-an-installable-package">Making an installable package<a class="anchor-link" href="#Making-an-installable-package"> </a></h3><ul>
+<li>Running code requires that it be in <code>sys.path</code> (made from <code>$PATH</code> and <code>$PYTHONPATH</code> and the local dir)</li>
+<li>Installing a package puts the code or a link to it in system or local <code>site-packages</code></li>
+</ul>
+<p>To be installable:</p>
+<ul>
+<li>Make a setup.py file in root folder, follow examples</li>
+<li>Use <code>pip install -e .</code> (recommended) or <code>python setup.py develop</code> (not recommended)</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="History-of-Python:-2-vs.-3">History of Python: 2 vs. 3<a class="anchor-link" href="#History-of-Python:-2-vs.-3"> </a></h1><ul>
+<li>Python started in 1991 by Guido Van Rossum</li>
+<li>Based on the learner's language ABC</li>
+<li>Released at the right time</li>
+<li>Python 2.4 had a huge user base by the time Python 3 was released</li>
+</ul>
+<p>So why is Python 3 better and why is Python 2 still common?</p>
+<p>TL;DR: Python 3 removes bad features and backward incompatible is slow when you have millions of lines of code.</p>
+<p>See <a href="http://www.asmeurer.com/python3-presentation/slides.html#1">the great talk</a></p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Changes">Changes<a class="anchor-link" href="#Changes"> </a></h1><ul>
+<li>Many of the improvements were backported to 2.6 and 2.7 (from 3.0 and 3.1)</li>
+<li>Some stylistic changes (print is a function, etc)</li>
+<li>Some removals not back-portable (function iterator unpacking)</li>
+<li>Most changes covered by the packages: <a href="https://pythonhosted.org/six/">six</a> or <a href="https://pypi.python.org/pypi/future">future</a></li>
+</ul>
+<h2 id="Iterator-unpacking">Iterator unpacking<a class="anchor-link" href="#Iterator-unpacking"> </a></h2><ul>
+<li>Better support for <code>*list</code> and <code>**dict</code>, especially in 3.5</li>
+</ul>
+
+<pre><code>first, *rest, last = range(10)</code></pre>
+<h2 id="Keyword-only-arguments">Keyword only arguments<a class="anchor-link" href="#Keyword-only-arguments"> </a></h2><ul>
+<li>No longer need to fake this with manual keyword dictionary, more natural</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Unicode">Unicode<a class="anchor-link" href="#Unicode"> </a></h2><ul>
+<li>Biggest change for libraries</li>
+<li>Strings are unicode (old strings are now bytes)</li>
+<li>Unicode variable names!</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">π</span><span class="o">=</span><span class="mf">3.1415926535</span>
+</pre></div>
+<h2 id="Chained-exceptions">Chained exceptions<a class="anchor-link" href="#Chained-exceptions"> </a></h2><ul>
+<li>Errors are clearer when several occur</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Iterators">Iterators<a class="anchor-link" href="#Iterators"> </a></h2><ul>
+<li>Iterators instead of duplicate functions</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000000000000</span><span class="p">):</span>
+   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Your computer will die in Python 2!&quot;</span><span class="p">)</span>
+</pre></div>
+<ul>
+<li><p>May require wrapping some functions with <code>list</code></p>
+</li>
+<li><p>You can now <code>yield from</code> another iterator (3.4)</p>
+</li>
+</ul>
+<h2 id="Comparison-fixed">Comparison fixed<a class="anchor-link" href="#Comparison-fixed"> </a></h2><ul>
+<li>You can no longer compare everything</li>
+<li><code>"two" &lt; 1</code> is now an error instead of the wrong answer!</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Type-support">Type support<a class="anchor-link" href="#Type-support"> </a></h2><ul>
+<li>Still duck-typed (dynamically typed)</li>
+<li>Added function (3.0) and variable (3.6) annotations</li>
+<li>Tools like PyCharm and mypy can do static analysis</li>
+</ul>
+<h2 id="Matrix-multiplication-operator-(3.5)">Matrix multiplication operator (3.5)<a class="anchor-link" href="#Matrix-multiplication-operator-(3.5)"> </a></h2><ul>
+<li>The <code>@</code> symbol was added for matrix multiplication</li>
+</ul>
+<h2 id="F-strings-(3.6)">F-strings (3.6)<a class="anchor-link" href="#F-strings-(3.6)"> </a></h2><ul>
+<li>Format strings allow inline python in strings</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This is </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2"> and x+1=</span><span class="si">{</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This is </span><span class="si">{}</span><span class="s2"> and x+1=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This is </span><span class="si">%i</span><span class="s2"> and x+1=</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>This is 3 and x+1=4
+This is 3 and x+1=4
+This is 3 and x+1=4
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Easy-breakpoints-for-debugging-(3.7)">Easy breakpoints for debugging (3.7)<a class="anchor-link" href="#Easy-breakpoints-for-debugging-(3.7)"> </a></h2><p>A new breakpoint builtin function was added to make breakpoints easier to set, and easier to customize.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Packages-for-Python">Packages for Python<a class="anchor-link" href="#Packages-for-Python"> </a></h1>
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>As you could see, Python is simple. To do real work in Python, you need libraries.</p>
+<p>The best library for Python: the Python standard library (included).</p>
+<ul>
+<li>Usually pretty good, covers many use cases</li>
+<li>Does not evolve, better options usually available</li>
+<li>Most Python 3 additions available as external libraries for Python 2</li>
+</ul>
+<h4 id="Small-sampling">Small sampling<a class="anchor-link" href="#Small-sampling"> </a></h4><ul>
+<li><code>sys</code>, <code>os</code>: system tools</li>
+<li><code>re</code>: regular expressions</li>
+<li><code>math</code>, <code>time</code> and friends, <code>pathlib</code> (3 or backport), <code>functools</code>, <code>itertools</code>, <code>pdb</code>, ...</li>
+</ul>
+<p>See <a href="https://pymotw.com/3/">PMOTW3 (or PMOTW2)</a>.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>There are many more common packages that can be downloaded from <a href="https://pypi.python.org/pypi">pypi</a> with <code>pip</code>:</p>
+<h4 id="For-scientists:-The-big-three">For scientists: The big three<a class="anchor-link" href="#For-scientists:-The-big-three"> </a></h4><ul>
+<li><code>numpy</code>: Numerical python (matrix and array)</li>
+<li><code>scipy</code>: More specialized additions to numpy</li>
+<li><code>matplotlib</code>: The classic plotting package</li>
+<li><code>pandas</code>: A replacement for <code>R</code> or Excel, tabular data</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/optional/PythonOptionalOverview_63_0.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Other-useful-libraries">Other useful libraries<a class="anchor-link" href="#Other-useful-libraries"> </a></h4><ul>
+<li><code>sympy</code>: Symbolic mathematics as Python objects</li>
+<li><code>plumbum</code>: Set of tools for command line programming (calling other programs, command line arguments, paths, remote connections, color)</li>
+<li><code>numba</code>: Compile python into CPU, OpenMP, or CUDA code</li>
+<li><code>pytest</code>: Better testing for your code in python</li>
+<li><code>setuptools</code>: The continued development of Python packaging</li>
+<li><code>tensorflow</code>: Google's computation engine designed for ML</li>
+<li><code>Cython</code>: The C++ and Python mix for compiled python-like code</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Tools-for-Python">Tools for Python<a class="anchor-link" href="#Tools-for-Python"> </a></h1>
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Jupyter">Jupyter<a class="anchor-link" href="#Jupyter"> </a></h2><p>The interactive language project, make up of:</p>
+<ul>
+<li>Jupyter notebook: A html interface to IPython and other kernels</li>
+<li>IPython: a kernel that extends Python</li>
+<li>Lots of other kernels being developed (ROOTbook, etc)</li>
+</ul>
+<p>This is the first project to drop support for Python 2!</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>IPython language extensions:</p>
+<div class="highlight"><pre><span></span><span class="o">%</span><span class="n">line_magic</span>
+<span class="o">%%</span><span class="n">cell_magic</span>
+<span class="n">help</span><span class="err">?</span>
+<span class="err">!</span><span class="n">command</span>
+</pre></div>
+<ul>
+<li>History (input and output cells stored)</li>
+<li>IPython has access to the original text before processed by Python</li>
+<li>IPython looks for special methods to print formatted objects</li>
+<li>Example: <code>%debug</code> after an exception drops you into <code>pdb</code></li>
+<li>Example: <code>%timeit</code> will run a command multiple times and get the timing info</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Jupyter-Notebooks">Jupyter Notebooks<a class="anchor-link" href="#Jupyter-Notebooks"> </a></h3><ul>
+<li>Powerful interactive environment</li>
+<li>Great for remote servers or websites</li>
+<li>Inline plots, widgets, etc</li>
+<li>Cells in markdown, with code and $m \alpha \tau h$ support</li>
+<li>Converts to PDF, slides, etc.</li>
+<li>Great for prototyping</li>
+<li>Fledgling project: <a href="https://github.com/nteract/nteract">nteract</a> for desktop application</li>
+<li>Future project: <a href="https://github.com/jupyterlab/jupyterlab">Juypter Lab</a> for web environment with multiple components</li>
+</ul>
+<h4 id="Useful-shortcuts-(more-in-help-&gt;keyboard-shortcuts)">Useful shortcuts (more in help-&gt;keyboard shortcuts)<a class="anchor-link" href="#Useful-shortcuts-(more-in-help-&gt;keyboard-shortcuts)"> </a></h4><ul>
+<li>Shift-tab: Help</li>
+<li>Shift-tab-tab: More help (etc.)</li>
+<li>Tab: Auto-completion (existing objects only for IPython &lt; 5)</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="JupyterLab">JupyterLab<a class="anchor-link" href="#JupyterLab"> </a></h2><p>The newest and shiniest member of the IPython/Jupyter family. It's a home for notebooks and other types of windows, all in a single browser window. The notebook has some nice updates, too, like drag-n-drop cells and collapsible input. Not ready for major sites yet, but good enough for you to run it on your own.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Packaging-in-Python">Packaging in Python<a class="anchor-link" href="#Packaging-in-Python"> </a></h2><h3 id="pip">pip<a class="anchor-link" href="#pip"> </a></h3><p>The Package Installer for Python, any package should be able to be installed with this.</p>
+<ul>
+<li>Easy to get (ensurepip in latest Python 2.7 or Python 3.4+, <code>getpip.py</code> before that)</li>
+<li>Can download binaries now instead of just source</li>
+<li>Interacts with environments nicely</li>
+</ul>
+<div class="highlight"><pre><span></span>pip install a_package
+pip install --user local_package
+pip install --upgrade pip
+pip install -e .
+</pre></div>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Anaconda"><a href="https://www.continuum.io/anaconda-overview">Anaconda</a><a class="anchor-link" href="#Anaconda"> </a></h2><ul>
+<li>A science focused distribution of Python</li>
+<li>Contains Python 2 or/and 3</li>
+<li>Highly optimized Numpy and friends with help from Intel</li>
+<li>Contains the Conda package manager and ~100 packages, with ~400 optional packages</li>
+</ul>
+<h3 id="Conda">Conda<a class="anchor-link" href="#Conda"> </a></h3><ul>
+<li>Designed to manage binary packages (mostly Python related)</li>
+<li>Built in support for environments</li>
+<li>Can manage Python itself!</li>
+</ul>
+<div class="highlight"><pre><span></span>conda create -n my_python_27_env <span class="nv">python</span><span class="o">=</span><span class="m">2</span>.7 anaconda
+<span class="nb">source</span> activate my_python_27_env
+conda install paramiko
+pip install plumbum
+</pre></div>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="IDEs-for-Python">IDEs for Python<a class="anchor-link" href="#IDEs-for-Python"> </a></h2><h3 id="PyCharm">PyCharm<a class="anchor-link" href="#PyCharm"> </a></h3><ul>
+<li>If you need to develop a package, PyCharm is impressive</li>
+<li>All the features you could ever want, plus many more</li>
+<li>Free community edition is great</li>
+</ul>
+<h3 id="Spyder">Spyder<a class="anchor-link" href="#Spyder"> </a></h3><ul>
+<li>An open-source Matlab like IDE</li>
+<li>Used to be part of Python(x,y) for Windows, now on pip and in anaconda</li>
+</ul>
+<h3 id="IDLE">IDLE<a class="anchor-link" href="#IDLE"> </a></h3><ul>
+<li>A basic editor that comes with every Python</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+ 
+
+
+    </main>
+    

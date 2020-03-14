@@ -1,0 +1,584 @@
+---
+redirect_from:
+  - "/week8/3-fittingtools"
+interact_link: content/week8/3_fittingtools.ipynb
+kernel_name: compclass
+kernel_path: content/week8
+has_widgets: false
+title: |-
+  Fitting Tools
+pagenum: 27
+prev_page:
+  url: /week8/2_fitting.html
+next_page:
+  url: /week9/1_confidence_intervals.html
+suffix: .ipynb
+search: goofit need data fitting openmp pip install scikit build variables tools set project git lmfit libomp try user path requirements partially range lets pdf pdfs week objectives again review structure note crash last both seem compiled code expects least mac linked different libraries anacondas intel homebrews thats why crashed ive reinstalled without really want osc cmake home local bin verbose extra here ensure gets highest level optimization eventually away macos broken youll prepare well making gaussian linear observable unbinned binned dataset list contain read default throwing error input value outside case pass filter true simply ignore those values instead display
+
+comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
+---
+
+    <main class="jupyter-page">
+    <div id="page-info"><div id="page-title">Fitting Tools</div>
+</div>
+    <div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Week-8-Day-3:-Fitting-tools">Week 8 Day 3: Fitting tools<a class="anchor-link" href="#Week-8-Day-3:-Fitting-tools"> </a></h1><h2 id="Objectives:">Objectives:<a class="anchor-link" href="#Objectives:"> </a></h2><ul>
+<li>Look again at fitting tools</li>
+<li>Set up a project in git (review of git, project structure)</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Note-about-crash-last-time!">Note about crash last time!<a class="anchor-link" href="#Note-about-crash-last-time!"> </a></h3><p>GooFit and LmFit both seem to have compiled code that expects OpenMP - and at least on my Mac, they were linked with different OpenMP libraries (Anaconda's Intel libomp for LmFit, and HomeBrew's libomp for GooFit). So that's why it crashed. I've reinstalled GooFit without OpenMP for now.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="GooFit">GooFit<a class="anchor-link" href="#GooFit"> </a></h3><p>If you really want to try GooFit, you can try this on OSC:</p>
+
+<pre><code>!pip install --user scikit-build cmake
+!PATH=$HOME/.local/bin:$PATH pip install --user --verbose goofit</code></pre>
+<p>The extra requirements here are partially to ensure it gets the highest level of optimization, and partially requirements that will eventually go away.</p>
+<p>If you are on macOS, scikit-build is broken, you'll need <code>!pip install scikit-build==0.6.1</code>.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">norm</span><span class="p">,</span> <span class="n">multivariate_normal</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Prepare-data">Prepare data<a class="anchor-link" href="#Prepare-data"> </a></h4><p>We'll be making a set of data out of a Gaussian + linear.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">gauss_part</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">100_000</span><span class="p">)</span>
+<span class="n">lin_part</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=-</span><span class="mi">10</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">50_000</span><span class="p">)</span>
+<span class="n">total_rand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">gauss_part</span><span class="p">,</span> <span class="n">lin_part</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">goofit</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We need an observable, with a range from -10 to 10.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">goofit</span><span class="o">.</span><span class="n">Observable</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can make an unbinned (or binned) dataset; we need to list the variables it will contain.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">goofit</span><span class="o">.</span><span class="n">UnbinnedDataSet</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's read in data. GooFit will default to throwing an error if you input a value that is outside the range (-10 to 10 in this case), but we can pass <code>filter=True</code> to simply ignore those values instead.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">from_matrix</span><span class="p">([</span><span class="n">total_rand</span><span class="p">],</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>If you display a PDF in the notebook, you get a nice pretty-printed version of it's documentation:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">goofit</span><span class="o">.</span><span class="n">PolynomialPdf</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>If the Gaussian is the potato, what is the
+polynomial? Bread? Milk? Nothing exotic, at any rate. The GooFit
+version does have some subtleties, to allow for polynomials over an
+arbitrary number<sup class="footnote-ref" id="fnref-1"><a href="#fn-1">1</a></sup> of dimensions:</p>
+$$
+    P(\vec x; \vec a, \vec x_0, N) =
+    \sum\limits_{p_1+p_2+\ldots+p_n \le N} a_{p_1p_2\ldots p_n} \prod\limits_{i=1}^n (\vec x - \vec x_0)_i^{p_i}
+$$<p>where $N$ is the highest degree of the polynomial and $n$ is the
+number of dimensions. The constructor takes a <code>vector</code> of
+observables, denoted $\vec x$ above; a <code>vector</code> of coefficients,
+$\vec a$, a <code>vector</code> of optional offsets $\vec x_0$ (if not
+specified, these default to zero), and the maximum degree $N$. The
+coefficients are in the order
+$a_{p_0p_0\ldots p_0}, a_{p_1p_0\ldots p_0}, \ldots a_{p_Np_0\ldots p_0}, a_{p_0p_1\ldots p_0}, a_{p_1p_1\ldots p_0},
+\ldots a_{p_0p_0\ldots p_N}$. In other words, start at the index for
+the constant term, and increment the power of the leftmost
+observable. Every time the sum of the powers reaches $N$, reset the
+leftmost power to zero and increment the next-leftmost. When the
+next-leftmost reaches $N$, reset it to zero and increment the
+third-leftmost, and so on.</p>
+<p>An example may be helpful; for two
+dimensions $x$ and $y$, and a maximum power of 3, the order is
+$a_{00}, a_{10}, a_{20}, a_{30}, a_{01}, a_{11}, a_{21}, a_{02}, a_{12}, a_{03}$.
+This can be visualised as picking boxes out of a matrix and
+discarding the ones where the powers exceed the maximum:</p>
+$$
+\begin{array}{cccc}
+    9: x^0y^3 &amp;    -      &amp;    -      &amp;    -      \\
+    7: x^0y^2 &amp; 8: x^1y^2 &amp;    -      &amp;    -      \\
+    4: x^0y^1 &amp; 5: x^1y^1 &amp; 6: x^2y^1 &amp;    -      \\
+    0: x^0y^0 &amp; 1: x^1y^0 &amp; 2: x^2y^0 &amp; 3: x^3y^0 \\
+\end{array}
+$$<p>starting in the lower-lefthand corner and going right,
+then up.</p>
+<p>There is also a simpler version of the constructor for the case of a
+polynomial with only one dimension; it takes the observable, a
+<code>vector</code> of coefficients, an optional offset, and the lowest (not
+highest) degree of the polynomial; the latter two both default to
+zero. In this case the order of the coefficients is from lowest to
+highest power.</p>
+<p>sufficed.</p>
+<div class="footnotes">
+<hr>
+<ol><li id="fn-1"><p>Although being honest, just supporting the special cases of one and two would likely have<a href="#fnref-1" class="footnote">&#8617;</a></p></li>
+</ol>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The fitting variables and PDFs need to be setup next.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">goofit</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">linear</span> <span class="o">=</span> <span class="n">goofit</span><span class="o">.</span><span class="n">PolynomialPdf</span><span class="p">(</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="p">[</span><span class="n">a</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">mu</span> <span class="o">=</span> <span class="n">goofit</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="s2">&quot;mu&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">sigma</span> <span class="o">=</span> <span class="n">goofit</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="s2">&quot;sigma&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">gauss</span> <span class="o">=</span> <span class="n">goofit</span><span class="o">.</span><span class="n">GaussianPdf</span><span class="p">(</span><span class="s2">&quot;gauss&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can add multiple PDFs with fractions for each</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">frac</span> <span class="o">=</span> <span class="n">goofit</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="s2">&quot;frac&quot;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">total</span> <span class="o">=</span> <span class="n">goofit</span><span class="o">.</span><span class="n">AddPdf</span><span class="p">(</span><span class="s2">&quot;tot&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">frac</span><span class="p">],</span> <span class="p">[</span><span class="n">gauss</span><span class="p">,</span> <span class="n">linear</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>And, we can fit a PDF to data:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">minimum</span> <span class="o">=</span> <span class="n">total</span><span class="o">.</span><span class="n">fitTo</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>MnSeedGenerator: for initial parameters FCN = 841645.2784155
+MnSeedGenerator: Initial state:   - FCN =   841645.2784155 Edm =        54488 NCalls =     19
+MnSeedGenerator: Negative G2 found - new state:   - FCN =   841645.2784155 Edm =      54480.8 NCalls =     28
+VariableMetric: start iterating until Edm is &lt; 0.0001
+VariableMetric: Initial state   - FCN =   841645.2784155 Edm =      54480.8 NCalls =     28
+VariableMetric: Iteration #   0 - FCN =   841645.2784155 Edm =      54480.8 NCalls =     28
+VariableMetric: Iteration #   1 - FCN =   805725.7295866 Edm =      5523.23 NCalls =     39
+VariableMetric: Iteration #   2 - FCN =    795403.425499 Edm =      1918.81 NCalls =     50
+VariableMetric: Iteration #   3 - FCN =   792737.6548792 Edm =      3.47229 NCalls =     60
+VariableMetric: Iteration #   4 - FCN =   792732.0268167 Edm =    0.0484444 NCalls =     70
+VariableMetric: Iteration #   5 - FCN =   792731.9534002 Edm =   0.00389431 NCalls =     80
+VariableMetric: Iteration #   6 - FCN =   792731.9490078 Edm =  2.48375e-07 NCalls =     90
+
+Minuit did successfully converge.
+# of function calls: 90
+minimum function Value: 792731.9490078
+minimum edm: 2.483749293692e-07
+minimum internal state vector: LAVector parameters:
+     0.3420860135755
+     0.1005454536517
+    -0.1996606468995
+     -1.068843201795
+
+minimum internal covariance matrix: LASymMatrix parameters:
+  2.0181161e-05  2.2787992e-08  6.9267333e-06              0
+  2.2787992e-08  6.3784342e-07  2.0316983e-08              0
+  6.9267333e-06  2.0316983e-08  9.7223226e-06              0
+              0              0              0              2
+
+
+# ext. ||   Name    ||   type  ||     Value     ||  Error +/- 
+
+   0   ||      frac || limited ||     0.6677264820844 ||0.001496251179233
+   1   ||        mu || limited ||      1.003761304242 ||0.005618793663826
+   2   ||     sigma || limited ||      2.004158173175 ||0.005402504047424
+   3   ||         a || limited ||    0.06167774468737 ||0.2024321074636
+
+
+
+
+The minimization took: 945.73 ms
+Average time per call: 10.511 ms
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The variables are changed in place (mutated):</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">frac</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>frac: 0.6677 +/- 0.0015 [0, 1] Fitter index: 0
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's look at a plot.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">grid</span><span class="p">,</span> <span class="n">pts</span> <span class="o">=</span> <span class="n">total</span><span class="o">.</span><span class="n">evaluatePdf</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">xvals</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">total_rand</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span> <span class="n">pts</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="c1"># ax.set_xlabel(&#39;xvar&#39;)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Normalized probability&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week8/3_fittingtools_26_0.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+ 
+
+
+    </main>
+    

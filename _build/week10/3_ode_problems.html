@@ -1,0 +1,1393 @@
+---
+redirect_from:
+  - "/week10/3-ode-problems"
+interact_link: content/week10/3_ode_problems.ipynb
+kernel_name: 
+kernel_path: content/week10
+has_widgets: false
+title: |-
+  Solving ODE Problems
+pagenum: 34
+prev_page:
+  url: /week10/2_rk.html
+next_page:
+  url: /week11/1_fourier_series.html
+suffix: .ipynb
+search: x y dot u psi matrix v p left frac right begin end np k debugger stack n e python print kappa bc res pdb breakpoint where set mathrm max width sqrt problems debuggers step ya yb friction g ode debugging starting classic library start current also docs tools term short help value trace forward next continue quit tracing lets code boundary align m hbar quad textrm solvebvp def f abs return ddot un week objectives discuss solve bvp using several parts import settrace standard ipython offers debug jump after error raised pm beginning org html controlling pyb ipydb sort
+
+comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
+---
+
+    <main class="jupyter-page">
+    <div id="page-info"><div id="page-title">Solving ODE Problems</div>
+</div>
+    <div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Week-10-Day-3:-ODE-problems">Week 10 Day 3: ODE problems<a class="anchor-link" href="#Week-10-Day-3:-ODE-problems"> </a></h1><h2 id="Objectives">Objectives<a class="anchor-link" href="#Objectives"> </a></h2><ul>
+<li>Discuss debuggers</li>
+<li>Solve a BVP</li>
+<li>Look at some other ODE problems</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Debugging">Debugging<a class="anchor-link" href="#Debugging"> </a></h2><p>Using a debugger has several parts:</p>
+<ul>
+<li>Starting the debugger<ul>
+<li>Classic way: <code>import pdb; pdb.set_trace()</code> (This is the standard library debugger)</li>
+<li>Python 3.7 way: <code>breakpoint()</code> (This will start the current debugger)</li>
+<li>IPython offers <code>%debug</code> to jump in <em>after</em> an error is raised! (like <code>pdb.pm()</code>)</li>
+<li>You can also start at the beginning (see <a href="https://docs.python.org/3.7/library/pdb.html">docs</a>)</li>
+</ul>
+</li>
+<li>Controlling the debugger<ul>
+<li><code>pyb</code> (and <code>ipydb</code>) are sort of based on classic debugging tools - the syntax is a bit odd, but will be useful in other languages.</li>
+<li>A common term is the "stack", short in this case for the "call-stack", the series of functions that call each other to get to the current point.<ul>
+<li>Note that the "stack" is also a term for memory locations in compiled programs - and is unrelated to this usage.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<table>
+<thead><tr>
+<th>short</th>
+<th>name</th>
+<th>action</th>
+<th>Names in other debuggers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>h</code></td>
+<td><code>help</code></td>
+<td>Print out help</td>
+<td></td>
+</tr>
+<tr>
+<td><code>p</code></td>
+<td><code>print</code></td>
+<td>Print out the value of a variable or expression</td>
+<td></td>
+</tr>
+<tr>
+<td><code>u</code></td>
+<td><code>up</code></td>
+<td>Go up one in the stack</td>
+<td></td>
+</tr>
+<tr>
+<td><code>d</code></td>
+<td><code>down</code></td>
+<td>Go down one in the stack</td>
+<td></td>
+</tr>
+<tr>
+<td><code>w</code></td>
+<td><code>where</code></td>
+<td>Show you where you are</td>
+<td>Stack trace</td>
+</tr>
+<tr>
+<td><code>s</code></td>
+<td><code>step</code></td>
+<td>Move forward one computation</td>
+<td>Step in</td>
+</tr>
+<tr>
+<td><code>n</code></td>
+<td><code>next</code></td>
+<td>More forward one line</td>
+<td>Step over</td>
+</tr>
+<tr>
+<td><code>c</code></td>
+<td><code>continue</code></td>
+<td>Continue on till next stop</td>
+<td></td>
+</tr>
+<tr>
+<td><code>b</code></td>
+<td><code>breakpoint</code></td>
+<td>Set a breakpoint somehere</td>
+<td></td>
+</tr>
+<tr>
+<td><code>q</code></td>
+<td><code>quit</code></td>
+<td>Quit</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">## A program to debug</span>
+<span class="k">def</span> <span class="nf">simple_function</span><span class="p">(</span><span class="n">div</span><span class="p">):</span>
+    <span class="n">simple_x</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">simple_y</span> <span class="o">=</span> <span class="n">div</span>
+
+    <span class="c1"># import pdb; pdb.set_trace()</span>
+
+    <span class="k">return</span> <span class="n">fancy_function</span><span class="p">(</span><span class="n">simple_x</span><span class="p">,</span> <span class="n">simple_y</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">fancy_function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">x</span> <span class="o">/</span> <span class="n">y</span>
+    <span class="k">return</span> <span class="n">r</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># simple_function(0)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># %debug</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># simple_function(2)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># import pdb</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># pdb.run(&#39;simple_function(0)&#39;)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Other-tools:-Tracing">Other tools: Tracing<a class="anchor-link" href="#Other-tools:-Tracing"> </a></h3><p>Some IDEs, like PyCharm, may offer enhanced and partially graphical debuggers. And, in Python 3.7, the new built-in <code>breakpoint()</code> can call the fancy debugger instead of the builtin one!</p>
+<p>Let's look at something similar: Tracing. If you have a complex piece of Python code and you want to have an idea of what the control flow looks like, you can trace it.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%writefile</span> simple.py
+
+<span class="c1">## A program to debug</span>
+<span class="k">def</span> <span class="nf">simple_function</span><span class="p">(</span><span class="n">div</span><span class="p">):</span>
+    <span class="n">simple_x</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">simple_y</span> <span class="o">=</span> <span class="n">div</span>
+
+    <span class="k">return</span> <span class="n">fancy_function</span><span class="p">(</span><span class="n">simple_x</span><span class="p">,</span> <span class="n">simple_y</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">fancy_function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">x</span> <span class="o">/</span> <span class="n">y</span>
+    <span class="k">return</span> <span class="n">r</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">simple_function</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Writing simple.py
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>python simple.py
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>1.0
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>python -m trace --trace simple.py
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre> --- modulename: simple, funcname: &lt;module&gt;
+simple.py(3): def simple_function(div):
+simple.py(10): def fancy_function(x, y):
+simple.py(15): def main():
+simple.py(19): if __name__ == &#34;__main__&#34;:
+simple.py(20):     main()
+ --- modulename: simple, funcname: main
+simple.py(16):     print(simple_function(2))
+ --- modulename: simple, funcname: simple_function
+simple.py(4):     simple_x = 2
+simple.py(5):     simple_y = div
+simple.py(7):     return fancy_function(simple_x, simple_y)
+ --- modulename: simple, funcname: fancy_function
+simple.py(11):     r = x / y
+simple.py(12):     return r
+1.0
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>python -m trace --listfuncs simple.py
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>1.0
+
+functions called:
+filename: simple.py, modulename: simple, funcname: &lt;module&gt;
+filename: simple.py, modulename: simple, funcname: fancy_function
+filename: simple.py, modulename: simple, funcname: main
+filename: simple.py, modulename: simple, funcname: simple_function
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Boundary-value-problems-(BPV)">Boundary value problems (BPV)<a class="anchor-link" href="#Boundary-value-problems-(BPV)"> </a></h2><p>Let's look at a square well:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">scipy.integrate</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$
+\begin{align}
+\psi'' + \left( \frac{2 m}{\hbar^2} V_0 - \kappa^2 \right) \psi = 0,&amp; \quad \textrm{for }|x|\le a \\
+\psi'' -  \kappa^2 \psi = 0,&amp;
+\quad \textrm{for }|x| &gt; a
+\end{align}
+$$
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Again, we write this as a set of first order equations:</p>
+$$
+u = \left(\begin{matrix}\psi' \\ \psi\end{matrix}\right)
+$$$$
+u' = \left(\begin{matrix}\psi'' \\ \psi'\end{matrix}\right)
+= \left(\begin{matrix}\left( \frac{2 m}{\hbar^2} V_0 - \kappa^2 \right) \psi \\ \psi'\end{matrix}\right)
+$$<p>where we set $V_0$ to $0$ when $|x|$ is larger than $a$. Boundary conditions:</p>
+$$
+\psi(x_\mathrm{max}) = e^{-\kappa x_\mathrm{max}} \\
+\psi(-x_\mathrm{max}) = e^{-\kappa x_\mathrm{max}}
+$$
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Double click to see broken code for <code>solve_bvp</code> (in a live notebook, not a viewer).</p>
+<!--
+
+```python
+width = 10
+
+def f(x, y, p):
+    E, = p
+    V = np.where(abs(x) < 10, -16, 0)
+    return np.vstack([y[1], -0.4829*(E - V)*y[0]])
+
+def bc(ya, yb, p):
+    E, = p
+    κ = np.sqrt(0.0483 * abs(E) * 10)
+    bc = np.exp(-κ * width)
+
+    return np.array([ya[0] - bc, yb[0] - bc, ya[1] + yb[1]])
+
+x = np.linspace(-width, width, 100)
+y = np.ones([2,len(x)])
+
+res = scipy.integrate.solve_bvp(f, bc, x, y, p=[-17])
+print(res.message)
+print('p =', res.p[0])
+
+plt.plot(res.x, res.y[0])
+```
+
+-->
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot; From &quot;COMPUTATIONAL PHYSICS&quot; &amp; &quot;COMPUTER PROBLEMS in PHYSICS&quot;</span>
+<span class="sd">    by RH Landau, MJ Paez, and CC Bordeianu (deceased)</span>
+<span class="sd">    Copyright R Landau, Oregon State Unv, MJ Paez, Univ Antioquia, </span>
+<span class="sd">    C Bordeianu, Univ Bucharest, 2017. </span>
+<span class="sd">    Please respect copyright &amp; acknowledge our work.&quot;&quot;&quot;</span>
+
+<span class="c1"># QuantumEigen.py:             Finds E and psi via rk4 + bisection</span>
+
+<span class="c1"># mass/((hbar*c)**2)= 940MeV/(197.33MeV-fm)**2 =0.4829</span>
+<span class="c1"># well width=20.0 fm, depth 10 MeV, Wave function not normalized.</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-3</span>  <span class="c1"># Precision</span>
+<span class="n">n_steps</span> <span class="o">=</span> <span class="mi">501</span>
+<span class="n">E</span> <span class="o">=</span> <span class="o">-</span><span class="mi">17</span>  <span class="c1"># E guess</span>
+<span class="n">h</span> <span class="o">=</span> <span class="mf">0.04</span>
+<span class="n">count_max</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">Emax</span> <span class="o">=</span> <span class="mf">1.1</span> <span class="o">*</span> <span class="n">E</span>  <span class="c1"># E limits</span>
+<span class="n">Emin</span> <span class="o">=</span> <span class="n">E</span> <span class="o">/</span> <span class="mf">1.1</span>
+
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">E</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="mf">0.4829</span> <span class="o">*</span> <span class="p">(</span><span class="n">E</span> <span class="o">-</span> <span class="n">V</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+
+
+<span class="k">def</span> <span class="nf">V</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="c1"># Well depth</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">16</span> <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="k">else</span> <span class="mi">0</span>
+
+
+<span class="k">def</span> <span class="nf">rk4</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">Neqs</span><span class="p">,</span> <span class="n">E</span><span class="p">):</span>
+    <span class="n">ydumb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Neqs</span><span class="p">),</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">k1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Neqs</span><span class="p">),</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">k2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Neqs</span><span class="p">),</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">k3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Neqs</span><span class="p">),</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">k4</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Neqs</span><span class="p">),</span> <span class="nb">float</span><span class="p">)</span>
+
+    <span class="n">F</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">E</span><span class="p">)</span>
+    <span class="n">k1</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="n">F</span>
+    <span class="n">ydumb</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">k1</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="n">F</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">ydumb</span><span class="p">,</span> <span class="n">E</span><span class="p">)</span>
+    <span class="n">k2</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="n">F</span>
+    <span class="n">ydumb</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">k2</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="n">F</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">ydumb</span><span class="p">,</span> <span class="n">E</span><span class="p">)</span>
+    <span class="n">k3</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="n">F</span>
+    <span class="n">ydumb</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">k3</span>
+
+    <span class="n">F</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">h</span><span class="p">,</span> <span class="n">ydumb</span><span class="p">,</span> <span class="n">E</span><span class="p">)</span>
+    <span class="n">k4</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="n">F</span>
+
+    <span class="n">y</span> <span class="o">+=</span> <span class="p">(</span><span class="n">k1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">k2</span> <span class="o">+</span> <span class="n">k3</span><span class="p">)</span> <span class="o">+</span> <span class="n">k4</span><span class="p">)</span> <span class="o">/</span> <span class="mi">6</span>
+
+
+<span class="k">def</span> <span class="nf">diff</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+    <span class="n">i_match</span> <span class="o">=</span> <span class="n">n_steps</span> <span class="o">//</span> <span class="mi">3</span>  <span class="c1"># Matching radius</span>
+    <span class="n">nL</span> <span class="o">=</span> <span class="n">i_match</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1e-15</span><span class="p">,</span> <span class="mf">1e-15</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="o">-</span><span class="n">E</span> <span class="o">*</span> <span class="mf">0.4829</span><span class="p">)])</span>  <span class="c1"># Initial left wf</span>
+
+    <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nL</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="p">(</span><span class="n">ix</span> <span class="o">-</span> <span class="n">n_steps</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">rk4</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">E</span><span class="p">)</span>
+
+    <span class="n">left</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Log  derivative</span>
+
+    <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e-15</span>
+    <span class="c1"># For even;  reverse for odd</span>
+    <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="o">-</span><span class="n">E</span> <span class="o">*</span> <span class="mf">0.4829</span><span class="p">)</span>  <span class="c1"># Initialize R wf</span>
+
+    <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_steps</span><span class="p">,</span> <span class="n">nL</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="p">(</span><span class="n">ix</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">n_steps</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">rk4</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">E</span><span class="p">)</span>
+
+    <span class="n">right</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Log derivative</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">left</span> <span class="o">-</span> <span class="n">right</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">left</span> <span class="o">+</span> <span class="n">right</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+    <span class="c1"># Repeat integrations for plot</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">n_steps</span> <span class="o">=</span> <span class="mi">1501</span>  <span class="c1"># integration steps</span>
+
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">),</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">yL</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">505</span><span class="p">),</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">i_match</span> <span class="o">=</span> <span class="mi">500</span>  <span class="c1"># Matching point</span>
+    <span class="n">nL</span> <span class="o">=</span> <span class="n">i_match</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e-40</span>  <span class="c1"># Initial left wf</span>
+    <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="o">-</span><span class="n">E</span> <span class="o">*</span> <span class="mf">0.4829</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nL</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">yL</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">yL</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="p">(</span><span class="n">ix</span> <span class="o">-</span> <span class="n">n_steps</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">rk4</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">E</span><span class="p">)</span>
+
+    <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0e-15</span>  <span class="c1"># For even;  reverse for odd</span>
+    <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="o">-</span><span class="n">E</span> <span class="o">*</span> <span class="mf">0.4829</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">Rwf_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_steps</span> <span class="o">-</span> <span class="mi">3</span> <span class="o">-</span> <span class="n">nL</span><span class="p">)</span>
+    <span class="n">Rwf_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_steps</span> <span class="o">-</span> <span class="mi">3</span> <span class="o">-</span> <span class="n">nL</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_steps</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nL</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>  <span class="c1"># right WF</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="p">(</span><span class="n">ix</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">n_steps</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># Integrate in</span>
+        <span class="n">rk4</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">E</span><span class="p">)</span>
+        <span class="n">Rwf_x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">ix</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">n_steps</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">Rwf_y</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">35e-9</span>
+        <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">h</span>
+    <span class="n">normL</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">yL</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">nL</span><span class="p">]</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Renormalize L wf &amp; derivative</span>
+    <span class="n">Lwf_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nL</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">Lwf_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nL</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nL</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="p">(</span><span class="n">ix</span> <span class="o">-</span> <span class="n">n_steps</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">yL</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">ix</span><span class="p">]</span> <span class="o">*</span> <span class="n">normL</span>
+        <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">yL</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">ix</span><span class="p">]</span> <span class="o">*</span> <span class="n">normL</span>
+        <span class="n">Lwf_x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">ix</span> <span class="o">-</span> <span class="n">n_steps</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">Lwf_y</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">35e-9</span>  <span class="c1"># Factor for scale</span>
+        <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">E</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Rwf_x</span><span class="p">,</span> <span class="n">Rwf_y</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Lwf_x</span><span class="p">,</span> <span class="n">Lwf_y</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+<span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">count_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="c1"># Iteration loop</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="p">(</span><span class="n">Emax</span> <span class="o">+</span> <span class="n">Emin</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>  <span class="c1"># Divide E range</span>
+    <span class="n">Diff</span> <span class="o">=</span> <span class="n">diff</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">diff</span><span class="p">(</span><span class="n">Emax</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span> <span class="o">*</span> <span class="n">Diff</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">Emax</span> <span class="o">=</span> <span class="n">E</span>  <span class="c1"># Bisection algor</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Emin</span> <span class="o">=</span> <span class="n">E</span>
+
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">Diff</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span><span class="p">:</span>
+        <span class="k">break</span>
+
+    <span class="n">plot</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final eigenvalue E = &quot;</span><span class="p">,</span> <span class="n">E</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;iterations, max = &quot;</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>-17.077272727272728
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/3_ode_problems_19_1.png"
+>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>-16.26590909090909
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/3_ode_problems_19_3.png"
+>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>-15.860227272727272
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/3_ode_problems_19_5.png"
+>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>-16.06306818181818
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/3_ode_problems_19_7.png"
+>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>-15.961647727272727
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/3_ode_problems_19_9.png"
+>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>-15.9109375
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/3_ode_problems_19_11.png"
+>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>-15.936292613636363
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/3_ode_problems_19_13.png"
+>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>-15.948970170454544
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/3_ode_problems_19_15.png"
+>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>-15.955308948863635
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/3_ode_problems_19_17.png"
+>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>-15.95213955965909
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/3_ode_problems_19_19.png"
+>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>-15.950554865056816
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/3_ode_problems_19_21.png"
+>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>-15.951347212357952
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/3_ode_problems_19_23.png"
+>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>-15.95174338600852
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/3_ode_problems_19_25.png"
+>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>-15.951941472833806
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/3_ode_problems_19_27.png"
+>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>-15.952040516246448
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/3_ode_problems_19_29.png"
+>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Final eigenvalue E =  -15.952090037952768
+iterations, max =  15
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Problem-2:-Projectile-motion-with-drag">Problem 2: Projectile motion with drag<a class="anchor-link" href="#Problem-2:-Projectile-motion-with-drag"> </a></h2><p>We can select a power $n=1$ or $2$. The friction coefficient is $k$.</p>
+$$
+\ddot{x} = - k \dot{x}^n \frac{\dot{x}}{v} \\
+\ddot{y} = - g - k \dot{y}^n \frac{\dot{y}}{v} \\
+v = \sqrt{\dot{x}^2 + \dot{y}^2}
+$$<p>We can rewrite it:</p>
+$$
+u = \left(\begin{matrix}
+    x \\
+    \dot{x} \\
+    y \\
+    \dot{y}
+\end{matrix}\right)
+$$<p>Then:</p>
+$$
+\dot{u} = \left(\begin{matrix}
+    \dot{x} \\
+    - k \dot{x}^n \frac{\dot{x}}{v} \\
+    \dot{y} \\
+    - g - k \dot{y}^n \frac{\dot{y}}{v}
+\end{matrix}\right)
+=
+\left(\begin{matrix}
+    u_1 \\
+    - k u_1^n \frac{u_1}{\sqrt{u_1^2 + u_3^2}} \\
+    u_3 \\
+    - g - k u_3^n \frac{u_3}{\sqrt{u_1^2 + u_3^2}}
+\end{matrix}\right)
+$$<p>We can set the initial positions to 0 and give it a starting velocity, and compare no friction to friction versions.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">scipy.integrate</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">v0</span> <span class="o">=</span> <span class="mi">22</span>
+<span class="n">angle</span> <span class="o">=</span> <span class="mi">34</span>
+<span class="n">g</span> <span class="o">=</span> <span class="mf">9.8</span>
+<span class="n">k</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">v0x</span> <span class="o">=</span> <span class="n">v0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">))</span>
+<span class="n">v0y</span> <span class="o">=</span> <span class="n">v0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">))</span>
+
+<span class="n">t_eval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">analytic_x</span> <span class="o">=</span> <span class="n">v0x</span> <span class="o">*</span> <span class="n">t_eval</span>
+<span class="n">analytic_y</span> <span class="o">=</span> <span class="n">v0y</span> <span class="o">*</span> <span class="n">t_eval</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">g</span> <span class="o">*</span> <span class="n">t_eval</span> <span class="o">**</span> <span class="mi">2</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="n">k</span> <span class="o">*</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="n">n</span> <span class="o">*</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="o">-</span><span class="n">g</span> <span class="o">-</span> <span class="n">k</span> <span class="o">*</span> <span class="n">u</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">**</span> <span class="n">n</span> <span class="o">*</span> <span class="n">u</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">v</span><span class="p">]</span>
+    <span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">integrate</span><span class="o">.</span><span class="n">solve_ivp</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">v0x</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">v0y</span><span class="p">],</span> <span class="n">t_eval</span><span class="o">=</span><span class="n">t_eval</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>The solver successfully reached the end of the integration interval.
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">res</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">analytic_x</span><span class="p">,</span> <span class="n">analytic_y</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&lt;matplotlib.lines.Line2D at 0x7fbcd937dd90&gt;]</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/3_ode_problems_25_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot; From &quot;COMPUTATIONAL PHYSICS&quot; &amp; &quot;COMPUTER PROBLEMS in PHYSICS&quot;</span>
+<span class="sd">    by RH Landau, MJ Paez, and CC Bordeianu (deceased)</span>
+<span class="sd">    Copyright R Landau, Oregon State Unv, MJ Paez, Univ Antioquia, </span>
+<span class="sd">    C Bordeianu, Univ Bucharest, 2017. </span>
+<span class="sd">    Please respect copyright &amp; acknowledge our work.&quot;&quot;&quot;</span>
+
+<span class="c1"># ProjectileAir.py: Order dt^2 projectile trajectory + drag</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">v0</span> <span class="o">=</span> <span class="mi">22</span>
+<span class="n">angle</span> <span class="o">=</span> <span class="mf">34.0</span>
+<span class="n">g</span> <span class="o">=</span> <span class="mf">9.8</span>
+<span class="n">kf</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">20</span>
+
+<span class="n">v0x</span> <span class="o">=</span> <span class="n">v0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span><span class="p">)</span>
+<span class="n">v0y</span> <span class="o">=</span> <span class="n">v0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span><span class="p">)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">v0y</span> <span class="o">/</span> <span class="n">g</span>
+<span class="n">H</span> <span class="o">=</span> <span class="n">v0y</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">g</span>
+<span class="n">R</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">v0x</span> <span class="o">*</span> <span class="n">v0y</span> <span class="o">/</span> <span class="n">g</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No Drag T =&quot;</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="s2">&quot;, H =&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="s2">&quot;, R =&quot;</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">plotNumeric</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+    <span class="n">vx</span> <span class="o">=</span> <span class="n">v0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span><span class="p">)</span>
+    <span class="n">vy</span> <span class="o">=</span> <span class="n">v0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">vy</span> <span class="o">/</span> <span class="n">g</span> <span class="o">/</span> <span class="n">N</span> <span class="o">*</span> <span class="mf">1.5</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">       With Friction  &quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;       x            y&quot;</span><span class="p">)</span>
+
+    <span class="n">xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
+    <span class="n">xy</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">vx</span> <span class="o">=</span> <span class="n">vx</span> <span class="o">-</span> <span class="n">k</span> <span class="o">*</span> <span class="n">vx</span> <span class="o">*</span> <span class="n">dt</span>
+        <span class="n">vy</span> <span class="o">=</span> <span class="n">vy</span> <span class="o">-</span> <span class="n">g</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">-</span> <span class="n">k</span> <span class="o">*</span> <span class="n">vy</span> <span class="o">*</span> <span class="n">dt</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">vx</span> <span class="o">*</span> <span class="n">dt</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">vy</span> <span class="o">*</span> <span class="n">dt</span>
+        <span class="n">xy</span><span class="p">[:,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; </span><span class="si">%13.10f</span><span class="s2">  </span><span class="si">%13.10f</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">xy</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">plotAnalytic</span><span class="p">():</span>
+    <span class="n">v0x</span> <span class="o">=</span> <span class="n">v0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span><span class="p">)</span>
+    <span class="n">v0y</span> <span class="o">=</span> <span class="n">v0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">v0y</span> <span class="o">/</span> <span class="n">g</span> <span class="o">/</span> <span class="n">N</span> <span class="o">*</span> <span class="mf">1.8</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">       No Friction  &quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;        x            y&quot;</span><span class="p">)</span>
+
+    <span class="n">xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">dt</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">v0x</span> <span class="o">*</span> <span class="n">t</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">v0y</span> <span class="o">*</span> <span class="n">t</span> <span class="o">-</span> <span class="n">g</span> <span class="o">*</span> <span class="n">t</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">xy</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; </span><span class="si">%13.10f</span><span class="s2">  </span><span class="si">%13.10f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">xy</span><span class="p">)</span>
+
+
+<span class="n">plotNumeric</span><span class="p">(</span><span class="n">kf</span><span class="p">)</span>
+<span class="n">plotAnalytic</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>No Drag T = 2.510662015582945 , H = 7.7216941017014955 , R = 45.79152914391073
+
+       With Friction  
+       x            y
+  1.5878444084   0.9841455183 
+  3.0560925976   1.8072962748 
+  4.4137525380   2.4815783725 
+  5.6691537211   3.0182045781 
+  6.8299982623   3.4275431141 
+  7.9034081546   3.7191812700 
+  8.8959689636   3.9019842221 
+  9.8137702310   3.9841494227 
+ 10.6624428350   3.9732568932 
+ 11.4471935368   3.8763157289 
+ 12.1728369253   3.6998071009 
+ 12.8438249551   3.4497240195 
+ 13.4642742600   3.1316081022 
+ 14.0379914099   2.7505835728 
+ 14.5684962641   2.3113886991 
+ 15.0590435667   1.8184048634 
+ 15.5126429149   1.2756834428 
+ 15.9320772235   0.6869706652 
+ 16.3199197985   0.0557305932 
+
+       No Friction  
+        x            y
+  0.0000000000   0.0000000000
+  2.0606188115   1.3273592161
+  4.1212376230   2.5296269877
+  6.1818564344   3.6068033149
+  8.2424752459   4.5588881976
+ 10.3030940574   5.3858816359
+ 12.3637128689   6.0877836298
+ 14.4243316803   6.6645941792
+ 16.4849504918   7.1163132841
+ 18.5455693033   7.4429409446
+ 20.6061881148   7.6444771607
+ 22.6668069262   7.7209219323
+ 24.7274257377   7.6722752595
+ 26.7880445492   7.4985371422
+ 28.8486633607   7.1997075804
+ 30.9092821721   6.7757865742
+ 32.9699009836   6.2267741236
+ 35.0305197951   5.5526702285
+ 37.0911386066   4.7534748890
+ 39.1517574180   3.8291881050
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/3_ode_problems_26_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+ 
+
+
+    </main>
+    

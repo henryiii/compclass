@@ -1,0 +1,175 @@
+---
+redirect_from:
+  - "/week7/1-worksheet"
+interact_link: content/week7/1_worksheet.ipynb
+kernel_name: compclass
+kernel_path: content/week7
+has_widgets: false
+title: |-
+  Worksheet
+pagenum: 23
+prev_page:
+  url: /week7/1_pandas.html
+next_page:
+  url: /week7/2_histograms_cuts.html
+suffix: .ipynb
+search: df astype category survived alive dataset bool pclass sex embarked embarktown does probably not columns fraction titanic week worksheet load following example data importantly column names cleanup modify provide reasonable dtypes little tricker categorical remember modifying dataframe youll able rerun cell without rerunning before yes categories our purposes should child drop adultmale python del statement delete several questions children average fare class adult passenger plotting bit tricky plot stacked histogram binned age bins vs passengers yourself filtering nans matplotlib directly think need
+
+comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
+---
+
+    <main class="jupyter-page">
+    <div id="page-info"><div id="page-title">Worksheet</div>
+</div>
+    <div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Week-7-Day-1:-Worksheet">Week 7 Day 1: Worksheet<a class="anchor-link" href="#Week-7-Day-1:-Worksheet"> </a></h1><p>Load the following example dataset:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;titanic&quot;</span><span class="p">)</span>
+<span class="c1"># Note: if you have problems, try:</span>
+<span class="c1"># df = pd.read_csv(&#39;https://raw.githubusercontent.com/mwaskom/seaborn-data/master/titanic.csv&#39;)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="1:-Look-at-the-data">1: Look at the data<a class="anchor-link" href="#1:-Look-at-the-data"> </a></h3><p>What does the dataset look like? (Most importantly, what are the column names)</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="2:-Cleanup">2: Cleanup<a class="anchor-link" href="#2:-Cleanup"> </a></h2><h3 id="2.1">2.1<a class="anchor-link" href="#2.1"> </a></h3><p>Modify the dataset to provide more reasonable dtypes.</p>
+<ul>
+<li><code>survived</code> can be bool</li>
+<li><code>alive</code> can be bool (a little tricker)</li>
+<li><code>pclass</code>, <code>sex</code>, <code>embarked</code>, <code>who</code>, and <code>embark_town</code> can be categorical</li>
+</ul>
+<p>Remember, you are modifying the DataFrame, so you'll probably not be able to rerun this cell without rerunning the one before it.</p>
+<!--
+df.survived = df.survived.astype('bool')
+df.pclass = df.pclass.astype('category')
+df.sex = df.sex.astype('category')
+df.embarked = df.embarked.astype('category')
+df.who = df.who.astype('category')
+df.embark_town = df.embark_town.astype('category')
+df.alive = df.alive == 'yes'
+-->
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="2.2">2.2<a class="anchor-link" href="#2.2"> </a></h2><p>What categories does <code>who</code> come in?</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="2.3">2.3<a class="anchor-link" href="#2.3"> </a></h2><p>For our purposes, we should have <code>child=bool</code>, <code>sex=category</code>, and we can drop <code>adult_male</code> and <code>who</code> columns. You can use the Python <code>del</code> statement to delete columns.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="3:-Several-questions">3: Several questions<a class="anchor-link" href="#3:-Several-questions"> </a></h2>
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>What fraction survived the titanic (in the dataset we have)?</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>What fraction of children survived the Titanic?</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>What was the average fare of each class of adult passenger <code>pclass</code>?</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="4:-Plotting">4: Plotting<a class="anchor-link" href="#4:-Plotting"> </a></h2><p>A bit tricky: Plot a stacked histogram binned over age (10 or 20 bins for 0-100) of alive vs. not alive passengers. You probably will find yourself filtering out the NaN's if you use matplotlib directly (which I think you need to).</p>
+
+</div>
+</div>
+</div>
+</div>
+
+ 
+
+
+    </main>
+    

@@ -1,0 +1,1435 @@
+---
+redirect_from:
+  - "/week11/2-fft"
+interact_link: content/week11/2_FFT.ipynb
+kernel_name: 
+kernel_path: content/week11
+has_widgets: false
+title: |-
+  Fast Fourier Transform
+pagenum: 36
+prev_page:
+  url: /week11/1_fourier_series.html
+next_page:
+  url: /week12/0_CuPyFractal.html
+suffix: .ipynb
+search: n k z y pi lets fft sum algorithm sqrt frac our here order o elements nn algorithms mathcal kn numba just calculations e above get fast bit methods cooly tukey compression even not times since calculation into terms also recursive loop fourier transform both using dft need ffts instead yn book en nk well function works implement important second lists newton matrix qr integer method feature different size problem overall speed still really requires doubling means where log thats feel free start later values power too break pieces odd definitions equiv expression zn expand however sign produce item factor
+
+comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
+---
+
+    <main class="jupyter-page">
+    <div id="page-info"><div id="page-title">Fast Fourier Transform</div>
+</div>
+    <div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Week-11-Day-2:-Fast-Fourier-Transform-(FFT)">Week 11 Day 2: Fast Fourier Transform (FFT)<a class="anchor-link" href="#Week-11-Day-2:-Fast-Fourier-Transform-(FFT)"> </a></h1><h2 id="Objectives">Objectives<a class="anchor-link" href="#Objectives"> </a></h2><ul>
+<li>Learn a bit about the way a FFT works</li>
+<li>Cover two methods to implement the Cooly-Tukey FFT</li>
+<li>Mention compression</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="The-Fast-Fourier-Transform">The Fast Fourier Transform<a class="anchor-link" href="#The-Fast-Fourier-Transform"> </a></h3><p>The FFT has been called one of the 10 most important algorithms of our time. Let's take a second to look at the pair of lists <a href="https://nickhigham.wordpress.com/2016/03/29/the-top-10-algorithms-in-applied-mathematics/">available here</a>:</p>
+<table>
+<thead><tr>
+<th>2016 PCAM index</th>
+<th>2000 Computing in Science and Engineering</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Newton and quasi-Newton methods</td>
+<td>The Fortran Optimizing Compiler</td>
+</tr>
+<tr>
+<td>Matrix factorizations (LU, Cholesky, QR)</td>
+<td>---</td>
+</tr>
+<tr>
+<td>Singular value decomposition, QR and QZ algorithms</td>
+<td>---</td>
+</tr>
+<tr>
+<td>Monte-Carlo methods</td>
+<td>---</td>
+</tr>
+<tr>
+<td>Fast Fourier transform</td>
+<td>---</td>
+</tr>
+<tr>
+<td>Krylov subspace methods (conjugate gradients, Lanczos, GMRES, minres)</td>
+<td>---</td>
+</tr>
+<tr>
+<td>JPEG</td>
+<td>Quicksort algorithm for sorting</td>
+</tr>
+<tr>
+<td>PageRank</td>
+<td>Integer relation detection</td>
+</tr>
+<tr>
+<td>Simplex algorithm</td>
+<td>---</td>
+</tr>
+<tr>
+<td>Kalman filter</td>
+<td>Fast multipole method</td>
+</tr>
+</tbody>
+</table>
+<p>(The items that match are marked with ---). Both lists prominently feature the FFT.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Why is FFT so important? Let's look at performance. A way to relate different algorithms is the order, $\mathcal{O}$. This gives you an idea of how the algorithm grows with the size of the problem - it says nothing about the overall time. Hopefully, overall speed is optimal for an algorithm; maybe we are using Numba or something like that; but even if you are not, the order still holds between similar implementations. The order really describes the number of operations an algorithm requires, but that should be related to the time.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Assuming you have N elements,</p>
+<ul>
+<li>$\mathcal{O}(1)$: Does not depend on the number of elements at all, just takes a constant amount of time.</li>
+<li>$\mathcal{O}(N)$: Doubling the number of elements doubles the about of time</li>
+<li>$\mathcal{O}(N^2)$: Doubling the number of elements quadruples the about of time</li>
+</ul>
+<p>Etc.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>If you look at the DFT algorithm, you'll see it has $N\times N$ calculations, so it is order $\mathcal{O}(N^2)$. This means for $N=1,000$ elements, you would need $1,000,000$ calculations (where "calculations" has an unspecified size). FFTs are order $\mathcal{O}(N \log_2 N)$ instead. So, since $1024 = 2^{10}$, this is roughly $1000\times 10 = 10,000$ calculations - that's 100 times faster. Feel free to repeat the calculation with $1,000,000$ elements, which is not unreasonable for an FT problem.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's revisit the DFT algorithm:</p>
+$$
+Z = e^{-2 \pi i / N} \\
+Y_n = \frac{1}{\sqrt{2 \pi}} \sum_{k=0}^{N-1} Z^{n k} y_k
+$$<p>Here we have adjusted the formula from last time slightly to ensure both $n$ and $k$ start at 0. (The book seems to have an error here, because in later discussions the k's start from 0.)
+Since both $n$ and $k$ vary over $N$ values, this is $N^2$ calculations. Let's investigate the most popular FFT algorithm, the Cooley–Tukey FFT. This one requires you have a power of 2 number of elements. Other FFT algorithms exist - but you can always "pad" your data to the next power of two and use this one.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Cooly-Tukey-FFT">Cooly-Tukey FFT<a class="anchor-link" href="#Cooly-Tukey-FFT"> </a></h3>
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Our approach is a bit different in the book, feel free to look at that too.</p>
+<p>We can break the DFT calculation into two pieces, the even $k$ terms and the odd $k$:</p>
+$$
+Y_n =
+\frac{1}{\sqrt{2 \pi}} \sum_{k=0}^{N/2 - 1} Z^{n (2 k)} y_{2 k} +
+\frac{1}{\sqrt{2 \pi}} \sum_{k=0}^{N/2 - 1} Z^{n (2 k + 1)} y_{2 k + 1}
+$$
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can then make two definitions here:</p>
+$$
+E_n \equiv  \frac{1}{\sqrt{2 \pi}} \sum_{k=0}^{N/2 - 1} Z^{n (2 k)} y_{2 k} \\
+O_n \equiv  \frac{1}{\sqrt{2 \pi}} \sum_{k=0}^{N/2 - 1} Z^{n (2 k)} y_{2 k + 1}
+$$<p>So the above expression becomes:</p>
+$$
+Y_n = E_n + Z^n O_n
+$$
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Given that this is periodic, we can also compute $Y_{n+N/2}$:</p>
+$$
+Y_{n+N/2} =
+\frac{1}{\sqrt{2 \pi}} \sum_{k=0}^{N/2 - 1} Z^{(n+N/2) (2 k)} y_{2 k} +
+\frac{1}{\sqrt{2 \pi}} \sum_{k=0}^{N/2 - 1} Z^{(n+N/2) (2 k + 1)} y_{2 k + 1}
+$$<p>We can expand the terms in the exponents:</p>
+$$
+Y_{n+N/2}=
+ \frac{1}{\sqrt{2\pi}}\sum_{k=0}^{N/2-1}Z^{2kn}Z^{Nk}y_{2k}
++Z^{n}Z^{N/2}\frac{1}{\sqrt{2\pi}}\sum_{k=0}^{N/2-1}Z^{2kn}Z^{kN}y_{2k+1}
+$$<p>However, by using our definition of $Z$, we have $Z^{kN} = e^{-2 \pi i k}$. For integer $k$, this is just 1. We can also evaluate $Z^{N/2} = e^{- \pi i} = -1$. At this point, we have now recovered the original expression, with a relative minus sign!</p>
+$$
+Y_{n+N/2}=
+ \frac{1}{\sqrt{2\pi}}\sum_{k=0}^{N/2-1}Z^{2kn}y_{2k}
+-Z^{n}\frac{1}{\sqrt{2\pi}}\sum_{k=0}^{N/2-1}Z^{2kn}y_{2k+1}
+$$$$
+Y_{n+N/2} = E_n - Z^n O_n
+$$
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>So now we can split our sum into two pieces, odd and even, then combine using the above definitions to produce 2 outputs for each calculation. We could continue to break up the sum in this manor, until we have 1 item in each - this is a recursive algorithm, and it's where the $\log_2(N)$ comes from. And, one item is really simple to calculate, that's just $E_0 = y_0$ and $O_0 = y_1$ (dropping the $1/\sqrt{2 \pi}$ factor, since you can add that later).</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Recursive-Cooly-Tukey-FFT">Recursive Cooly-Tukey FFT<a class="anchor-link" href="#Recursive-Cooly-Tukey-FFT"> </a></h3><p>Let's try it:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># @numba.njit</span>
+<span class="k">def</span> <span class="nf">ct_fft_recursive</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">N</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">1</span><span class="n">j</span> <span class="o">/</span> <span class="n">N</span><span class="p">)</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">evens</span> <span class="o">=</span> <span class="n">ct_fft_recursive</span><span class="p">(</span><span class="n">x</span><span class="p">[::</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">odds</span> <span class="o">=</span> <span class="n">Z</span> <span class="o">**</span> <span class="n">k</span> <span class="o">*</span> <span class="n">ct_fft_recursive</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">evens</span> <span class="o">+</span> <span class="n">odds</span><span class="p">,</span> <span class="n">evens</span> <span class="o">-</span> <span class="n">odds</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">N</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">9</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mf">800.0</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">N</span> <span class="o">*</span> <span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">50.0</span> <span class="o">*</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">80.0</span> <span class="o">*</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># If you want to JIT the above function, either use `return x + 0j` or the following:</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">complex</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Our algorithm</span>
+<span class="n">yf</span> <span class="o">=</span> <span class="n">ct_fft_recursive</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+<span class="n">xf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">T</span><span class="p">),</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">norm_yf</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="n">N</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">yf</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xf</span><span class="p">,</span> <span class="n">norm_yf</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week11/2_FFT_16_0.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Official Numpy algorithm</span>
+<span class="n">yf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+<span class="n">xf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">T</span><span class="p">),</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">norm_yf</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="n">N</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">yf</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xf</span><span class="p">,</span> <span class="n">norm_yf</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week11/2_FFT_17_0.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">ct_fft_recursive</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>4.66 ms ± 144 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>9.14 µs ± 145 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>You can get a factor 10 speed up from Numba; further gains could be obtained by avoiding the memory allocations and things like that. There are also other</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Bitflip-Cooly-Tukey-FFT">Bitflip Cooly-Tukey FFT<a class="anchor-link" href="#Bitflip-Cooly-Tukey-FFT"> </a></h3><p>Like many recursive algorithms, you can also implement this in a normal loop, as well. We just need to get the ordering right - the algorithm above has a special output order: it is the same as flipping the bits on an N length binary number.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This algorithm can be best seen by looking at a feature of the above multiplication, $nk$. Let's look at a matrix of $nk$:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">N</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">n_or_k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="n">nk</span> <span class="o">=</span> <span class="n">n_or_k</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_or_k</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">nk</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; + &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2"> &gt;2</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre> 0 +  0 +  0 +  0 +  0 +  0 +  0 +  0
+ 0 +  1 +  2 +  3 +  4 +  5 +  6 +  7
+ 0 +  2 +  4 +  6 +  8 + 10 + 12 + 14
+ 0 +  3 +  6 +  9 + 12 + 15 + 18 + 21
+ 0 +  4 +  8 + 12 + 16 + 20 + 24 + 28
+ 0 +  5 + 10 + 15 + 20 + 25 + 30 + 35
+ 0 +  6 + 12 + 18 + 24 + 30 + 36 + 42
+ 0 +  7 + 14 + 21 + 28 + 35 + 42 + 49
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Notice there are lots of repeats here - this means we are doing the same calculation many times. Let's keep going. Since Z has some special properties; it is $e^{−2 \pi i/N}$, so we can use the properties that $Z^{(n-N/2)} = -Z^{n}$ and $Z^{(n-N)} = Z^{n}$ to rewrite all indices in terms of the first $N/2$ indices.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">nk</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;+&#39;</span> <span class="k">if</span> <span class="n">v</span><span class="o">%</span><span class="mi">8</span> <span class="o">&lt;</span> <span class="mi">4</span> <span class="k">else</span> <span class="s1">&#39;-&#39;</span><span class="si">}{</span><span class="n">v</span><span class="o">%</span><span class="mi">4</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>+0, +0, +0, +0, +0, +0, +0, +0
++0, +1, +2, +3, -0, -1, -2, -3
++0, +2, -0, -2, +0, +2, -0, -2
++0, +3, -2, +1, -0, -3, +2, -1
++0, -0, +0, -0, +0, -0, +0, -0
++0, -1, +2, -3, -0, +1, -2, +3
++0, -2, -0, +2, +0, -2, -0, +2
++0, -3, -2, -1, -0, +3, +2, +1
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can now group alternating columns:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">nk</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;+&#39;</span> <span class="k">if</span> <span class="n">v1</span><span class="o">%</span><span class="mi">8</span> <span class="o">&lt;</span> <span class="mi">4</span> <span class="k">else</span> <span class="s1">&#39;-&#39;</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;+&#39;</span> <span class="k">if</span> <span class="n">v2</span><span class="o">%</span><span class="mi">8</span> <span class="o">&lt;</span> <span class="mi">4</span> <span class="k">else</span> <span class="s1">&#39;-&#39;</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v1</span><span class="o">%</span><span class="mi">4</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">v1</span><span class="o">%</span><span class="mi">4</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">for</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">row</span><span class="p">[:</span><span class="mi">4</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>+ + 0 0, + + 0 0, + + 0 0, + + 0 0
++ - 0 0, + - 1 1, + - 2 2, + - 3 3
++ + 0 0, + + 2 2, - - 0 0, - - 2 2
++ - 0 0, + - 3 3, - + 2 2, + - 1 1
++ + 0 0, - - 0 0, + + 0 0, - - 0 0
++ - 0 0, - + 1 1, + - 2 2, - + 3 3
++ + 0 0, - - 2 2, - - 0 0, + + 2 2
++ - 0 0, - + 3 3, - + 2 2, - + 1 1
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>If we pull the sign out, we get:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">nk</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;+&#39;</span> <span class="k">if</span> <span class="n">v1</span><span class="o">%</span><span class="mi">8</span> <span class="o">&lt;</span> <span class="mi">4</span> <span class="k">else</span> <span class="s1">&#39;-&#39;</span><span class="si">}</span><span class="s2"> Z^</span><span class="si">{</span><span class="n">v1</span><span class="o">%</span><span class="mi">4</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;(y_</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;+&#39;</span> <span class="k">if</span> <span class="p">(</span><span class="n">v2</span><span class="o">%</span><span class="mi">8</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="n">v1</span><span class="o">%</span><span class="mi">8</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;-&#39;</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;y_</span><span class="si">{</span><span class="n">n</span><span class="o">+</span><span class="mi">4</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="n">row</span><span class="p">[:</span><span class="mi">4</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>+ Z^0 (y_0 + y_4) + Z^0 (y_1 + y_5) + Z^0 (y_2 + y_6) + Z^0 (y_3 + y_7)
++ Z^0 (y_0 - y_4) + Z^1 (y_1 - y_5) + Z^2 (y_2 - y_6) + Z^3 (y_3 - y_7)
++ Z^0 (y_0 + y_4) + Z^2 (y_1 + y_5) - Z^0 (y_2 + y_6) - Z^2 (y_3 + y_7)
++ Z^0 (y_0 - y_4) + Z^3 (y_1 - y_5) - Z^2 (y_2 - y_6) + Z^1 (y_3 - y_7)
++ Z^0 (y_0 + y_4) - Z^0 (y_1 + y_5) + Z^0 (y_2 + y_6) - Z^0 (y_3 + y_7)
++ Z^0 (y_0 - y_4) - Z^1 (y_1 - y_5) + Z^2 (y_2 - y_6) - Z^3 (y_3 - y_7)
++ Z^0 (y_0 + y_4) - Z^2 (y_1 + y_5) - Z^0 (y_2 + y_6) + Z^2 (y_3 + y_7)
++ Z^0 (y_0 - y_4) - Z^3 (y_1 - y_5) - Z^2 (y_2 - y_6) - Z^1 (y_3 - y_7)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Notice the pattern here. The recursive nature of the pattern is what provided the previous method to work. Now let's instead expand this in loops.</p>
+<p>First let's define a bitflip operation that reversed the order of bits; this reverses a butterfly join like the one above.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">bitflip</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">L</span><span class="p">):</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>  <span class="c1"># Expected number of bits</span>
+    <span class="n">str_number</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">0</span><span class="si">{</span><span class="n">length</span><span class="si">}</span><span class="s2">b</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># Convert to string of 0&#39;s and 1&#39;s, correct length</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">str_number</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># Reverse and convert to int (base 2)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">bitflip</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="mi">8</span><span class="p">)))</span>  <span class="c1"># 110 becomes 011</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>0
+4
+2
+6
+1
+5
+3
+7
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>If converting to strings bother you, we can use bit shifts instead. Let's make this a numba function so we can make the loop function numba too if we want to.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
+<span class="k">def</span> <span class="nf">bitflip</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">L</span><span class="p">):</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">L</span><span class="p">)):</span>
+        <span class="n">result</span> <span class="o">&lt;&lt;=</span> <span class="mi">1</span>
+        <span class="n">result</span> <span class="o">|=</span> <span class="n">i</span> <span class="o">&amp;</span> <span class="mi">1</span>
+        <span class="n">i</span> <span class="o">&gt;&gt;=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">result</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">bitflip</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="mi">8</span><span class="p">)))</span>  <span class="c1"># 110 becomes 011</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>0
+4
+2
+6
+1
+5
+3
+7
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now, we are going to need to produce three values; <code>p</code>, <code>first</code>, and <code>second</code>. This is easiest to see, I believe, if you look at figure 10.10 in the book. Let's make sure we loop properly here:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">N</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">times</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">times</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span> <span class="o">//</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">wid</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">times</span> <span class="o">-</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">bitflip</span><span class="p">((</span><span class="n">j</span> <span class="o">//</span> <span class="n">wid</span><span class="p">),</span> <span class="n">times</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">first</span> <span class="o">=</span> <span class="p">(</span><span class="n">j</span> <span class="o">//</span> <span class="n">wid</span><span class="p">)</span> <span class="o">*</span> <span class="n">wid</span> <span class="o">+</span> <span class="n">j</span>
+        <span class="n">second</span> <span class="o">=</span> <span class="p">(</span><span class="n">j</span> <span class="o">//</span> <span class="n">wid</span><span class="p">)</span> <span class="o">*</span> <span class="n">wid</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="n">wid</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="n">p</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="nb">print</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>0 0 4
+0 1 5
+0 2 6
+0 3 7
+
+0 0 2
+0 1 3
+2 4 6
+2 5 7
+
+0 0 1
+2 2 3
+1 4 5
+3 6 7
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's put this together into our loop:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># @numba.njit</span>
+<span class="k">def</span> <span class="nf">ct_fft_loop</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Z</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># just to make sure we don&#39;t mess up the input</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># Number of data points</span>
+    <span class="n">times</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>  <span class="c1"># Number of times (the log_2 N part)</span>
+
+    <span class="k">if</span> <span class="n">Z</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># We can support sympy too</span>
+        <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">1</span><span class="n">j</span> <span class="o">/</span> <span class="n">N</span><span class="p">)</span>  <span class="c1"># with this addition.</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">times</span><span class="p">):</span>
+        <span class="n">wid</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">times</span> <span class="o">-</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span>  <span class="c1"># Trade pointers (0 copy)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span> <span class="o">//</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">bitflip</span><span class="p">((</span><span class="n">j</span> <span class="o">//</span> <span class="n">wid</span><span class="p">),</span> <span class="n">times</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># The power on z</span>
+            <span class="n">first</span> <span class="o">=</span> <span class="p">(</span><span class="n">j</span> <span class="o">//</span> <span class="n">wid</span><span class="p">)</span> <span class="o">*</span> <span class="n">wid</span> <span class="o">+</span> <span class="n">j</span>  <span class="c1"># First index</span>
+            <span class="n">second</span> <span class="o">=</span> <span class="p">(</span><span class="n">j</span> <span class="o">//</span> <span class="n">wid</span><span class="p">)</span> <span class="o">*</span> <span class="n">wid</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="n">wid</span>  <span class="c1"># Second index</span>
+
+            <span class="n">left</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">first</span><span class="p">]</span>  <span class="c1"># Precompute terms</span>
+            <span class="n">right</span> <span class="o">=</span> <span class="n">Z</span> <span class="o">**</span> <span class="n">p</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">second</span><span class="p">]</span>
+
+            <span class="n">y</span><span class="p">[</span><span class="n">first</span><span class="p">]</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="n">right</span>
+            <span class="n">y</span><span class="p">[</span><span class="n">second</span><span class="p">]</span> <span class="o">=</span> <span class="n">left</span> <span class="o">-</span> <span class="n">right</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">bitflip</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">times</span><span class="p">)]</span>
+
+    <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's just verify that this works. We'll drop Sympy variables into our algorithm and see if we get the right terms:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Our algorithm</span>
+<span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">init_printing</span><span class="p">,</span> <span class="n">Matrix</span>
+
+<span class="n">init_printing</span><span class="p">()</span>
+<span class="n">ys</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">(</span><span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;y:8&quot;</span><span class="p">))</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">)</span>
+<span class="n">yf</span> <span class="o">=</span> <span class="n">ct_fft_loop</span><span class="p">(</span><span class="n">ys</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span>
+<span class="n">yf</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_latex output_subarea output_execute_result">
+$\displaystyle \left[\begin{matrix}y_{0} + y_{1} + y_{2} + y_{3} + y_{4} + y_{5} + y_{6} + y_{7}\\Z^{2} \left(y_{2} - y_{6}\right) + Z \left(Z^{2} \left(y_{3} - y_{7}\right) + y_{1} - y_{5}\right) + y_{0} - y_{4}\\Z^{2} \left(y_{1} - y_{3} + y_{5} - y_{7}\right) + y_{0} - y_{2} + y_{4} - y_{6}\\Z^{3} \left(- Z^{2} \left(y_{3} - y_{7}\right) + y_{1} - y_{5}\right) - Z^{2} \left(y_{2} - y_{6}\right) + y_{0} - y_{4}\\y_{0} - y_{1} + y_{2} - y_{3} + y_{4} - y_{5} + y_{6} - y_{7}\\Z^{2} \left(y_{2} - y_{6}\right) - Z \left(Z^{2} \left(y_{3} - y_{7}\right) + y_{1} - y_{5}\right) + y_{0} - y_{4}\\- Z^{2} \left(y_{1} - y_{3} + y_{5} - y_{7}\right) + y_{0} - y_{2} + y_{4} - y_{6}\\- Z^{3} \left(- Z^{2} \left(y_{3} - y_{7}\right) + y_{1} - y_{5}\right) - Z^{2} \left(y_{2} - y_{6}\right) + y_{0} - y_{4}\end{matrix}\right]$
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">init_printing</span><span class="p">(</span><span class="n">pretty_print</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now, let's set our example back up and test it out:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">N</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">9</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mf">800.0</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">N</span> <span class="o">*</span> <span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">50.0</span> <span class="o">*</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">80.0</span> <span class="o">*</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># If you want to JIT the above function, either use `return x + 0j` or the following:</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">complex</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Our algorithm</span>
+<span class="n">yf</span> <span class="o">=</span> <span class="n">ct_fft_loop</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+<span class="n">xf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">T</span><span class="p">),</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">norm_yf</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="n">N</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">yf</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xf</span><span class="p">,</span> <span class="n">norm_yf</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week11/2_FFT_46_0.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We are significanly nicer on memory, as well as avoiding lots of function calls, so we get a bit better on time. We are still not close to the official codes, however, even with numba. So, don't write your own ffts!</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">ct_fft_loop</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>4.35 ms ± 119 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>9.68 µs ± 172 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="FFTs-for-compression">FFTs for compression<a class="anchor-link" href="#FFTs-for-compression"> </a></h2><p>How could an FFT be used for compression? If we truncate the series, we can throw away the high frequency components of a signal, while keeping the basic (low frequency) shape intact. Let's try:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="n">x</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&lt;matplotlib.lines.Line2D at 0x7fe1eccd4b90&gt;]</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week11/2_FFT_52_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ft</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ft</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&lt;matplotlib.lines.Line2D at 0x7fe1eccb8dd0&gt;]</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week11/2_FFT_53_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Lossy-compression:">Lossy compression:<a class="anchor-link" href="#Lossy-compression:"> </a></h4>
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ft</span><span class="p">[</span><span class="mi">30</span><span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">yp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft</span><span class="p">(</span><span class="n">ft</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">yp</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&lt;matplotlib.lines.Line2D at 0x7fe1ecc20c10&gt;]</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week11/2_FFT_56_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+ 
+
+
+    </main>
+    

@@ -1,0 +1,368 @@
+---
+redirect_from:
+  - "/week12/0-cupyfractal"
+interact_link: content/week12/0_CuPyFractal.ipynb
+kernel_name: 
+kernel_path: content/week12
+has_widgets: false
+title: |-
+  CuPy Fractal
+pagenum: 37
+prev_page:
+  url: /week11/2_FFT.html
+next_page:
+  url: /week12/0_PyBindNumba.html
+suffix: .ipynb
+search: wait until conda gets want rawkernel not fun setup cuda libraries build credit original code codes jim pivarski here github com jpivarski python numpy mini course blob evaluated gpu ipynb
+
+comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
+---
+
+    <main class="jupyter-page">
+    <div id="page-info"><div id="page-title">CuPy Fractal</div>
+</div>
+    <div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">cupy</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Wait until conda gets 5.0 if you want RawKernel. Not fun to setup CUDA with libraries and build. All credit for original code codes to Jim Pivarski here: <a href="https://github.com/jpivarski/python-numpy-mini-course/blob/evaluated/7-gpu.ipynb">https://github.com/jpivarski/python-numpy-mini-course/blob/evaluated/7-gpu.ipynb</a></p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cupy</span><span class="o">.</span><span class="n">__version__</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span>
+
+
+<span class="k">def</span> <span class="nf">prepare</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">numpy</span><span class="o">=</span><span class="n">numpy</span><span class="p">):</span>
+    <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ogrid</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="p">:</span> <span class="mi">0</span> <span class="p">:</span> <span class="n">height</span> <span class="o">*</span> <span class="mi">1</span><span class="n">j</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span> <span class="p">:</span> <span class="mi">0</span> <span class="p">:</span> <span class="n">width</span> <span class="o">*</span> <span class="mi">1</span><span class="n">j</span><span class="p">]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="mi">1</span><span class="n">j</span>
+    <span class="n">fractal</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">c</span><span class="p">,</span> <span class="n">fractal</span>
+
+
+<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">fractal</span><span class="p">,</span> <span class="n">maxiterations</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+    <span class="n">fractal</span> <span class="o">*=</span> <span class="mi">0</span>  <span class="c1"># set fractal to maxiterations without replacing it</span>
+    <span class="n">fractal</span> <span class="o">+=</span> <span class="n">maxiterations</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">c</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">maxiterations</span><span class="p">):</span>
+        <span class="n">z</span> <span class="o">**=</span> <span class="mi">2</span>
+        <span class="n">z</span> <span class="o">+=</span> <span class="n">c</span>
+        <span class="n">diverge</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">real</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">z</span><span class="o">.</span><span class="n">imag</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">z</span><span class="p">[</span><span class="n">diverge</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">diverge</span> <span class="o">&amp;=</span> <span class="n">fractal</span> <span class="o">==</span> <span class="n">maxiterations</span>
+        <span class="n">fractal</span><span class="p">[</span><span class="n">diverge</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+
+    <span class="k">return</span> <span class="n">fractal</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">c</span><span class="p">,</span> <span class="n">fractal</span> <span class="o">=</span> <span class="n">prepare</span><span class="p">(</span><span class="mi">8000</span><span class="p">,</span> <span class="mi">12000</span><span class="p">,</span> <span class="n">numpy</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">_</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">fractal</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">c</span><span class="p">,</span> <span class="n">fractal</span> <span class="o">=</span> <span class="n">prepare</span><span class="p">(</span><span class="mi">8000</span><span class="p">,</span> <span class="mi">12000</span><span class="p">,</span> <span class="n">cupy</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">_</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">fractal</span><span class="p">)</span>
+<span class="n">cupy</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">Stream</span><span class="o">.</span><span class="n">null</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cupy_single</span> <span class="o">=</span> <span class="n">cupy</span><span class="o">.</span><span class="n">ElementwiseKernel</span><span class="p">(</span>
+    <span class="s2">&quot;complex128 cpx, int32 maxiterations&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;int32 res&quot;</span><span class="p">,</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    res = maxiterations;</span>
+<span class="sd">    complex&lt;double&gt; z = cpx;</span>
+
+<span class="sd">    for (int i=0; i&lt;maxiterations; i++) {</span>
+<span class="sd">        z = z*z + cpx;</span>
+<span class="sd">        </span>
+<span class="sd">        if(z.real()*z.real() + z.imag()*z.imag() &gt; 4) {</span>
+<span class="sd">            res = i;</span>
+<span class="sd">            break;</span>
+<span class="sd">        }</span>
+<span class="sd">    }</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fract_el&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">c</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">prepare</span><span class="p">(</span><span class="mi">8000</span><span class="p">,</span> <span class="mi">12000</span><span class="p">,</span> <span class="n">cupy</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">fractal</span> <span class="o">=</span> <span class="n">cupy_single</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">cupy</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">Stream</span><span class="o">.</span><span class="n">null</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cupy_kernel</span> <span class="o">=</span> <span class="n">cupy</span><span class="o">.</span><span class="n">RawKernel</span><span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">extern &quot;C&quot; </span>
+<span class="sd">__global__ void fractal(double* c, int* fractal, int height, int width, int maxiterations) {</span>
+<span class="sd">    const int x = threadIdx.x + blockIdx.x*blockDim.x;</span>
+<span class="sd">    const int y = threadIdx.y + blockIdx.y*blockDim.y;</span>
+<span class="sd">    double creal = c[2 * (x + height*y)];</span>
+<span class="sd">    double cimag = c[2 * (x + height*y) + 1];</span>
+<span class="sd">    double zreal = creal;</span>
+<span class="sd">    double zimag = cimag;</span>
+<span class="sd">    fractal[x + height*y] = maxiterations;</span>
+<span class="sd">    for (int i = 0;  i &lt; maxiterations;  i++) {</span>
+<span class="sd">        double zreal2 = zreal*zreal - zimag*zimag + creal;</span>
+<span class="sd">        double zimag2 = 2*zreal*zimag + cimag;</span>
+<span class="sd">        zreal = zreal2;</span>
+<span class="sd">        zimag = zimag2;</span>
+<span class="sd">        if (zreal*zreal + zimag*zimag &gt; 4) {</span>
+<span class="sd">            fractal[x + height*y] = i;</span>
+<span class="sd">            break;</span>
+<span class="sd">        }</span>
+<span class="sd">    }</span>
+<span class="sd">}</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fractal&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">run_pycuda</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">maxiterations</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+    <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">cupy</span><span class="o">.</span><span class="n">ogrid</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="p">:</span> <span class="mi">0</span> <span class="p">:</span> <span class="n">height</span> <span class="o">*</span> <span class="mi">1</span><span class="n">j</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span> <span class="p">:</span> <span class="mi">0</span> <span class="p">:</span> <span class="n">width</span> <span class="o">*</span> <span class="mi">1</span><span class="n">j</span><span class="p">]</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">height</span> <span class="o">/</span> <span class="mi">32</span><span class="p">)),</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">width</span> <span class="o">/</span> <span class="mi">32</span><span class="p">)))</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="mi">1</span><span class="n">j</span>
+    <span class="n">fractal</span> <span class="o">=</span> <span class="n">cupy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">cupy</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span> <span class="o">+</span> <span class="n">maxiterations</span>
+    <span class="n">cupy_kernel</span><span class="p">(</span>
+        <span class="n">grid</span><span class="p">,</span>
+        <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="p">[</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">cupy</span><span class="o">.</span><span class="n">double</span><span class="p">),</span>
+            <span class="n">fractal</span><span class="p">,</span>
+            <span class="n">cupy</span><span class="o">.</span><span class="n">int32</span><span class="p">(</span><span class="n">height</span><span class="p">),</span>
+            <span class="n">cupy</span><span class="o">.</span><span class="n">int32</span><span class="p">(</span><span class="n">width</span><span class="p">),</span>
+            <span class="n">cupy</span><span class="o">.</span><span class="n">int32</span><span class="p">(</span><span class="n">maxiterations</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">c</span><span class="p">,</span> <span class="n">fractal</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">_</span><span class="p">,</span> <span class="n">fractal</span> <span class="o">=</span> <span class="n">run_pycuda</span><span class="p">(</span><span class="mi">8000</span><span class="p">,</span> <span class="mi">12000</span><span class="p">)</span>
+<span class="n">cupy</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">Stream</span><span class="o">.</span><span class="n">null</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">_</span><span class="p">,</span> <span class="n">fractal</span> <span class="o">=</span> <span class="n">run_pycuda</span><span class="p">(</span><span class="mi">8000</span><span class="p">,</span> <span class="mi">12000</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">fractal</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+ 
+
+
+    </main>
+    

@@ -1,0 +1,452 @@
+---
+redirect_from:
+  - "/week6/2-string-masses-sympy"
+interact_link: content/week6/2_string_masses_sympy.ipynb
+kernel_name: compclass
+kernel_path: content/week6
+has_widgets: false
+title: |-
+  String Masses Sympy
+pagenum: 19
+prev_page:
+  url: /week6/2_string_masses_final.html
+next_page:
+  url: /week6/3_fitting.html
+suffix: .ipynb
+search: x theta cos sin t tag l begin align end matrix problem string angle assume lengths w our mathbf left right worked ignore following drawing code well define tn tension ln length thetan horizantal labeled n horizontal add vertical cancel explicilty defining positive axis also trigometric identites finally physics get force equations weight unknowns solution non linear f unlike book im using based indexing lets sympy give us symbolic manipulation abilities
+
+comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
+---
+
+    <main class="jupyter-page">
+    <div id="page-info"><div id="page-title">String Masses Sympy</div>
+</div>
+    <div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Worked-problem:-The-string-problem">Worked problem: The string problem<a class="anchor-link" href="#Worked-problem:-The-string-problem"> </a></h1><p>Ignore the following drawing code.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell tag_input-hidden">
+
+<div class="cell border-box-sizing code_cell rendered tag_input-hidden">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">SVG</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+
+<span class="n">V</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">])</span>
+
+<span class="n">p0</span> <span class="o">=</span> <span class="n">V</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">p1</span> <span class="o">=</span> <span class="n">V</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span>
+<span class="n">p2</span> <span class="o">=</span> <span class="n">V</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">p3</span> <span class="o">=</span> <span class="n">V</span><span class="p">(</span><span class="mi">290</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">sub</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&lt;tspan baseline-shift=&quot;sub&quot; font-size=&quot;10&quot;&gt;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s1">&lt;/tspan&gt;&#39;</span>
+
+
+<span class="n">SVG</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;svg viewBox=&quot;0 0 300 150&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;&gt;</span>
+<span class="s2">  &lt;style&gt;</span>
+<span class="s2">    ellipse </span><span class="se">{{</span><span class="s2">stroke:#000; fill:yellow;</span><span class="se">}}</span><span class="s2"></span>
+<span class="s2">    text </span><span class="se">{{</span><span class="s2">text-anchor:middle; alignment-baseline:central;</span><span class="se">}}</span><span class="s2"></span>
+<span class="s2">    .string </span><span class="se">{{</span><span class="s2">stroke:#F00;stroke-width:1;</span><span class="se">}}</span><span class="s2"></span>
+<span class="s2">    .tstring </span><span class="se">{{</span><span class="s2">fill:red</span><span class="se">}}</span><span class="s2"></span>
+<span class="s2">    .bar </span><span class="se">{{</span><span class="s2">stroke:#000;stroke-width:3;</span><span class="se">}}</span><span class="s2"></span>
+<span class="s2">  &lt;/style&gt;</span>
+
+<span class="s2">  &lt;line x1=&quot;</span><span class="si">{</span><span class="n">p0</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot; y1=&quot;</span><span class="si">{</span><span class="n">p0</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot; x2=&quot;</span><span class="si">{</span><span class="n">p1</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot; y2=&quot;</span><span class="si">{</span><span class="n">p1</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot; class=&quot;string&quot;/&gt;</span>
+<span class="s2">  &lt;line x1=&quot;</span><span class="si">{</span><span class="n">p1</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot; y1=&quot;</span><span class="si">{</span><span class="n">p1</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot; x2=&quot;</span><span class="si">{</span><span class="n">p2</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot; y2=&quot;</span><span class="si">{</span><span class="n">p2</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot; class=&quot;string&quot;/&gt;</span>
+<span class="s2">  &lt;line x1=&quot;</span><span class="si">{</span><span class="n">p2</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot; y1=&quot;</span><span class="si">{</span><span class="n">p2</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot; x2=&quot;</span><span class="si">{</span><span class="n">p3</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot; y2=&quot;</span><span class="si">{</span><span class="n">p3</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot; class=&quot;string&quot;/&gt;</span>
+
+<span class="s2">  &lt;g&gt;</span>
+<span class="s2">    &lt;line x1=&quot;</span><span class="si">{</span><span class="n">p0</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot; y1=&quot;</span><span class="si">{</span><span class="n">p0</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot; x2=&quot;</span><span class="si">{</span><span class="n">p3</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot; y2=&quot;</span><span class="si">{</span><span class="n">p3</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot; class=&quot;bar&quot;/&gt;</span>
+<span class="s2">    &lt;text x=&quot;</span><span class="si">{</span><span class="p">(</span><span class="n">p0</span><span class="o">.</span><span class="n">x</span><span class="o">+</span><span class="n">p3</span><span class="o">.</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="si">}</span><span class="s2">&quot; y=&quot;</span><span class="si">{</span><span class="n">p0</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="mi">10</span><span class="si">}</span><span class="s2">&quot;&gt;L&lt;/text&gt;</span>
+<span class="s2">  &lt;/g&gt;</span>
+<span class="s2">  &lt;g&gt;</span>
+<span class="s2">    &lt;ellipse cx=&quot;</span><span class="si">{</span><span class="n">p1</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot; cy=&quot;</span><span class="si">{</span><span class="n">p1</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot; rx=&quot;20&quot; ry=&quot;20&quot;/&gt;</span>
+<span class="s2">    &lt;text x=&quot;</span><span class="si">{</span><span class="n">p1</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot; y=&quot;</span><span class="si">{</span><span class="n">p1</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot;&gt;W</span><span class="si">{</span><span class="n">sub</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/text&gt;</span>
+<span class="s2">  &lt;/g&gt;</span>
+<span class="s2">  &lt;g&gt;</span>
+<span class="s2">    &lt;ellipse cx=&quot;</span><span class="si">{</span><span class="n">p2</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot; cy=&quot;</span><span class="si">{</span><span class="n">p2</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot; rx=&quot;20&quot; ry=&quot;20&quot;/&gt;</span>
+<span class="s2">    &lt;text x=&quot;</span><span class="si">{</span><span class="n">p2</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot; y=&quot;</span><span class="si">{</span><span class="n">p2</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot;&gt;W</span><span class="si">{</span><span class="n">sub</span><span class="p">(</span><span class="mi">23</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/text&gt;</span>
+<span class="s2">  &lt;/g&gt;</span>
+<span class="s2">  &lt;text x=&quot;</span><span class="si">{</span><span class="p">(</span><span class="n">p0</span><span class="o">.</span><span class="n">x</span><span class="o">+</span><span class="n">p1</span><span class="o">.</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">5</span><span class="si">}</span><span class="s2">&quot; y=&quot;</span><span class="si">{</span><span class="p">(</span><span class="n">p0</span><span class="o">.</span><span class="n">y</span><span class="o">+</span><span class="n">p1</span><span class="o">.</span><span class="n">y</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">5</span><span class="si">}</span><span class="s2">&quot; class=&quot;tstring&quot;&gt;1&lt;/text&gt;</span>
+<span class="s2">  &lt;text x=&quot;</span><span class="si">{</span><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">x</span><span class="o">+</span><span class="n">p2</span><span class="o">.</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">5</span><span class="si">}</span><span class="s2">&quot; y=&quot;</span><span class="si">{</span><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">y</span><span class="o">+</span><span class="n">p2</span><span class="o">.</span><span class="n">y</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">8</span><span class="si">}</span><span class="s2">&quot; class=&quot;tstring&quot;&gt;2&lt;/text&gt;</span>
+<span class="s2">  &lt;text x=&quot;</span><span class="si">{</span><span class="p">(</span><span class="n">p2</span><span class="o">.</span><span class="n">x</span><span class="o">+</span><span class="n">p3</span><span class="o">.</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">5</span><span class="si">}</span><span class="s2">&quot; y=&quot;</span><span class="si">{</span><span class="p">(</span><span class="n">p2</span><span class="o">.</span><span class="n">y</span><span class="o">+</span><span class="n">p3</span><span class="o">.</span><span class="n">y</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">5</span><span class="si">}</span><span class="s2">&quot; class=&quot;tstring&quot;&gt;3&lt;/text&gt;</span>
+<span class="s2">&lt;/svg&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+<span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+<div class="output_svg output_subarea output_execute_result">
+<svg viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    ellipse {stroke:#000; fill:yellow;}
+    text {text-anchor:middle; alignment-baseline:central;}
+    .string {stroke:#F00;stroke-width:1;}
+    .tstring {fill:red}
+    .bar {stroke:#000;stroke-width:3;}
+  </style>
+
+  <line class="string" x1="10" x2="50" y1="10" y2="80"/>
+  <line class="string" x1="50" x2="150" y1="80" y2="100"/>
+  <line class="string" x1="150" x2="290" y1="100" y2="10"/>
+
+  <g>
+    <line class="bar" x1="10" x2="290" y1="10" y2="10"/>
+    <text x="150.0" y="20">L</text>
+  </g>
+  <g>
+    <ellipse cx="50" cy="80" rx="20" ry="20"/>
+    <text x="50" y="80">W<tspan baseline-shift="sub" font-size="10">12</tspan></text>
+  </g>
+  <g>
+    <ellipse cx="150" cy="100" rx="20" ry="20"/>
+    <text x="150" y="100">W<tspan baseline-shift="sub" font-size="10">23</tspan></text>
+  </g>
+  <text class="tstring" x="35.0" y="40.0">1</text>
+  <text class="tstring" x="105.0" y="82.0">2</text>
+  <text class="tstring" x="215.0" y="50.0">3</text>
+</svg>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We'll define $T_n$ to be the tension, $L_n$ to be the length, and $\theta_n$ to be the angle from horizantal for each string labeled $n$.</p>
+<p>First, we assume the horizontal lengths add up to L:</p>
+$$
+L_1 \cos \theta_1 + L_2 \cos \theta_2  + L_3 \cos \theta_3 = L \tag{1}
+$$<p>Then, we can assume that the vertical lengths cancel:</p>
+$$
+L_1 \sin \theta_1 + L_2 \sin \theta_2  - L_3 \sin \theta_3 = 0
+\tag{2}
+$$<p>(We are explicilty defining theta to be the positive angle from the $x$ axis)</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can also use trigometric identites:</p>
+$$
+\begin{align}
+\sin^2 \theta_1 + \cos^2 \theta_1 &amp;=&amp; 1 \tag{3} \\
+\sin^2 \theta_2 + \cos^2 \theta_2 &amp;=&amp; 1 \tag{4} \\
+\sin^2 \theta_3 + \cos^2 \theta_3 &amp;=&amp; 1 \tag{5}
+\end{align}
+$$
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Finally, we can use physics to get 4 force equations, two for each weight.</p>
+$$
+\begin{align}
+T_1 \sin \theta_1 - T_2 \sin \theta_2 - W_{12} &amp;=&amp; 0 \tag{6} \\
+T_1 \cos \theta_1 - T_2 \cos \theta_2 &amp;=&amp; 0 \tag{7} \\
+T_2 \sin \theta_2 + T_3 \sin \theta_3 - W_{23} &amp;=&amp; 0 \tag{8} \\
+T_2 \cos \theta_2 - T_3 \cos \theta_3 &amp;=&amp; 0 \tag{9} \\
+\end{align}
+$$
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now, we have our unknowns:</p>
+$$
+\mathbf{x} = \left(
+\begin{matrix}
+\sin{\theta_1} \\
+\sin{\theta_2} \\
+\sin{\theta_3} \\
+\cos{\theta_1} \\
+\cos{\theta_2} \\
+\cos{\theta_3} \\
+T_1 \\
+T_2 \\
+T_3 \\
+\end{matrix}
+\right)
+$$
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>But, we have the problem that our solution is non-linear:</p>
+$$
+f(\mathbf{x}) = \left(
+\begin{matrix}
+3 x_5 + 4 x_4 + 4 x_5 - 8 \\
+3 x_0 + 4 x_1 + 4 x_2 \\
+x_6 x_0 - x_7 x_1 - 10 \\
+x_6 x_3 - x_7 x_4 \\
+x_7 x_1 + x_8 x_2 - 20 \\
+x_7 x_4 + x_8 x_6 \\
+x_0^2 + x_3^2 - 1 \\
+x_1^2 + x_4^2 - 1 \\
+x_2^2 + x_5^2 - 1 \\
+\end{matrix}
+\right) = 0
+$$
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Unlike the book, I'm using 0 based indexing. Let's use SymPy to give us some symbolic manipulation abilities:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">sympy</span> <span class="k">as</span> <span class="nn">s</span>
+
+<span class="n">s</span><span class="o">.</span><span class="n">init_printing</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;x:10&quot;</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="mi">3</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="mi">3</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+        <span class="n">x</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+        <span class="n">x</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+        <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+<span class="n">f</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_latex output_subarea output_execute_result">
+$\displaystyle \left[\begin{matrix}3 x_{3} + 4 x_{4} + 4 x_{5} - 8\\3 x_{0} + 4 x_{1} - 4 x_{2}\\x_{0} x_{6} - x_{1} x_{7} - 10\\x_{3} x_{6} - x_{4} x_{7}\\x_{1} x_{7} + x_{2} x_{8} - 20\\x_{4} x_{7} - x_{5} x_{8}\\x_{0}^{2} + x_{3}^{2} - 1\\x_{1}^{2} + x_{4}^{2} - 1\\x_{2}^{2} + x_{5}^{2} - 1\end{matrix}\right]$
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">Matrix</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">T</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">)])</span><span class="o">.</span><span class="n">T</span>
+<span class="n">df</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_latex output_subarea output_execute_result">
+$\displaystyle \left[\begin{matrix}0 & 0 & 0 & 3 & 4 & 4 & 0 & 0 & 0\\3 & 4 & -4 & 0 & 0 & 0 & 0 & 0 & 0\\x_{6} & - x_{7} & 0 & 0 & 0 & 0 & x_{0} & - x_{1} & 0\\0 & 0 & 0 & x_{6} & - x_{7} & 0 & x_{3} & - x_{4} & 0\\0 & x_{7} & x_{8} & 0 & 0 & 0 & 0 & x_{1} & x_{2}\\0 & 0 & 0 & 0 & x_{7} & - x_{8} & 0 & x_{4} & - x_{5}\\2 x_{0} & 0 & 0 & 2 x_{3} & 0 & 0 & 0 & 0 & 0\\0 & 2 x_{1} & 0 & 0 & 2 x_{4} & 0 & 0 & 0 & 0\\0 & 0 & 2 x_{2} & 0 & 0 & 2 x_{5} & 0 & 0 & 0\end{matrix}\right]$
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
+<span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-3</span>
+
+<span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">15</span><span class="p">):</span>
+
+    <span class="c1"># Compute f and its derivative</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">evalf</span><span class="p">(</span><span class="n">subs</span><span class="o">=</span><span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="n">b</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_arr</span><span class="p">)})</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">evalf</span><span class="p">(</span><span class="n">subs</span><span class="o">=</span><span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="n">b</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_arr</span><span class="p">)})</span>
+
+    <span class="c1"># Convert these SymPy contraptions into Numpy</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">M</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="c1"># Solve for Δx</span>
+    <span class="n">Δx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="o">-</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="c1"># Compute new x</span>
+    <span class="n">x_arr</span> <span class="o">+=</span> <span class="n">Δx</span>
+
+    <span class="n">errX</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">Δx</span><span class="p">)</span>
+    <span class="n">errX</span><span class="p">[</span><span class="n">x_arr</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x_arr</span><span class="p">[</span><span class="n">x_arr</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">])</span>  <span class="c1"># Relitave error only if x is not 0</span>
+    <span class="n">errF</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">errX</span> <span class="o">&lt;=</span> <span class="n">eps</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">errF</span> <span class="o">&lt;=</span> <span class="n">eps</span><span class="p">):</span>
+        <span class="k">break</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of iterations = &quot;</span><span class="p">,</span> <span class="n">it</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final Solution:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x_arr[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">] = </span><span class="si">{</span><span class="n">x_arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Number of iterations =  8
+Final Solution:
+x_arr[0] = 0.7610026921032024
+x_arr[1] = 0.2649538102798601
+x_arr[2] = 0.8357058293572619
+x_arr[3] = 0.648748720702048
+x_arr[4] = 0.9642611048977284
+x_arr[5] = 0.5491773545757356
+x_arr[6] = 17.16020978458048
+x_arr[7] = 11.54527968431142
+x_arr[8] = 20.271528044627093
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+ 
+
+
+    </main>
+    

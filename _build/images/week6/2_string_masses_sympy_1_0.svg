@@ -1,0 +1,29 @@
+<svg viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    ellipse {stroke:#000; fill:yellow;}
+    text {text-anchor:middle; alignment-baseline:central;}
+    .string {stroke:#F00;stroke-width:1;}
+    .tstring {fill:red}
+    .bar {stroke:#000;stroke-width:3;}
+  </style>
+
+  <line class="string" x1="10" x2="50" y1="10" y2="80"/>
+  <line class="string" x1="50" x2="150" y1="80" y2="100"/>
+  <line class="string" x1="150" x2="290" y1="100" y2="10"/>
+
+  <g>
+    <line class="bar" x1="10" x2="290" y1="10" y2="10"/>
+    <text x="150.0" y="20">L</text>
+  </g>
+  <g>
+    <ellipse cx="50" cy="80" rx="20" ry="20"/>
+    <text x="50" y="80">W<tspan baseline-shift="sub" font-size="10">12</tspan></text>
+  </g>
+  <g>
+    <ellipse cx="150" cy="100" rx="20" ry="20"/>
+    <text x="150" y="100">W<tspan baseline-shift="sub" font-size="10">23</tspan></text>
+  </g>
+  <text class="tstring" x="35.0" y="40.0">1</text>
+  <text class="tstring" x="105.0" y="82.0">2</text>
+  <text class="tstring" x="215.0" y="50.0">3</text>
+</svg>

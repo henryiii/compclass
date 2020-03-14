@@ -1,0 +1,267 @@
+---
+redirect_from:
+  - "/week14/2-ml"
+interact_link: content/week14/2_ml.ipynb
+kernel_name: 
+kernel_path: content/week14
+has_widgets: false
+title: |-
+  Machine Learning
+pagenum: 44
+prev_page:
+  url: /week14/1_graphs.html
+next_page:
+  url: /week14/2_MNIST.html
+suffix: .ipynb
+search: d y function frac data layer hat l sample network x learning weights linear relu h cdot dl training layers activation b w tag terminology neural nets n values left right machine train distribution parameters fully connected simple convolutional structures recurrent memory used hidden after infty loss batch epoch form tutorials pytorch examples lets random our result samples convert derivatives mathrm week intro objectives cover basic logistic regression example hello world ml class notes diagrams descriptions validation independent test overtraining details instead underlying fit group definition named usually produces fc matrix relates nearby often variable length inbetween state not externally
+
+comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
+---
+
+    <main class="jupyter-page">
+    <div id="page-info"><div id="page-title">Machine Learning</div>
+</div>
+    <div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Week-14-Day-2:-Intro-to-Machine-Learning">Week 14 Day 2: Intro to Machine Learning<a class="anchor-link" href="#Week-14-Day-2:-Intro-to-Machine-Learning"> </a></h1><h2 id="Objectives">Objectives<a class="anchor-link" href="#Objectives"> </a></h2><ul>
+<li>Cover basic terminology of Machine Learning</li>
+<li>Look at a Logistic Regression example (the Hello World of DL)</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="ML-terminology">ML terminology<a class="anchor-link" href="#ML-terminology"> </a></h2><p>See class notes for diagrams and descriptions.</p>
+<ul>
+<li><strong>Training sample</strong>: The data you use to train the network.</li>
+<li><strong>Validation sample</strong>: An independent data sample you can test the network with.</li>
+<li><strong>Overtraining</strong>: Learning details of the training sample instead of the underlying distribution.</li>
+<li><strong>Weights</strong>: The parameters you fit to.</li>
+<li><strong>Layers</strong>: A way to group the distribution definition. Named for the (usually linear) function that produces them:<ul>
+<li><em>Fully Connected linear layer (FC)</em>: A simple matrix of weights</li>
+<li><em>Convolutional layer</em>: A layer that relates nearby data structures</li>
+<li><em>Recurrent layer</em>: A layer that has some "memory" - often used for variable length data.</li>
+</ul>
+</li>
+<li><strong>Hidden layer</strong>: An "inbetween" state not externally visible.</li>
+<li><strong>Activation function</strong>: A non-linear function that can applies after a layer.<ul>
+<li><em>ReLu</em>: Rectified linear unit function</li>
+<li><em>Sigmoid</em>: Maps $(-\infty,\infty) \rightarrow (0,1)$</li>
+</ul>
+</li>
+<li><strong>Network</strong>: The collection of weights in layers and activation functions. Also called a model.</li>
+<li><strong>Loss function</strong>: A function that gives you a "score" for how poorly you did.</li>
+<li><strong>Cost function</strong>: Sum of the loss function over your training sample.</li>
+<li><strong>Batch</strong>: A smaller division used for evaluating data</li>
+<li><strong>Epoch</strong>: An iteration over the whole training sample (one "step")</li>
+<li><strong>Backpropagation</strong>: Taking the derivative of the network</li>
+<li><strong>Learning rate</strong>: How far to move the weights based on the gradient after each epoch.</li>
+<li><strong>Neuron</strong>: The combination of a weight and an activation function.</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Network-terminology">Network terminology<a class="anchor-link" href="#Network-terminology"> </a></h2><ul>
+<li><strong>Deep learning</strong>: Large neural networks with hidden layers</li>
+<li><strong>CNNs</strong>: <em>Convolutional Neural</em> Nets: Looks for spacial structures, like in images</li>
+<li><strong>RNNs</strong>: <em>Recurrent Neural Nets</em>: Have some form of memory (Recursive NN are one form of RNN, among others)</li>
+<li><strong>GANs</strong>: <em>Generative Adversarial Nets</em>: can run in reverse to generate possible inputs.</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Simple-network">Simple network<a class="anchor-link" href="#Simple-network"> </a></h2><p>See the excellent tutorials here: <a href="https://pytorch.org/tutorials/beginner/pytorch_with_examples.html">PyTorch with examples</a> for examples using Numpy, Torch, and TensorFlow.</p>
+<p>Let's start with a batch of random numbers - this will be our "data". We will do the following:</p>
+
+<pre><code>1,000 x N     1000 x 100          100 x 10     10 x N
+ data (x)         -&gt;       ReLu       -&gt;     result (y)
+               fully connected linear layers</code></pre>
+<p>In words: we have N samples of data with <code>D_in = 1000</code> values each. We convert that to <code>H = 100</code> values, use a relu activation function, then convert that to <code>D_out = 10</code> values and compare with the expected result.</p>
+<p>Since this is all random, we can train on small samples because we have so many parameters.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">N</span> <span class="o">=</span> <span class="mi">64</span>               <span class="c1"># batch size</span>
+<span class="n">D_in</span> <span class="o">=</span> <span class="mi">1_000</span>         <span class="c1"># input dimension</span>
+<span class="n">H</span> <span class="o">=</span> <span class="mi">100</span>              <span class="c1"># hidden dimension</span>
+<span class="n">D_out</span> <span class="o">=</span> <span class="mi">10</span>           <span class="c1"># output dimension</span>
+
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">500</span>         <span class="c1"># How many iterations to run</span>
+<span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">1e-6</span> <span class="c1"># How much to move each iteration</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Randomly initializing weights is important in some cases, though in this one it is a bit harder to show (IMO).</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="c1"># Create random input and output data</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">D_in</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">D_out</span><span class="p">)</span>
+
+<span class="c1"># Randomly initialize weights</span>
+<span class="n">w1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">D_in</span><span class="p">,</span> <span class="n">H</span><span class="p">)</span>
+<span class="n">w2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">D_out</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now, let's loop and do the calculations.</p>
+<p>The derivatives are easy - just look at our definitions:</p>
+$$
+b = x \cdot w_1 \tag{1}
+$$$$
+h = \mathrm{ReLu}(b) \tag{2}
+$$$$
+\hat{y} = h \cdot w_2 \tag{3}
+$$$$
+L(\hat{y}, y) = \left(\hat{y} - y\right)^2 \tag{4}
+$$
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The derivatives:</p>
+$$
+\frac{dL}{d\hat{y}} = 2  \left(\hat{y} - y\right)
+$$$$
+\frac{d L}{d w_2} = h^T \cdot \frac{dL}{d\hat{y}}
+$$$$
+\frac{d L}{d h} = \frac{dL}{d\hat{y}} \cdot w_2^T
+$$$$
+\frac{d L}{d b} = \mathrm{ReLu}\left(\frac{d L}{d h}\right)
+$$$$
+\frac{d L}{d w_1} = x^T \cdot \frac{d L}{d b}
+$$
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+    
+    <span class="c1"># Forward pass: compute predicted y</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">x</span> <span class="o">@</span> <span class="n">w1</span>                 <span class="c1"># First FC layer          (1)</span>
+    <span class="n">h_relu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># Activation function     (2)</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">h_relu</span> <span class="o">@</span> <span class="n">w2</span>       <span class="c1"># Second FC layer         (3)</span>
+
+    <span class="c1"># Compute and print cost</span>
+    <span class="n">cost</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">y_pred</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># Sum of loss         (4)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">cost</span><span class="p">)</span>
+
+    <span class="c1"># Backprop to compute gradients of w1 and w2 with respect to loss</span>
+    <span class="n">grad_y_pred</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">y_pred</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>     <span class="c1">#          back (4)</span>
+    <span class="n">grad_w2</span> <span class="o">=</span> <span class="n">h_relu</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">grad_y_pred</span>     <span class="c1">#          dL/dw2</span>
+    <span class="n">grad_h_relu</span> <span class="o">=</span> <span class="n">grad_y_pred</span> <span class="o">@</span> <span class="n">w2</span><span class="o">.</span><span class="n">T</span>     <span class="c1">#          back (3)</span>
+    <span class="n">grad_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">grad_h_relu</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1">#          back (2)</span>
+    <span class="n">grad_w1</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">grad_h</span>               <span class="c1">#          dL/dw1</span>
+    
+    <span class="c1"># Update weights</span>
+    <span class="n">w1</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">grad_w1</span>
+    <span class="n">w2</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">grad_w2</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+ 
+
+
+    </main>
+    

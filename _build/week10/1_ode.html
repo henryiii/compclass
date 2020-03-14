@@ -1,0 +1,316 @@
+---
+redirect_from:
+  - "/week10/1-ode"
+interact_link: content/week10/1_ode.ipynb
+kernel_name: compclass
+kernel_path: content/week10
+has_widgets: false
+title: |-
+  Intro to ODEs
+pagenum: 31
+prev_page:
+  url: /week9/3_performance.html
+next_page:
+  url: /week10/1_pro_file.html
+suffix: .ipynb
+search: x matrix dot m k left right odes lets ddot equation frac begin end t max try better steps font happens order u week continued previous notebook take famous physics examples fk restoring force spring analytically solvable solution mathrm cos sqrt harmonic motion notice set initial conditions here value solve numerically well learn much ways just going eulers algorithm color blue note learned something today ipython release notes type delta press tab perfect python yourself run increase step size solver need rewrite standard form vector series equations writing
+
+comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
+---
+
+    <main class="jupyter-page">
+    <div id="page-info"><div id="page-title">Intro to ODEs</div>
+</div>
+    <div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Week-10-day-1:-ODEs">Week 10 day 1: ODEs<a class="anchor-link" href="#Week-10-day-1:-ODEs"> </a></h1><h2 id="Continued-from-previous-notebook">Continued from previous notebook<a class="anchor-link" href="#Continued-from-previous-notebook"> </a></h2>
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.integrate</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's look now at ODEs. Let's take one of the most famous physics examples:</p>
+$$
+F_k(x) = m \ddot{x} = - k x
+$$<p>This is the equation for the restoring force of a spring - this is an analytically solvable equation with the solution:</p>
+$$
+x(t) = x_\mathrm{max} \cos\left(\sqrt{\frac{k}{m}} t\right)
+$$<p>This is <em>harmonic motion</em>. Notice that we had to set some initial conditions here; the value of $x(0)=x_{\max}$ and $\dot{x}(0)=0$.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now let's try to solve this numerically. We'll learn much better ways to do this, but for now, we are just going to use time steps and Euler’s algorithm.</p>
+<p><font color="blue"></p>
+<blockquote><p>Note: I learned something today from the IPython release notes. Type <code>\Delta</code> then press tab. Perfect for Python 3!</p>
+</blockquote>
+<p>&lt;/font&gt;</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ΔT</span> <span class="o">=</span> <span class="mf">0.01</span>  <span class="c1"># timestep</span>
+<span class="n">steps</span> <span class="o">=</span> <span class="mi">1_000</span>  <span class="c1"># Total number of steps</span>
+<span class="n">x_max</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Size of x max</span>
+<span class="n">v_0</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">koverm</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># k / m</span>
+
+<span class="c1"># Compute the final values of t for plotting</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ΔT</span> <span class="o">*</span> <span class="p">(</span><span class="n">steps</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">steps</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
+<span class="n">vs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
+
+<span class="n">xs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_max</span>
+<span class="n">vs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_0</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="c1"># Compute a based on *current* position</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="n">koverm</span> <span class="o">*</span> <span class="n">xs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="c1"># Compute next velocity</span>
+    <span class="n">vs</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">vs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span> <span class="o">*</span> <span class="n">ΔT</span>
+
+    <span class="c1"># Compute next position</span>
+    <span class="n">xs</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">xs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">vs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">ΔT</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&lt;matplotlib.lines.Line2D at 0x7f8066879450&gt;]</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/1_ode_6_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Try-it-yourself">Try it yourself<a class="anchor-link" href="#Try-it-yourself"> </a></h4><ul>
+<li>What happens if you run more steps?</li>
+<li>What happens if you increase the step size?</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>For a better solver, we need to rewrite the equation to a standard form, a vector of first order ODEs:</p>
+$$
+\ddot{x} = - \frac{k}{m} x
+$$<p>As a series of first order equations by writing</p>
+$$
+u = \left(
+\begin{matrix}
+\dot{x} \\
+x
+\end{matrix}
+\right)
+$$<p>Then,</p>
+$$
+\dot{u} = \left(
+\begin{matrix}
+\ddot{x} \\
+\dot{x}
+\end{matrix}
+\right) = \left(
+\begin{matrix}
+- \frac{k}{m} x \\
+\dot{x}
+\end{matrix}
+\right)
+$$
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="s2">&quot;Y has two elements, x and v&quot;</span>
+
+    <span class="k">return</span> <span class="o">-</span><span class="n">koverm</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+
+<span class="n">res</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">integrate</span><span class="o">.</span><span class="n">solve_ivp</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">[</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">t_eval</span><span class="o">=</span><span class="n">ts</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>The solver successfully reached the end of the integration interval.
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ts</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Analytic solution&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Hand solution&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;RK4(5) solution&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/1_ode_10_0.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+ 
+
+
+    </main>
+    

@@ -1,0 +1,476 @@
+---
+redirect_from:
+  - "/optional/python3"
+interact_link: content/optional/Python3.ipynb
+kernel_name: compclass
+kernel_path: content/optional
+has_widgets: false
+title: |-
+  Python 2 vs. Python 3
+pagenum: 48
+prev_page:
+  url: /optional/PythonOptionalOverview.html
+next_page:
+  url: 
+suffix: .ipynb
+search: python font function h new np dot better import print unicode color future division syntax added beta r t unpacking used matrix s dictionaries porting change bytes originally library green supported encoding decoding often explicit red changed needed tuple arguments replaced features not input changes class annotations standard libraries pathlib enum mock futures statistics selectors typing windows multiplication operator inv v string ordered versus henry schreiner disclaimer notebook going focus reasons details code lhcb github io developkit lessons development steps b html complete description help impactful biggest strings default instead supporting both challenge mostly solved enables places longer dual builds
+
+comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
+---
+
+    <main class="jupyter-page">
+    <div id="page-info"><div id="page-title">Python 2 vs. Python 3</div>
+</div>
+    <div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Python-2-versus-3">Python 2 versus 3<a class="anchor-link" href="#Python-2-versus-3"> </a></h1><h2 id="Henry-Schreiner">Henry Schreiner<a class="anchor-link" href="#Henry-Schreiner"> </a></h2>
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Disclaimer: This notebook is going to focus on reasons to use Python 3 more than on the details of porting code. See <a href="https://lhcb.github.io/developkit-lessons/first-development-steps/06b-python.html">https://lhcb.github.io/developkit-lessons/first-development-steps/06b-python.html</a> for a more complete description and help porting.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Unicode">Unicode<a class="anchor-link" href="#Unicode"> </a></h2><p>This is the most impactful, biggest change. All strings now default to Unicode instead of bytes. Supporting both unicode and bytes was originally a library challenge, but has mostly been solved.</p>
+<p><font color="green"></p>
+<ul>
+<li>Enables unicode in more places, better supported</li>
+<li>No longer dual builds of Python (wide vs. narrow)</li>
+<li>Encoding/decoding often more explicit</li>
+<li>Can use in Python 2 with <code>from __future__ import unicode_literals</code> (careful!)</li>
+</ul>
+<p>&lt;/font&gt;
+<font color="red"></p>
+<ul>
+<li>Was originally much slower/more memory</li>
+<li>Encoding/decoding often more explicit</li>
+</ul>
+<p>&lt;/font&gt;</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Print-as-a-function">Print as a function<a class="anchor-link" href="#Print-as-a-function"> </a></h2><p>Python 3 changed print to a function. This means even the "Hello World" program changed!</p>
+<p><font color="green"></p>
+<ul>
+<li>Can use print as a function/method name</li>
+<li>Easier redirection, ending, separator, flush</li>
+<li>Can replace print if needed</li>
+<li>Can use in Python 2 with <code>from __future__ import print_function</code></li>
+</ul>
+<p>&lt;/font&gt;
+<font color="red"></p>
+<ul>
+<li>Have to type two more chars for every print</li>
+<li>Lost "soft space" feature</li>
+</ul>
+<p>&lt;/font&gt;</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%python</span>2
+<span class="nb">print</span> <span class="s2">&quot;Hello world!&quot;</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Hello world!
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Hello world!
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Division">Division<a class="anchor-link" href="#Division"> </a></h2><p>This is the other big change for users, but was so popular, almost everyone adds <code>from __future__ import division</code>!</p>
+<ul>
+<li>Division of integers with <code>/</code> now produces floats if needed.</li>
+<li>Truncating division with <code>//</code> supported in Python 2 and 3.</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%python</span>2
+<span class="nb">print</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>0
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>0.5
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Removals">Removals<a class="anchor-link" href="#Removals"> </a></h2><p>Python 3 removes several things that were either deprecated or in need of replacement.</p>
+<ul>
+<li>Classic style classes</li>
+<li>Tuple unpacking in function arguments (rarely used, replaced by new features)</li>
+<li>Backticks for repr (will not be used again)</li>
+<li>Comma syntax for exceptions (replaced by <code>as</code> a long time ago)</li>
+<li>Removed <code>input</code>, renamed <code>raw_input</code> to <code>input</code></li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Smaller-changes">Smaller changes<a class="anchor-link" href="#Smaller-changes"> </a></h2><ul>
+<li>Import now looks for system packages first (<code>from __future__ import absolute_import</code>)</li>
+<li><code>exec</code> is a function now</li>
+<li>Metaclasses have a new syntax, more options for overriding class construction</li>
+<li><code>nonlocal</code> variables added</li>
+<li>Extended tuple unpacking <code>first, *rest = iterable</code></li>
+<li>Unified <code>int</code> and <code>long</code></li>
+<li>Added function annotations (and variable annotations in 3.6)</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Other-nice-changes">Other nice changes<a class="anchor-link" href="#Other-nice-changes"> </a></h2><ul>
+<li>Better tracebacks</li>
+<li>Better segfault reporting</li>
+<li>Better REPL (tab completion, for example)
+*</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="New-standard-libraries-(with-backports)">New standard libraries (with backports)<a class="anchor-link" href="#New-standard-libraries-(with-backports)"> </a></h2><ul>
+<li><code>pathlib</code> (<code>pathlib2</code>)</li>
+<li><code>enum</code> (<code>enum</code>)</li>
+<li><code>unittest.mock</code> (<code>mock</code>)</li>
+<li><code>concurrent.futures</code> (<code>futures</code>)</li>
+<li><code>statistics</code> (<code>statistics</code>)</li>
+<li><code>selectors</code> (<code>selectors34</code>)</li>
+<li><code>typing</code> (<code>typing</code>)</li>
+<li><code>asyncio</code> (<code>trollius</code>)</li>
+<li><code>dataclass</code> 3.7</li>
+<li><code>importlib.resources</code> (<code>importlib_resources</code>) 3.7</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="New-features">New features<a class="anchor-link" href="#New-features"> </a></h2><ul>
+<li><code>async</code> and <code>await</code> (3.5, 3.7)</li>
+<li>Better unpacking (3.5)</li>
+<li>Function signature objects (3.3)</li>
+<li>Lots of Windows and Windows launcher improvements</li>
+<li><code>yield from</code> (3.3)</li>
+<li>Added <code>breakpoint()</code> function (3.7)</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="New-syntax:-Matrix-multiplication-operator-(3.5)">New syntax: Matrix multiplication operator (3.5)<a class="anchor-link" href="#New-syntax:-Matrix-multiplication-operator-(3.5)"> </a></h2><p>A matrix multiplication operator was added: <code>@</code> (mATrix). Not used in the standard library; provided for libraries like Numpy.</p>
+<p>Before:</p>
+<div class="highlight"><pre><span></span><span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span> <span class="o">-</span> <span class="n">r</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+           <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">inv</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">V</span><span class="p">),</span> <span class="n">H</span><span class="o">.</span><span class="n">T</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span> <span class="o">-</span> <span class="n">r</span><span class="p">))</span>
+</pre></div>
+<p>After:</p>
+<div class="highlight"><pre><span></span><span class="n">S</span> <span class="o">=</span> <span class="p">(</span><span class="n">H</span> <span class="o">@</span> <span class="n">beta</span> <span class="o">-</span> <span class="n">r</span><span class="p">)</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">inv</span><span class="p">(</span><span class="n">H</span> <span class="o">@</span> <span class="n">V</span> <span class="o">@</span> <span class="n">H</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">@</span> <span class="p">(</span><span class="n">H</span> <span class="o">@</span> <span class="n">beta</span> <span class="o">-</span> <span class="n">r</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="New-syntax:-Formatted-string-literals-(3.6)">New syntax: Formatted string literals (3.6)<a class="anchor-link" href="#New-syntax:-Formatted-string-literals-(3.6)"> </a></h2><p>Adding an <code>f</code> to the front of a string allows most valid Python to be interpolated inside <code>{}</code>s.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;1 + 2 = </span><span class="si">{</span><span class="mi">1</span><span class="o">+</span><span class="mi">2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>1 + 2 = 3
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Ordered-dictionaries-(3.6)">Ordered dictionaries (3.6)<a class="anchor-link" href="#Ordered-dictionaries-(3.6)"> </a></h2><p>Dictionaries in CPython since 3.6 (official language specification in 3.7) are now faster and ordered! This affects normal dictionaries, keyword arguments, and class ordering.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[&#39;b&#39;, &#39;a&#39;, &#39;c&#39;]
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%python</span>2
+<span class="n">a</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[&#39;a&#39;, &#39;c&#39;, &#39;b&#39;]
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+ 
+
+
+    </main>
+    

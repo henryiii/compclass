@@ -1,0 +1,161 @@
+# Each entry has the following schema:
+#
+# - title: mytitle   # Title of chapter or section
+#   url: /myurl  # URL of section relative to the /content/ folder.
+#   sections:  # Contains a list of more entries that make up the chapter's sections
+#   not_numbered: true  # if the section shouldn't have a number in the sidebar
+#     (e.g. Introduction or appendices)
+#   expand_sections: true  # if you'd like the sections of this chapter to always
+#     be expanded in the sidebar.
+#   external: true  # Whether the URL is an external link or points to content in the book
+#
+# Below are some special values that trigger specific behavior:
+# - search: true  # Will provide a link to a search page
+# - divider: true  # Will insert a divider in the sidebar
+# - header: My Header  # Will insert a header with no link in the sidebar
+
+
+- header: "Starting the class"
+- url: /IntroToJupyterBook
+  title: Introduction to the CompClass
+- url: /syllabus
+  title: Syllabus
+- url: /week1/0_IntroductionAndLogin
+  title: PHYS 5041/6041 Introduction
+
+- header: "Week 1: Basics"
+- url: /week1/1_ProgrammingBasics
+  title: Basics of Programming
+
+- header: "Week 2: Basics 2"
+- url: /week2/0_ObjectOriented
+  title: Object Oriented Programming
+- url: /week2/1_errors
+  title: Error Accumulation
+
+- header: "Week 3: Numerical Computing"
+- url: /week3/0_numerics
+  title: Numerical Tools
+- url: /week3/1_plotting
+  title: Plotting
+# Add how git works
+
+- header: "Week 4: Randomness"
+- url: /week4/1_random_numbers
+  title: Random numbers
+  expand_sections: true
+  sections:
+  - url: /week4/RandomWalk
+    title: Random Walk
+- url: /week4/2_MC
+  title: Monte Carlo
+- url: /week4/IPythonMagics
+  title: IPython Magics
+
+- header: "Week 5: Integration and Differentiation"
+- url: /week5/1_integration
+  title: Integration Rules
+- url: /week5/2_mcintegrate
+  title: Monte Carlo Integration
+- url: /week5/3_differentiation
+  title: Numerical Differentiation
+
+- header: "Week 6: Linear Algebra"
+- url: /week6/1_vectorization
+  title: Vectorization
+- url: /week6/2_linearalgebra
+  title: Linear Algebra
+  expand_sections: true
+  sections:
+  - url: /week6/2_string_masses_classic
+    title: String Masses Classic
+  - url: /week6/2_string_masses_final
+    title: String Masses Final
+  - url: /week6/2_string_masses_sympy
+    title: String Masses Sympy
+- url: /week6/3_fitting
+  title: Linear Regression
+  expand_sections: true
+  sections:
+  - url: /week6/3_spline_fit
+    title: Spline Fit
+
+- header: "Week 7: Tabular data"
+- url: /week7/1_pandas
+  title: Structured Tabular Data
+  expand_sections: true
+  sections:
+  - url: /week7/1_worksheet
+    title: Worksheet
+- url: /week7/2_histograms_cuts
+  title: Histograms and Cuts
+
+- header: "Week 8: Statistics"
+- url: /week8/1_generation
+  title: Generating Distributions
+- url: /week8/2_fitting
+  title: Minimizing and Fitting Distributions
+- url: /week8/3_fittingtools
+  title: Fitting Tools
+
+- header: "Week 9: Statistics 2"
+- url: /week9/1_confidence_intervals
+  title: Confidence Intervals
+- url: /week9/2_mcmc
+  title: Markov Chain Monte Carlo
+- url: /week9/3_performance
+  title: Performance Computing
+
+- header: "Week 10: Differential Equations"
+- url: /week10/1_ode
+  title: Intro to ODEs
+  expand_sections: true
+  sections:
+    - url: /week10/1_pro_file
+      title: Profiling Code, Reading and Writing Files
+- url: /week10/2_rk
+  title: The Runge–Kutta Algorithm
+- url: /week10/3_ode_problems
+  title: Solving ODE Problems
+
+
+- header: "Week 11: Fourier Series"
+- url: /week11/1_fourier_series
+  title: Fourier Series
+- url: /week11/2_FFT
+  title: Fast Fourier Transform
+
+- header: "Week 12: Assorted Topics"
+- url: /week12/0_CuPyFractal
+  title: CuPy Fractal
+- url: /week12/0_PyBindNumba
+  title: PyBind11 and Numba
+- url: /week12/1_fitting
+  title: Fitting Revisited
+- url: /week12/1_guis
+  title: GUIs
+- url: /week12/2_signalfiltering
+  title: Signal Filtering
+
+- header: "Week 13: Review"
+- url: /week13/1_review
+  title: Review
+
+- header: "Week 14: Requested Topics"
+- url: /week14/1_graphs
+  title: Static Computation Graphs
+- url: /week14/2_ml
+  title: Machine Learning
+  expand_sections: true
+  sections:
+  - url: /week14/2_MNIST
+    title: MINST Dataset
+- url: /week14/3_sharing
+  title: Sharing your Code
+  
+- header: "Optional"
+- url: /optional/PythonOptionalOverview
+  title: Overview of Python
+- url: /optional/Python3
+  title: Python 2 vs. Python 3
+

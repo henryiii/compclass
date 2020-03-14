@@ -1,0 +1,744 @@
+---
+redirect_from:
+  - "/week14/3-sharing"
+interact_link: content/week14/3_sharing.ipynb
+kernel_name: 
+kernel_path: content/week14
+has_widgets: false
+title: |-
+  Sharing your Code
+pagenum: 46
+prev_page:
+  url: /week14/2_MNIST.html
+next_page:
+  url: /optional/PythonOptionalOverview.html
+suffix: .ipynb
+search: code python span style right not float pts should new org slide pipfile www packages few very slides com run get class list only nice shell en project too clear notebook example environment good version features shells talk much done similar better data py several setup libraries pypi pip pipenv bash even its im notebooks really functions feature tools slots final presentation report reproducible numbers text results directly reading keep maybe scientific git recommended s scripts library used readme package conda still lock install dependencies something dev dont here user cover language advanced just years useful probably io wikipedia wiki
+
+comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
+---
+
+    <main class="jupyter-page">
+    <div id="page-info"><div id="page-title">Sharing your Code</div>
+</div>
+    <div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Week-14-Day-3:-Sharing-and-documenting-code">Week 14 Day 3: Sharing and documenting code<a class="anchor-link" href="#Week-14-Day-3:-Sharing-and-documenting-code"> </a></h1><h2 id="Objectives">Objectives<a class="anchor-link" href="#Objectives"> </a></h2><ul>
+<li>Go over the final presentation</li>
+<li>Go over the final project report</li>
+<li>Talk about reproducible research</li>
+<li>Talk about what we didn't talk about.</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Presentations">Presentations<a class="anchor-link" href="#Presentations"> </a></h2>
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Previous-rubric:">Previous rubric:<a class="anchor-link" href="#Previous-rubric:"> </a></h3><h4 id="Style">Style<a class="anchor-link" href="#Style"> </a></h4><ul>
+<li>Include page numbers?                <span style="float:right;"> 10 pts </span></li>
+<li>Fonts legible?                       <span style="float:right;"> 5 pts </span></li>
+<li>Some reasonable figures/images?      <span style="float:right;"> 10 pts </span></li>
+<li>Reasonable amount of text per slide (not too much)? <span style="float:right;"> 5 pts </span></li>
+<li>Attractive slides?                   <span style="float:right;"> 5 pts </span></li>
+<li>Multiple obvious grammatical/spelling errors? <span style="float:right;"> 10 pts </span></li>
+</ul>
+<h4 id="Content">Content<a class="anchor-link" href="#Content"> </a></h4><ul>
+<li>Intro<ul>
+<li>Clear to non-expert?                     <span style="float:right;"> 15 pts </span></li>
+<li>Explains why the audience should be interested?  <span style="float:right;"> 15 pts </span></li>
+</ul>
+</li>
+<li>Plans/results<ul>
+<li>Clear description of what was done or will be done? <span style="float:right;"> 15 pts </span></li>
+</ul>
+</li>
+</ul>
+<h4 id="Speaking">Speaking<a class="anchor-link" href="#Speaking"> </a></h4><ul>
+<li>Stayed on time? (UG)                 <span style="float:right;"> 5 pts </span></li>
+<li>Avoid directly reading slides?       <span style="float:right;"> 5 pts </span></li>
+</ul>
+<p>See <a href="https://www.rcampus.com/rubricshowc.cfm?code=CX6CA97&amp;sp=yes&amp;">100 point talk rubric</a></p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Final-presentation:">Final presentation:<a class="anchor-link" href="#Final-presentation:"> </a></h3><p><strong>Sign up for a time slot!</strong></p>
+<h4 id="Parts">Parts<a class="anchor-link" href="#Parts"> </a></h4><ul>
+<li>Title slide with your <strong>name</strong>.</li>
+<li>Intro (similar to before, 2-3 slides)</li>
+<li>Procedures (discussion of what was done, 2-3 slides)</li>
+<li>Results (discussion of what was accomplished, 2-3 slides)</li>
+<li>Future plans (what can be done, 1 slide)</li>
+<li>Conclusion (Quick recap in 1 slide)</li>
+<li>References (1 slide)</li>
+<li>Backup (anything)</li>
+</ul>
+<h4 id="Guides">Guides<a class="anchor-link" href="#Guides"> </a></h4><ul>
+<li>Have at least 2 images. More is better.</li>
+<li>You must have <strong>slide numbers</strong>.</li>
+<li>Stay on time. You have 10 minutes, plus ~2 minutes for questions. If you go over, you will have to stop.</li>
+<li>Keep text per slide down - The 1-6-6 rule is too strict, but keep it in mind. Maybe <a href="https://www.elsevier.com/connect/how-to-give-a-dynamic-scientific-presentation">see this page</a>.</li>
+<li>Think visual - how do you make your content clear and have an impact?</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Project-report">Project report<a class="anchor-link" href="#Project-report"> </a></h2><h3 id="Format">Format<a class="anchor-link" href="#Format"> </a></h3><ul>
+<li>You will "submit" a git repository with your code.<ul>
+<li>It does not <em>have</em> to be in git. But recommended. If not, you should be able to send a zip file with it.</li>
+</ul>
+</li>
+<li>Should be reproducible - if I have access to your data, I should be able to run your code and get your results.</li>
+<li>Structure should be similar to recommended structure in class<ul>
+<li>Must have 1+ <code>.py</code> files with implementations</li>
+<li>Should have notebook(s) or python scripts that run the library parts</li>
+<li>Should have a list of some sort of requirements / used packages</li>
+<li>Data does not have to be included</li>
+</ul>
+</li>
+<li>Two documents required:<ul>
+<li>README.md (or similar): basic instructions to someone who wants to run your code</li>
+<li>Writeup as notebook or document: see below</li>
+</ul>
+</li>
+</ul>
+<h3 id="Writeup">Writeup<a class="anchor-link" href="#Writeup"> </a></h3><ul>
+<li>Report can be written in a notebook (with or without a bit of example code)</li>
+<li>Should contain similar sections the slides (so see above)</li>
+<li>Should be 2-4 pages in length, not counting code.</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="https://imgs.xkcd.com/comics/python_environment.png" alt="Example of common Python environments"></p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Reproducing-your-environment">Reproducing your environment<a class="anchor-link" href="#Reproducing-your-environment"> </a></h2><p>Several methods:</p>
+<ul>
+<li><code>setup.py</code>: make an installable package<ul>
+<li>Good for libraries, but doesn't keep exact version numbers</li>
+<li>Harder to setup</li>
+</ul>
+</li>
+<li><code>environment.xml</code>: list of packages for Conda<ul>
+<li>Still only one version</li>
+<li>Requires Conda</li>
+</ul>
+</li>
+<li><code>requirements.txt</code>: List of PyPI packages<ul>
+<li>Directly supported by Pip</li>
+<li>Only PyPI packages</li>
+</ul>
+</li>
+<li><code>Pipfile</code> and <code>Pipfile.lock</code>: list of packages for Pipenv<ul>
+<li>Stores "nice" and "reproducible" version</li>
+<li>Always and automatically generated by Pipenv</li>
+<li>Only PyPI packages</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Example:-Pipenv">Example: Pipenv<a class="anchor-link" href="#Example:-Pipenv"> </a></h4><div class="highlight"><pre><span></span>pipenv install numpy uproot
+</pre></div>
+<p>This creates a virtual environment, a <code>Pipfile</code> and a <code>Pipfile.lock</code>. Pipfile will list general, explicit dependencies. Pipfile.lock will list <em>all</em> installed packages, including requirement from pip, and will have exact versions (and is an ugly file). You can do a few extra things in the Pipfile too, like set up cross-dependencies (install this back-ported package only on old Python, for example), require a Python version, and more.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Why?">Why?<a class="anchor-link" href="#Why?"> </a></h3><p>Once you have this:</p>
+<ul>
+<li>Others can make a virtual environment and run your code in 1-2 lines</li>
+<li>You have a history of exactly what worked if something breaks</li>
+<li>You can even give access to your code in a service like Binder; no install required</li>
+<li>It's easy for you to set up your code on a new computer</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Example:-PvFinder">Example: <a href="https://gitlab.cern.ch/LHCb-Reco-Dev/pv-finder">PvFinder</a><a class="anchor-link" href="#Example:-PvFinder"> </a></h3><p>This is a project I'm working on. Notice several things:</p>
+<ul>
+<li>Pipfile: I don't actually use this (I'm using Conda) but I'm still tracking dependencies</li>
+<li>README.md: A nice, markdown readme is in several directories</li>
+<li><code>model/</code>: The Python code is in here. I picked a bad name, but I am stuck with it.</li>
+<li><code>notebooks/</code>: Most of the "user" code is here, with explanations and plots. I clear the notebooks before committing them.</li>
+<li><code>scripts/</code>: Files in here are run directly from the shell.</li>
+<li><code>tests/</code>: I have only a few tests, but few is better than none.</li>
+<li>Data is stored in another location, but symlinked in.</li>
+<li>I make large changes in a branch, then make a Pull Request, keeps nice history and helps collaborators</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="What-did-we-miss?">What did we miss?<a class="anchor-link" href="#What-did-we-miss?"> </a></h2><p>Other topics we did not cover this semester because we were too short on time.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Python-language-features">Python language features<a class="anchor-link" href="#Python-language-features"> </a></h3><p>We mostly skipped more advanced features or features that are really new.</p>
+<ul>
+<li>Lambda functions: You can just write regular functions.</li>
+<li>Advanced iterators/generators: Nice, but not critical for scientific code.</li>
+<li>Async/Await: I've been trying for years to use this in scientific code. Haven't found a use yet. Maybe IPython 7's new support will make it useful for animations? Very much a Python 3 feature.</li>
+<li>Static type hints: Nice tools (editors like PyCharm, static analyzer like MyPy) could make this useful, but it adds lots of extra bits of code and is very much a Python 3 feature. Can slow your code down a bit (better in Python 3.7 and will be even better in Python 4)</li>
+<li>How to <em>write</em> a decorator: Very tricky to get just right.</li>
+<li>Metaclasses and advanced class creation: Even if you think you need this, you probably don't.</li>
+<li>Threading: Python really can't do faster <em>computation</em> in multiple threads; you should use something like Numba to do so. Regular threading (and async) is designed for IO, networking, etc; places where you sit and wait.</li>
+<li>Python 2: Even though many experiments are still stuck on Python 2, it is a <a href="https://pythonclock.org">dying language</a>. Next year, <a href="https://python3statement.org">many more libraries</a> will drop support from new releases. <em>Most</em> of what you know can be used or adapted to Python 2 if you have to.</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># A static code analysis tool will complain if you set x to a non-int value.</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Related-topics">Related topics<a class="anchor-link" href="#Related-topics"> </a></h3><ul>
+<li><a href="https://en.wikipedia.org/wiki/Comparison_of_command_shells">Shells</a>: we didn't cover shells - it's a key part of working on any Unix system.<ul>
+<li>Several old shells exist, like SH (1979) and CSH (1978). Don't use them.</li>
+<li><a href="https://en.wikipedia.org/wiki/Bash_(Unix_shell">Bash</a>) (1989) is the most common shell. It's what people mean by a shell most of the time. It's default pretty much anywhere, including macOS.</li>
+<li>New shells are fancier or more user friendly. <a href="https://en.wikipedia.org/wiki/Z_shell">ZSH</a> is Bash on steroids, <a href="https://fishshell.com">FISH</a> is a re-imagining of a shell for the 1990s (that's considered <em>new</em> for shells), and <a href="http://xonsh.org">Xonsh</a> is a shell written in Python 3.</li>
+</ul>
+</li>
+<li>Containers: like <a href="https://www.docker.com">Docker</a><ul>
+<li>Run a pristine custom Linux environment anywhere in seconds</li>
+<li>Too high a learning curve to cover - with great power, ...!</li>
+<li>Used for everything; you can get a container for any Linux OS, Anaconda, LaTeX, ROOT, and more.</li>
+</ul>
+</li>
+<li>Compiled extensions<ul>
+<li>Would need another language, like C or C++11; and Numba covers many use cases already!</li>
+</ul>
+</li>
+<li><a href="https://www.python.org/dev/peps/">PEPs</a>: Python Enhancement Proposals<ul>
+<li>This is how Python is developed</li>
+<li>Almost all features were a PEP at one point</li>
+<li>Currently bogged down in finding a new governance model after Guido Van Rossum stepped down.</li>
+</ul>
+</li>
+<li>Utilities<ul>
+<li>Formatting tools can check your format against <a href="https://www.python.org/dev/peps/pep-0008/">PEP 8</a> (formatting guidelines)</li>
+<li><a href="http://www.sphinx-doc.org/en/master/">Sphinx</a> builds documentation for your code</li>
+<li><a href="https://cookiecutter.readthedocs.io/en/latest/">CookieCutter</a> can make a new project from a template</li>
+<li>Continuous integration services test your git repository on every commit, publish docs or a website, make binaries, push to PyPI, and more.</li>
+</ul>
+</li>
+<li><code>setup.py</code><ul>
+<li>You can make an installable package</li>
+<li>Uses setuptools (third-party, but ubiquitous like pip) or distutils (standard library, but not recommended)</li>
+<li>Not that user friendly <em>yet</em> - see <a href="https://www.scivision.co/pyproject-toml-vs-setup-py/">flit</a> - new tools require pip 10+</li>
+</ul>
+</li>
+<li><a href="https://pythontips.com/2018/06/03/top-14-most-famous-python-libraries-frameworks/">More libraries</a><ul>
+<li><a href="https://plumbum.readthedocs.io/en/latest/">Plumbum</a> makes writing shell scripts in Python simple (note: I'm the maintainer)</li>
+</ul>
+</li>
+<li>More about Jupyter notebooks<ul>
+<li>How to write markdown, LaTeX math, hidden text, colors, and other ways to make great notebooks</li>
+<li>How to make a slide show from a notebook</li>
+<li>Examples of Jupyter Lab instead of plain Jupyter Notebook</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Takeaways">Takeaways<a class="anchor-link" href="#Takeaways"> </a></h2><ul>
+<li>Know what to look for</li>
+<li>Know where to look</li>
+<li>Code is a product of research, just like a paper. It should be made presentable.</li>
+<li>Reading code is harder than writing code</li>
+<li>Reading good code is easier than writing good code</li>
+<li>Good code is tested, clear, and simple</li>
+<li>Less code is easier to maintain/debug than more code most of the time</li>
+<li>Understand the algorithm (maybe with a toy implementation), then use the existing tools if possible</li>
+<li>Only make code uglier for performance <em>if it matters</em>! Check!</li>
+<li>Python 3.6 was the most exciting Python release in the last 10 years, and probably for a few years to come. (3.7 was nice, but mostly focused on performance and security, and 3.8 will be bogged down in politics).</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Bonus-feature:-DataClasses/Attrs">Bonus feature: DataClasses/Attrs<a class="anchor-link" href="#Bonus-feature:-DataClasses/Attrs"> </a></h2><p>We can't end without seeing some code! So let's look at a feature you probably thought existed when you tried to write your first class. A "data" class.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">MyBadVector</span><span class="p">:</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="mi">0</span>
+    
+<span class="c1"># v = MyBadVector(1,2,3) # NO!</span>
+<span class="c1"># print(v) # Ugly!</span>
+<span class="c1"># MyBadVector.x &lt;- Is stored in class, not instance!</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Python's best shot at providing something like this is a namedtuple - a very useful concept, but not really a very good class:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="n">MyTupleVector</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;MyTupleVector&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">v</span> <span class="o">=</span> <span class="n">MyTupleVector</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>MyTupleVector(x=1, y=2, z=3)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Behaves like a tuple:</span>
+<span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span> <span class="o">=</span> <span class="n">v</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># But also has names!</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>1
+1
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>There are a few options, but not many.</p>
+<p>To really get what we want, we have to write a lot of boiler plate code that is always the same:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">MyProperVector</span><span class="p">:</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">)</span> <span class="c1"># optional, used to make the class faster and smaller</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="c1"># Each argument is listed 3 (or 4) times!</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="c1"># Easy to make mistake</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">z</span>
+        
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># All classes need something like this, all about the same</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(x=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2">, y=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2">, z=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+<span class="n">v</span> <span class="o">=</span> <span class="n">MyProperVector</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>MyProperVector(x=1, y=2, z=3)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The relatively recent but very popular Attrs project was designed to fix this. Here's what it looks like.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">attr</span> <span class="c1"># note: if you don&#39;t have it (you probably do), it&#39;s called attrs not attr in PyPI</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span>
+<span class="k">class</span> <span class="nc">MyAttrsVector</span><span class="p">:</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">v</span> <span class="o">=</span> <span class="n">MyAttrsVector</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>MyAttrsVector(x=1, y=2, z=3)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>You can optionally add auto-slots, types (as an argument or in Python 3.6 style), defaults, conversion functions, validation functions, immutability, and more!</p>
+<p>You automatically get (but can control) <code>__init__</code>, comparisons, and <code>__repr__</code>, and can also get <code>__slots__</code>, <code>__hash__</code>, and a few more.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This was so popular <strong>Python 3.7</strong> has added a version of it to the standard library! A few "magical" features are not included, like <code>__slots__</code> (Attrs actually creates a new class to add slots, while this could in very special and rare cases cause issues).</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Requires Python 3.7:</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">MyDataClassVector</span><span class="p">:</span>
+    <span class="n">x</span> <span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">y</span> <span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">z</span> <span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>  
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">v</span> <span class="o">=</span> <span class="n">MyDataClassVector</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>MyDataClassVector(x=1, y=2, z=3)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+ 
+
+
+    </main>
+    

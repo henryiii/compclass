@@ -1,0 +1,1861 @@
+---
+redirect_from:
+  - "/week9/3-performance"
+interact_link: content/week9/3_performance.ipynb
+kernel_name: compclass
+kernel_path: content/week9
+has_widgets: false
+title: |-
+  Performance Computing
+pagenum: 30
+prev_page:
+  url: /week9/2_mcmc.html
+next_page:
+  url: /week10/1_ode.html
+suffix: .ipynb
+search: numba its python lets jit function new code memory functions x c just float targets simple true integral state numpy even bit version numexpr run features cuda sumweightslocs following well original also too existing cant only cython gets not special ufunc parallel f array nopython target list threshold nitems calculation example often here slow however though expression compiler create used pretty available dont def supported types release integralthreshold minwidth items len week ways speed reminder should give doing already faster pure examples same element note case problem allocations power try place calculations before get rid allocated wow allocation pre put
+
+comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
+---
+
+    <main class="jupyter-page">
+    <div id="page-info"><div id="page-title">Performance Computing</div>
+</div>
+    <div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Week-9-Day-3">Week 9 Day 3<a class="anchor-link" href="#Week-9-Day-3"> </a></h1><h2 id="Objectives">Objectives<a class="anchor-link" href="#Objectives"> </a></h2><ul>
+<li>Discuss calculation performance</li>
+<li>Look at ways to speed up code</li>
+</ul>
+<blockquote><p>Reminder: You should all have started your projects. You should be able to give a simple report over what you are doing and planning to do two weeks from today.</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Example-Numpy-calculation">Example Numpy calculation<a class="anchor-link" href="#Example-Numpy-calculation"> </a></h2><p>For the following, we will often use normal Numpy as a baseline. Remember it's already a factor of 10 to 100 faster than pure Python!</p>
+<p>Let's pretend that we have the following calculation, and it's important to us for some reason:</p>
+$$
+y = x + x^2 + x^3 + x^4 + x^5 + x^6 + x^7 + x^8
+$$
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">norm</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numexpr</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>For all the following examples, we'll use the same 1M element vector:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">1_000_000</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Simple-Python">Simple Python<a class="anchor-link" href="#Simple-Python"> </a></h4>
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">f_simple</span><span class="p">(</span><span class="n">xarr</span><span class="p">):</span>
+    <span class="n">yarr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">xarr</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xarr</span><span class="p">)):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">xarr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">yarr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="n">x</span><span class="o">**</span><span class="mi">4</span> <span class="o">+</span> <span class="n">x</span><span class="o">**</span><span class="mi">5</span> <span class="o">+</span> <span class="n">x</span><span class="o">**</span><span class="mi">6</span> <span class="o">+</span> <span class="n">x</span><span class="o">**</span><span class="mi">7</span> <span class="o">+</span> <span class="n">x</span><span class="o">**</span><span class="mi">8</span>
+    <span class="k">return</span> <span class="n">yarr</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">f_simple</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>3.59 s ± 153 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Simple-Numpy">Simple Numpy<a class="anchor-link" href="#Simple-Numpy"> </a></h4>
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">f_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="n">x</span><span class="o">**</span><span class="mi">4</span> <span class="o">+</span> <span class="n">x</span><span class="o">**</span><span class="mi">5</span> <span class="o">+</span> <span class="n">x</span><span class="o">**</span><span class="mi">6</span> <span class="o">+</span> <span class="n">x</span><span class="o">**</span><span class="mi">7</span> <span class="o">+</span> <span class="n">x</span><span class="o">**</span><span class="mi">8</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">f_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>480 ms ± 16 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Note that this is clean and clear. If this is fast enough for your use case, <em>stop here</em>! This is the easiest one to maintain, and is the most similar to the original problem statement.</p>
+<p>It is slow, however, We have to make a lot of memory allocations; even though we can reclaim it later, this is slow. Also, raising to a power is a bit pricey too.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Algorithmic-rearrangement">Algorithmic rearrangement<a class="anchor-link" href="#Algorithmic-rearrangement"> </a></h4><p>Let's try to build a new version of the expression that is friendlier to doing in-place calculations. Before we move to in-place calculations, though, let's test the new expression, both against the old one and with a timer:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">f_nest_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">x</span><span class="p">)))))))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">f_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">f_nest_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">f_nest_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>7.73 ms ± 100 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Numpy-reduced-memory">Numpy reduced memory<a class="anchor-link" href="#Numpy-reduced-memory"> </a></h4><p>Now, let's get rid of all the extra memory allocations. We will allocate once, then just keep changing the memory we've already allocated:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">f_mem_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">):</span>
+        <span class="n">y</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">y</span> <span class="o">*=</span> <span class="n">x</span>
+    <span class="k">return</span> <span class="n">y</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">f_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">f_mem_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">f_mem_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>7.91 ms ± 177 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Wow! Almost all the time in the previous examples was memory allocation!</p>
+<p>Most of Numpy's functionality can be accessed with pre-allocated memory. You can use the <code>out=</code> keyword argument in many functions to put the results of many function calls directly in existing memory, for example.</p>
+<p>However, we can't always get rid of memory allocation, depending on the problem, and we are now much further from the original math expression. Let's see if we can use a library to help.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Numexpr">Numexpr<a class="anchor-link" href="#Numexpr"> </a></h4><p>We can't resist a quick look at the numexpr JIT compiler. It's an oldy but a goody for simple use cases. <em>If</em> you have long, simple numpy expressions, you can put them inside a string, and numexpr will create an optimized version of this without in-between expressions that Python would require, and then evaluate that. Let's see:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">f_numexper</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">numexpr</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s1">&#39;x + x**2 + x**3 + x**4 + x**5 + x**6 + x**7 + x**8&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">f_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">f_numexper</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">f_numexper</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>5.58 ms ± 150 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Nice! The downside: It only supports a small handful of operations and functions, like <code>sin</code> and <code>cos</code>. It's also best used for simple bits like this. However, your code is pretty readable (albeit in a string), and if used carefully, could be all you'll need. Numexpr must be available, of course, but it usually is.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Cython:-A-new-language">Cython: A new language<a class="anchor-link" href="#Cython:-A-new-language"> </a></h4><p>I can't skip Cython. It revolutionized Python in many ways, though as you'll see soon, I don't think it's the best tool for the job anymore. It allows you to write a mix of Python and C to create completely pre-compiled functions. Compared to writing the Python C-API, it's amazing. Compared to pretty much anything else...</p>
+<p>Compiling Cython is often a pain, but it has a Jupyter extension that is excellent, so let's use that.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> Cython
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%</span><span class="n">cython</span>
+<span class="c"># cython: boundscheck=False, wraparound=False, noncheck=False, cdivision=True</span>
+
+<span class="k">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">f_cython</span><span class="p">(</span><span class="n">double</span><span class="p">[:]</span> <span class="n">xarr</span><span class="p">):</span>
+    <span class="n">y_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">xarr</span><span class="p">)])</span>
+    <span class="k">cdef</span> <span class="kt">double</span>[<span class="p">:]</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y_arr</span>
+    <span class="k">cdef</span> <span class="kt">int</span> <span class="nf">i</span>
+    <span class="k">cdef</span> <span class="kt">double</span> <span class="nf">x</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">xarr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mf">0</span><span class="p">]):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">xarr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="mf">1</span> <span class="o">+</span> <span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="mf">1</span> <span class="o">+</span> <span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="mf">1</span> <span class="o">+</span> <span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="mf">1</span> <span class="o">+</span> <span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="mf">1</span> <span class="o">+</span> <span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="mf">1</span> <span class="o">+</span> <span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="mf">1</span> <span class="o">+</span> <span class="n">x</span><span class="p">)))))))</span>
+        <span class="c">#y[i] = x + x**2 + x**3 + x**4 + x**5 + x**6 + x**7 + x**8</span>
+                
+    <span class="k">return</span> <span class="n">y</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">f_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">f_cython</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">f_cython</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>3.79 ms ± 84.3 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Yes, this is overkill. Even if you know Python, C, and C++, this is still a new language with its own quirks. But it does give you lots of power for complex tasks - you can even write classes! You can activate C++ mode and call existing C++ libraries! Yes, compiling gets exponentially harder to do if you do that, but it's possible. Not pretty, just possible. You can use OpenMP to run in multiple threads, again making the compile step more complicated (I'm not showing that on macOS here!)</p>
+<p>Now let's look at the new kid on the scene:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Numba">Numba<a class="anchor-link" href="#Numba"> </a></h4><p>Numba takes a totally different approach. It's built on two ideas:</p>
+<ul>
+<li>It reads and converts byte code from <em>existing Python functions</em></li>
+<li>It does JIT compilation directly to LLVM (no C or C++ in-between)</li>
+</ul>
+<p>Why is that special or new?</p>
+<ul>
+<li>100% Python - no special compiler, special extensions, strings, etc.</li>
+<li>Easy to make optional - just don't run the function through Numba - no Numba requirement</li>
+<li>It's a just a library! No new interpreter or compiler step</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>For now, let's <em>not even bother to write a new function</em>! We have perfectly nice existing functions, let's just pass them through Numba:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">f_numba_simple</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">f_numpy</span><span class="p">)</span>
+<span class="n">f_numba_nest</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">f_nest_numpy</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">f_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">f_numba_simple</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">f_nest_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">f_numba_nest</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">f_numba_simple</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>686 µs ± 13.8 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">f_numba_nest</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>670 µs ± 8.45 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Wow! We didn't do anything at all to our <em>original</em>, slow source code. We even reused it! We could have written a check for Numba, and only applied the JIT if Numba was found - free speedup.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Numba-UFunc">Numba UFunc<a class="anchor-link" href="#Numba-UFunc"> </a></h4><p>Before we co on, let's play around a bit more and see if we can squeeze a bit more out of Numba by creating a parallel UFunc - don't worry about what this is, we'll cover Numba in detail next:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">f_numba_simple_ufunc</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">vectorize</span><span class="p">([</span><span class="n">numba</span><span class="o">.</span><span class="n">double</span><span class="p">(</span><span class="n">numba</span><span class="o">.</span><span class="n">double</span><span class="p">)],</span>
+                                       <span class="n">target</span><span class="o">=</span><span class="s1">&#39;parallel&#39;</span><span class="p">)(</span><span class="n">f_numpy</span><span class="p">)</span>
+<span class="n">f_numba_nest_ufunc</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">vectorize</span><span class="p">([</span><span class="n">numba</span><span class="o">.</span><span class="n">double</span><span class="p">(</span><span class="n">numba</span><span class="o">.</span><span class="n">double</span><span class="p">)],</span>
+                                     <span class="n">target</span><span class="o">=</span><span class="s1">&#39;parallel&#39;</span><span class="p">)(</span><span class="n">f_numba_nest</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">f_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">f_numba_simple_ufunc</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">f_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">f_numba_nest_ufunc</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">f_numba_simple_ufunc</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>358 µs ± 15 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">f_numba_nest_ufunc</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>352 µs ± 9.74 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Numba-JIT-Parallel:">Numba JIT Parallel:<a class="anchor-link" href="#Numba-JIT-Parallel:"> </a></h4><p>We could actually have done that with just JIT, as well, by asking it to parallelize:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">f_numba_parallel</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span><span class="n">f_numpy</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">f_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">f_numba_parallel</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">f_numba_parallel</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>371 µs ± 10.9 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Numba">Numba<a class="anchor-link" href="#Numba"> </a></h2><p>So now that we have seen it, let's properly introduce Numba's features. Numba is developed by Anaconda, and (of course) comes in the Anaconda distribution. It's also available via pip now, too.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Decorators">Decorators<a class="anchor-link" href="#Decorators"> </a></h4><p>Reminder: We can write this:</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+    <span class="o">...</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+<p>As a decorator like this:</p>
+<div class="highlight"><pre><span></span><span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+<p>If you noticed the rather odd double-call syntax above, that's because it was designed to be a decorator and it's more natural that way.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ul>
+<li><code>jit</code>: Compile a function. Unlike Cython, this supports array-at-a-time syntax. <code>njit</code> is <code>jit(nopython=True)</code></li>
+<li><code>vectorize</code>: Make a UFunc. You write a 1 element function, and it gets applied to all elements.</li>
+<li><code>guvectorize</code>: Make a Generalized UFunc. You can specify relations for the input/output shapes</li>
+<li><code>cfunc</code>: Callable from other Numba routines only (jit functions can be called too)</li>
+</ul>
+<p>Lesser used / more specialized / underdeveloped:</p>
+<ul>
+<li><code>jitclass</code>: Write a class instead of a function (early support warning has been there for a long time)</li>
+<li><code>stencil</code>: Masking operations</li>
+<li><code>overload</code>: Make a nopython version of a function</li>
+<li>GPU versions: You can target CUDA with <code>cuda.jit</code>, <code>vectorize(target='cuda')</code> (limited feature set)</li>
+<li>You recently can target AMD ROC GPUs too</li>
+</ul>
+<p>See the <a href="https://numba.pydata.org/numba-doc/dev/index.html">Numba documentation</a> for more. You can find a list of functions and features supported - it's far more extensive than numexpr! (Note that the CUDA and ROC versions have fewer features supported)</p>
+<p>Common options (not all are available on all functions):</p>
+<ul>
+<li>A signature or list of signatures: Precompile the function with these expected types</li>
+<li><code>nopython=True</code>: force the function to fail if it can't become a pure Numba compiled function</li>
+<li><code>target=</code>: Can be one of <code>cpu</code>, <code>parallel</code>, <code>gpu</code>, <code>cuda</code>, depending on the function</li>
+<li><code>fastmath=True</code>: Can speed up math at some accuracy cost</li>
+<li><code>parallel=True</code>: Just on <code>jit</code>, can try to parallelize</li>
+<li><code>nogil=True</code>: Release Python's global interpreter lock on memory</li>
+</ul>
+<p>Numba is under rapid development, with a new release every 2-3 months. Each release adds features from Intel's collaboration, often a few AMD features now, new supported functions, and lots more.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Tips-and-tricks:">Tips and tricks:<a class="anchor-link" href="#Tips-and-tricks:"> </a></h4><p>If you need 32 bit floats, you have to be a bit careful if you create a new variable inside your function. You can pass a dictionary to <code>locals=</code> of the internal types if Numba gets it wrong.</p>
+<p>You can see the contained types, LLVM code, or assembly that gets generated if you wish.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">f_numba_simple</span><span class="o">.</span><span class="n">inspect_types</span><span class="p">()</span>
+<span class="c1">#print(list(f_numba_simple.inspect_llvm().values())[0])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>f_numpy (array(float64, 1d, C),)
+--------------------------------------------------------------------------------
+# File: &lt;ipython-input-5-aaa06cc540b5&gt;
+# --- LINE 1 --- 
+
+def f_numpy(x):
+
+    # --- LINE 2 --- 
+    # label 0
+    #   x = arg(0, name=x)  :: array(float64, 1d, C)
+    #   $const6.2 = const(int, 2)  :: Literal[int](2)
+    #   del $const6.2
+    #   $const14.6 = const(int, 3)  :: Literal[int](3)
+    #   del $const14.6
+    #   $const22.10 = const(int, 4)  :: Literal[int](4)
+    #   del $const22.10
+    #   $const30.14 = const(int, 5)  :: Literal[int](5)
+    #   del $const30.14
+    #   $const38.18 = const(int, 6)  :: Literal[int](6)
+    #   del $const38.18
+    #   $const46.22 = const(int, 7)  :: Literal[int](7)
+    #   del $const46.22
+    #   $const54.26 = const(int, 8)  :: Literal[int](8)
+    #   del $const54.26
+    #   $58binary_add.28 = arrayexpr(expr=(&lt;built-in function add&gt;, [(&lt;built-in function add&gt;, [(&lt;built-in function add&gt;, [(&lt;built-in function add&gt;, [(&lt;built-in function add&gt;, [(&lt;built-in function add&gt;, [(&lt;built-in function add&gt;, [Var(x, &lt;ipython-input-5-aaa06cc540b5&gt;:2), (&lt;built-in function pow&gt;, [Var(x, &lt;ipython-input-5-aaa06cc540b5&gt;:2), const(int, 2)])]), (&lt;built-in function pow&gt;, [Var(x, &lt;ipython-input-5-aaa06cc540b5&gt;:2), const(int, 3)])]), (&lt;built-in function pow&gt;, [Var(x, &lt;ipython-input-5-aaa06cc540b5&gt;:2), const(int, 4)])]), (&lt;built-in function pow&gt;, [Var(x, &lt;ipython-input-5-aaa06cc540b5&gt;:2), const(int, 5)])]), (&lt;built-in function pow&gt;, [Var(x, &lt;ipython-input-5-aaa06cc540b5&gt;:2), const(int, 6)])]), (&lt;built-in function pow&gt;, [Var(x, &lt;ipython-input-5-aaa06cc540b5&gt;:2), const(int, 7)])]), (&lt;built-in function pow&gt;, [Var(x, &lt;ipython-input-5-aaa06cc540b5&gt;:2), const(int, 8)])]), ty=array(float64, 1d, C))  :: array(float64, 1d, C)
+    #   del x
+    #   $60return_value.29 = cast(value=$58binary_add.28)  :: array(float64, 1d, C)
+    #   del $58binary_add.28
+    #   return $60return_value.29
+
+    return x + x**2 + x**3 + x**4 + x**5 + x**6 + x**7 + x**8
+
+
+================================================================================
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Real-code-example">Real code example<a class="anchor-link" href="#Real-code-example"> </a></h2><p>Here is some real code that I've written recently. I had a training sample that took 60 seconds to run an iteration. The original (non-decorated version) took 100+ seconds to run on 10K events. The decorated version, with some small changes to remove list appending, takes &lt;0.1 second and can be run every iteration.</p>
+<p>The code looks for signals that look like bumps in an array of mostly zeros following a specific set of requirements (<code>threshold</code>, <code>integral_threshold</code>, <code>min_width</code>).</p>
+<div class="highlight"><pre><span></span><span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">numba</span><span class="o">.</span><span class="n">float32</span><span class="p">[:](</span><span class="n">numba</span><span class="o">.</span><span class="n">float32</span><span class="p">[:],</span> <span class="n">numba</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">numba</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">numba</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>
+           <span class="nb">locals</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;integral&#39;</span><span class="p">:</span><span class="n">numba</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="s1">&#39;sum_weights_locs&#39;</span><span class="p">:</span><span class="n">numba</span><span class="o">.</span><span class="n">float32</span><span class="p">},</span>
+           <span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pv_locations</span><span class="p">(</span><span class="n">targets</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">integral_threshold</span><span class="p">,</span> <span class="n">min_width</span><span class="p">):</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">integral</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">sum_weights_locs</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="c1"># Make an empty array and manually track the size (faster than python array)</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">nitems</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">targets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">:</span>
+            <span class="n">state</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">integral</span> <span class="o">+=</span> <span class="n">targets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">sum_weights_locs</span> <span class="o">+=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">targets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="c1"># weight times location</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">targets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">threshold</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">state</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+
+            <span class="c1"># Record only if</span>
+            <span class="k">if</span> <span class="n">state</span> <span class="o">&gt;=</span> <span class="n">min_width</span> <span class="ow">and</span> <span class="n">integral</span> <span class="o">&gt;=</span> <span class="n">integral_threshold</span><span class="p">:</span>
+                <span class="n">items</span><span class="p">[</span><span class="n">nitems</span><span class="p">]</span> <span class="o">=</span> <span class="n">sum_weights_locs</span> <span class="o">/</span> <span class="n">integral</span>
+                <span class="n">nitems</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c1">#reset state</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">integral</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">sum_weights_locs</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+
+    <span class="c1"># Special case for final item (very rare or never occuring)</span>
+    <span class="c1"># handled by above if len</span>
+
+    <span class="k">return</span> <span class="n">items</span><span class="p">[:</span><span class="n">nitems</span><span class="p">]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Numba-accelerated-code">Numba accelerated code<a class="anchor-link" href="#Numba-accelerated-code"> </a></h2>
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Fractal-code-from-week-3">Fractal code from week 3<a class="anchor-link" href="#Fractal-code-from-week-3"> </a></h4>
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="n">iterations</span> <span class="o">=</span> <span class="mi">50</span>
+
+<span class="k">def</span> <span class="nf">make_fractal</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">iterations</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="o">*</span><span class="mi">1</span><span class="n">j</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">it_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iterations</span><span class="p">):</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">c</span>
+        <span class="n">it_matrix</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="k">return</span> <span class="n">it_matrix</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">make_fractal</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">iterations</span><span class="p">));</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>/usr/share/miniconda/envs/compclass/lib/python3.7/site-packages/ipykernel_launcher.py:11: RuntimeWarning: overflow encountered in square
+  # This is added back by InteractiveShellApp.init_path()
+/usr/share/miniconda/envs/compclass/lib/python3.7/site-packages/ipykernel_launcher.py:11: RuntimeWarning: invalid value encountered in square
+  # This is added back by InteractiveShellApp.init_path()
+/usr/share/miniconda/envs/compclass/lib/python3.7/site-packages/ipykernel_launcher.py:12: RuntimeWarning: overflow encountered in absolute
+  if sys.path[0] == &#39;&#39;:
+/usr/share/miniconda/envs/compclass/lib/python3.7/site-packages/ipykernel_launcher.py:12: RuntimeWarning: invalid value encountered in less
+  if sys.path[0] == &#39;&#39;:
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week9/3_performance_58_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">make_fractal</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">iterations</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>/usr/share/miniconda/envs/compclass/lib/python3.7/site-packages/ipykernel_launcher.py:11: RuntimeWarning: overflow encountered in square
+  # This is added back by InteractiveShellApp.init_path()
+/usr/share/miniconda/envs/compclass/lib/python3.7/site-packages/ipykernel_launcher.py:11: RuntimeWarning: invalid value encountered in square
+  # This is added back by InteractiveShellApp.init_path()
+/usr/share/miniconda/envs/compclass/lib/python3.7/site-packages/ipykernel_launcher.py:12: RuntimeWarning: overflow encountered in absolute
+  if sys.path[0] == &#39;&#39;:
+/usr/share/miniconda/envs/compclass/lib/python3.7/site-packages/ipykernel_launcher.py:12: RuntimeWarning: invalid value encountered in less
+  if sys.path[0] == &#39;&#39;:
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>192 ms ± 2.57 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">make_fractal_nb</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">iterations</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="o">*</span><span class="mi">1</span><span class="n">j</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">it_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iterations</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span>
+                    <span class="n">it_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="k">return</span> <span class="n">it_matrix</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">make_fractal_nb</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">iterations</span><span class="p">));</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week9/3_performance_61_0.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">make_fractal_nb</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">iterations</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>132 ms ± 1.99 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="MCMC">MCMC<a class="anchor-link" href="#MCMC"> </a></h3><p>This is our sampler for MCMC:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">sampler</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">mu_init</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> <span class="n">proposal_width</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mu_prior_mu</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mu_prior_sd</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
+    <span class="n">mu_current</span> <span class="o">=</span> <span class="n">mu_init</span>
+    <span class="n">posterior</span> <span class="o">=</span> <span class="p">[</span><span class="n">mu_current</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">samples</span><span class="p">):</span>
+        <span class="c1"># suggest new position</span>
+        <span class="n">mu_proposal</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">mu_current</span><span class="p">,</span> <span class="n">proposal_width</span><span class="p">)</span><span class="o">.</span><span class="n">rvs</span><span class="p">()</span>
+
+        <span class="c1"># Compute likelihood by multiplying probabilities of each data point</span>
+        <span class="n">likelihood_current</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">mu_current</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">prod</span><span class="p">()</span>
+        <span class="n">likelihood_proposal</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">mu_proposal</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">prod</span><span class="p">()</span>
+        
+        <span class="c1"># Compute prior probability of current and proposed mu        </span>
+        <span class="n">prior_current</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">mu_prior_mu</span><span class="p">,</span> <span class="n">mu_prior_sd</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">mu_current</span><span class="p">)</span>
+        <span class="n">prior_proposal</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">mu_prior_mu</span><span class="p">,</span> <span class="n">mu_prior_sd</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">mu_proposal</span><span class="p">)</span>
+        
+        <span class="n">p_current</span> <span class="o">=</span> <span class="n">likelihood_current</span> <span class="o">*</span> <span class="n">prior_current</span>
+        <span class="n">p_proposal</span> <span class="o">=</span> <span class="n">likelihood_proposal</span> <span class="o">*</span> <span class="n">prior_proposal</span>
+        
+        <span class="c1"># Accept proposal?</span>
+        <span class="n">p_accept</span> <span class="o">=</span> <span class="n">p_proposal</span> <span class="o">/</span> <span class="n">p_current</span>
+        
+        <span class="c1"># Usually would include prior probability, which we neglect here for simplicity</span>
+        <span class="n">accept</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">p_accept</span>
+        
+        <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
+            <span class="n">plot_proposal</span><span class="p">(</span><span class="n">mu_current</span><span class="p">,</span> <span class="n">mu_proposal</span><span class="p">,</span> <span class="n">mu_prior_mu</span><span class="p">,</span> <span class="n">mu_prior_sd</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">accept</span><span class="p">,</span> <span class="n">posterior</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">accept</span><span class="p">:</span>
+            <span class="c1"># Update position</span>
+            <span class="n">mu_current</span> <span class="o">=</span> <span class="n">mu_proposal</span>
+        
+        <span class="n">posterior</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mu_current</span><span class="p">)</span>
+        
+    <span class="k">return</span> <span class="n">posterior</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="n">posterior</span> <span class="o">=</span> <span class="n">sampler</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="mi">1500</span><span class="p">,</span> <span class="n">mu_init</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>CPU times: user 4.94 s, sys: 3.97 ms, total: 4.95 s
+Wall time: 4.94 s
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now let's replace the scipy calls, and rerun:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">norm_pdf</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">loc</span><span class="p">)</span> <span class="o">/</span> <span class="n">scale</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">/</span> <span class="n">scale</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Make sure it's really the same:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="n">norm_pdf</span><span class="p">(</span><span class="o">.</span><span class="mi">4</span><span class="p">,</span> <span class="o">.</span><span class="mi">7</span><span class="p">,</span> <span class="o">.</span><span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="n">norm</span><span class="p">(</span><span class="o">.</span><span class="mi">4</span><span class="p">,</span> <span class="o">.</span><span class="mi">7</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="o">.</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="n">norm</span><span class="p">(</span><span class="o">.</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">prod</span><span class="p">()</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">norm_pdf</span><span class="p">(</span><span class="o">.</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">data</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We'll also remove the list appending.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">sampler</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">mu_init</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> <span class="n">proposal_width</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mu_prior_mu</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mu_prior_sd</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
+    <span class="n">mu_current</span> <span class="o">=</span> <span class="n">mu_init</span>
+    
+    <span class="n">posterior</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">samples</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">posterior</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">mu_current</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">samples</span><span class="p">):</span>
+        <span class="c1"># suggest new position</span>
+        <span class="n">mu_proposal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mu_current</span><span class="p">,</span> <span class="n">proposal_width</span><span class="p">)</span>
+
+        <span class="c1"># Compute likelihood by multiplying probabilities of each data point</span>
+        <span class="n">likelihood_current</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">norm_pdf</span><span class="p">(</span><span class="n">mu_current</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+        <span class="n">likelihood_proposal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">norm_pdf</span><span class="p">(</span><span class="n">mu_proposal</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+        
+        <span class="c1"># Compute prior probability of current and proposed mu        </span>
+        <span class="n">prior_current</span> <span class="o">=</span> <span class="n">norm_pdf</span><span class="p">(</span><span class="n">mu_prior_mu</span><span class="p">,</span> <span class="n">mu_prior_sd</span><span class="p">,</span> <span class="n">mu_current</span><span class="p">)</span>
+        <span class="n">prior_proposal</span> <span class="o">=</span> <span class="n">norm_pdf</span><span class="p">(</span><span class="n">mu_prior_mu</span><span class="p">,</span> <span class="n">mu_prior_sd</span><span class="p">,</span> <span class="n">mu_proposal</span><span class="p">)</span>
+        
+        <span class="n">p_current</span> <span class="o">=</span> <span class="n">likelihood_current</span> <span class="o">*</span> <span class="n">prior_current</span>
+        <span class="n">p_proposal</span> <span class="o">=</span> <span class="n">likelihood_proposal</span> <span class="o">*</span> <span class="n">prior_proposal</span>
+        
+        <span class="c1"># Accept proposal?</span>
+        <span class="n">p_accept</span> <span class="o">=</span> <span class="n">p_proposal</span> <span class="o">/</span> <span class="n">p_current</span>
+        
+        <span class="c1"># Usually would include prior probability, which we neglect here for simplicity</span>
+        <span class="n">accept</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">p_accept</span>
+        
+        <span class="k">if</span> <span class="n">accept</span><span class="p">:</span>
+            <span class="c1"># Update position</span>
+            <span class="n">mu_current</span> <span class="o">=</span> <span class="n">mu_proposal</span>
+        
+        <span class="n">posterior</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mu_current</span>
+        
+    <span class="k">return</span> <span class="n">posterior</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="n">posterior</span> <span class="o">=</span> <span class="n">sampler</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="mi">1500</span><span class="p">,</span> <span class="n">mu_init</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>CPU times: user 59.3 ms, sys: 0 ns, total: 59.3 ms
+Wall time: 59.1 ms
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Okay, instanciating scipy distributions over and over again is very costly....</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span> <span class="nf">norm_pdf</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">loc</span><span class="p">)</span> <span class="o">/</span> <span class="n">scale</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">/</span> <span class="n">scale</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">sampler</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">mu_init</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> <span class="n">proposal_width</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mu_prior_mu</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mu_prior_sd</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
+    <span class="n">mu_current</span> <span class="o">=</span> <span class="n">mu_init</span>
+    
+    <span class="n">posterior</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">samples</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">posterior</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">mu_current</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">samples</span><span class="p">):</span>
+        <span class="c1"># suggest new position</span>
+        <span class="n">mu_proposal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mu_current</span><span class="p">,</span> <span class="n">proposal_width</span><span class="p">)</span>
+
+        <span class="c1"># Compute likelihood by multiplying probabilities of each data point</span>
+        <span class="n">likelihood_current</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">norm_pdf</span><span class="p">(</span><span class="n">mu_current</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+        <span class="n">likelihood_proposal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">norm_pdf</span><span class="p">(</span><span class="n">mu_proposal</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+        
+        <span class="c1"># Compute prior probability of current and proposed mu        </span>
+        <span class="n">prior_current</span> <span class="o">=</span> <span class="n">norm_pdf</span><span class="p">(</span><span class="n">mu_prior_mu</span><span class="p">,</span> <span class="n">mu_prior_sd</span><span class="p">,</span> <span class="n">mu_current</span><span class="p">)</span>
+        <span class="n">prior_proposal</span> <span class="o">=</span> <span class="n">norm_pdf</span><span class="p">(</span><span class="n">mu_prior_mu</span><span class="p">,</span> <span class="n">mu_prior_sd</span><span class="p">,</span> <span class="n">mu_proposal</span><span class="p">)</span>
+        
+        <span class="n">p_current</span> <span class="o">=</span> <span class="n">likelihood_current</span> <span class="o">*</span> <span class="n">prior_current</span>
+        <span class="n">p_proposal</span> <span class="o">=</span> <span class="n">likelihood_proposal</span> <span class="o">*</span> <span class="n">prior_proposal</span>
+        
+        <span class="c1"># Accept proposal?</span>
+        <span class="n">p_accept</span> <span class="o">=</span> <span class="n">p_proposal</span> <span class="o">/</span> <span class="n">p_current</span>
+        
+        <span class="c1"># Usually would include prior probability, which we neglect here for simplicity</span>
+        <span class="n">accept</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">p_accept</span>
+        
+        <span class="k">if</span> <span class="n">accept</span><span class="p">:</span>
+            <span class="c1"># Update position</span>
+            <span class="n">mu_current</span> <span class="o">=</span> <span class="n">mu_proposal</span>
+        
+        <span class="n">posterior</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mu_current</span>
+        
+    <span class="k">return</span> <span class="n">posterior</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">vals</span> <span class="o">=</span> <span class="n">sampler</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="mi">1500</span><span class="p">,</span> <span class="n">mu_init</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">500</span><span class="p">:],</span> <span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week9/3_performance_77_0.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="n">posterior</span> <span class="o">=</span> <span class="n">sampler</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="mi">1500</span><span class="p">,</span> <span class="n">mu_init</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>CPU times: user 1.87 ms, sys: 12 µs, total: 1.89 ms
+Wall time: 1.88 ms
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+ 
+
+
+    </main>
+    

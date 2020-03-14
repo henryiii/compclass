@@ -1,0 +1,946 @@
+---
+redirect_from:
+  - "/week10/2-rk"
+interact_link: content/week10/2_rk.ipynb
+kernel_name: 
+kernel_path: content/week10
+has_widgets: false
+title: |-
+  The Runge–Kutta Algorithm
+pagenum: 33
+prev_page:
+  url: /week10/1_pro_file.html
+next_page:
+  url: /week10/3_ode_problems.html
+suffix: .ipynb
+search: mathbf y n frac f t h k tn tag dot matrix algorithm left x approx rk lets right begin end color int dt mathcal o term get grid mathrm problem rewrite last our m implies taylor series interval blue weve yn red book try same before scipy week rungekutta objectives work through implementing euler code few changes general adaptable harmonic motion equation terms where standard form ddot range kutta introduction note expand around midpoint second here symmetric integral back into original statement got calculate eulers saw putting together picked bold face indicate vector odes coarser keeping another non zero
+
+comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
+---
+
+    <main class="jupyter-page">
+    <div id="page-info"><div id="page-title">The Runge–Kutta Algorithm</div>
+</div>
+    <div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Week-10-Day-2:-Runge&#8211;Kutta-algorithm">Week 10 Day 2: Runge&#8211;Kutta algorithm<a class="anchor-link" href="#Week-10-Day-2:-Runge&#8211;Kutta-algorithm"> </a></h1><h2 id="Objectives">Objectives<a class="anchor-link" href="#Objectives"> </a></h2><p>Work through a problem by implementing the RK2 algorithm!</p>
+<p>First let's rewrite the Euler code from last time, with a few changes to make this more general and adaptable:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can rewrite our harmonic motion equation in terms of $\mathbf{f}(t, \mathbf{y}) = \dot{\mathbf{y}}$, where this is in the standard form:</p>
+$$
+\mathbf{y} =
+\left(
+\begin{matrix}
+\dot{x} \\
+x
+\end{matrix}
+\right)
+$$$$
+\mathbf{f}(t, \mathbf{y}) =
+\dot{\mathbf{y}}
+=
+\left(
+\begin{matrix}
+\ddot{x} \\
+\dot{x}
+\end{matrix}
+\right)
+=
+\left(
+\begin{matrix}
+-\frac{k}{m} x \\
+\dot{x}
+\end{matrix}
+\right)
+=
+\left(
+\begin{matrix}
+-\frac{k}{m} y_1 \\
+y_0
+\end{matrix}
+\right)
+$$
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x_max</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Size of x max</span>
+<span class="n">v_0</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">koverm</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># k / m</span>
+
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="s2">&quot;Y has two elements, x and v&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">koverm</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">euler_ivp</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">init_y</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">init_y</span><span class="p">)</span>  <span class="c1"># Number of equations</span>
+
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">steps</span><span class="p">,</span> <span class="n">order</span><span class="p">))</span>
+    <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_y</span>  <span class="c1"># Note that this sets the elements of the first row</span>
+
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+
+        <span class="c1"># Copute dydt based on *current* position</span>
+        <span class="n">dydt</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+
+        <span class="c1"># Compute next velocity and position</span>
+        <span class="n">y</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">-</span> <span class="n">dydt</span> <span class="o">*</span> <span class="n">h</span>
+
+    <span class="k">return</span> <span class="n">y</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">1000</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">euler_ivp</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">[</span><span class="n">x_max</span><span class="p">,</span> <span class="n">v_0</span><span class="p">],</span> <span class="n">ts</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ts</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">y</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;--&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&lt;matplotlib.lines.Line2D at 0x7f6ec5d57310&gt;]</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/2_rk_5_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Range-Kutta-introduction">Range-Kutta introduction<a class="anchor-link" href="#Range-Kutta-introduction"> </a></h2><p>Note that $h =  t_{n+1} - t_n $.</p>
+$$
+\dot{y} = f(t,y)
+\\
+\implies y = \int f(t,y) \, dt
+\\
+\implies y_{n+1} = y_{n} + \int_{t_n}^{t_{n+1}} f(t,y) \, dt
+$$
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now, expand $f$ in a Taylor series around the <em>midpoint</em> of the interval:</p>
+$$
+f(t,y) \approx  f(t_{n+\frac{1}{2}},y_{n+\frac{1}{2}})
+       + \left( t - t_{n+\frac{1}{2}}\right)
+       \dot{f}(t_{n+\frac{1}{2}})
+       + \mathcal{O}(h^2)
+$$<p>The second term here is symmetric in the interval, so all we have left is the first term in the integral:</p>
+$$
+\int_{t_n}^{t_{n+1}} f(t,y) \, dt \approx
+    h\, f(t_{n+\frac{1}{2}},y_{n+\frac{1}{2}}) + \mathcal{O}(h^3)
+$$
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Back into the original statement, we get:</p>
+$$
+y_{n+1} \approx
+\color{blue}{
+y_{n}
++ h\, f(t_{n+\frac{1}{2}},y_{n+\frac{1}{2}})
+}
++ \mathcal{O}(h^3)
+\tag{rk2}
+$$<p>We've got one more problem! How do we calculate $f(t_{n+\frac{1}{2}},y_{n+\frac{1}{2}})$? We can use the Euler's algorithm that we saw last time:</p>
+$$
+y_{n+\frac{1}{2}}
+\approx y_n + \frac{1}{2} h \dot{y}
+= \color{red}{
+y_n + \frac{1}{2} h f(t_{n},y_{n})
+}
+$$
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Putting it together, this is our RK2 algorithm:</p>
+$$
+\mathbf{y}_{n+1} \approx
+\color{blue}{
+\mathbf{y}_{n}
++ \mathbf{k}_2
+}
+\tag{1.0}
+$$$$
+\mathbf{k}_1 = h \mathbf{f}(t_n,\, \mathbf{y}_n)
+\tag{1.1}
+$$$$
+\mathbf{k}_2 = h \mathbf{f}(t_n + \frac{h}{2},\, \color{red}{\mathbf{y}_n
++ \frac{\mathbf{k}_1}{2}})
+\tag{1.2}
+$$<p>Like the book, we've picked up bold face to indicate that we can have a vector of ODEs.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">rk2_ivp</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">init_y</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">init_y</span><span class="p">)</span>
+
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">steps</span><span class="p">,</span> <span class="n">order</span><span class="p">))</span>
+    <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_y</span>
+
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+
+        <span class="n">k1</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>  <span class="c1"># 1.1</span>
+        <span class="n">k2</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+</span> <span class="n">k1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># 1.2</span>
+
+        <span class="n">y</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+</span> <span class="n">k2</span>  <span class="c1"># 1.0</span>
+
+    <span class="k">return</span> <span class="n">y</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's try this with the same grid as before:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">1000</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">rk2_ivp</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">[</span><span class="n">x_max</span><span class="p">,</span> <span class="n">v_0</span><span class="p">],</span> <span class="n">ts</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ts</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">y</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;--&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&lt;matplotlib.lines.Line2D at 0x7f6ec34a5950&gt;]</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/2_rk_12_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>And, on a coarser grid:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">100</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">rk2_ivp</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">[</span><span class="n">x_max</span><span class="p">,</span> <span class="n">v_0</span><span class="p">],</span> <span class="n">ts</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ts</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">y</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;--&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&lt;matplotlib.lines.Line2D at 0x7f6ec33edf50&gt;]</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/2_rk_14_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can get the RK4 algorithm by keeping another non-zero term in the Taylor series:</p>
+$$
+\mathbf{y}_{n+1} \approx
+\mathbf{y}_{n}
++ \frac{1}{6} (\mathbf{k}_1 + 2 \mathbf{k}_2 + 2 \mathbf{k}_3 + \mathbf{k}_4 )
+\tag{2.0}
+$$$$
+\mathbf{k}_1 = h \mathbf{f}(t_n,\, \mathbf{y}_n)
+\tag{2.1}
+$$$$
+\mathbf{k}_2 = h \mathbf{f}(t_n + \frac{h}{2},\,
+                            \mathbf{y}_n + \frac{\mathrm{k}_1}{2})
+\tag{2.2}
+$$$$
+\mathbf{k}_3 = h \mathbf{f}(t_n + \frac{h}{2},\,
+                            \mathbf{y}_n + \frac{\mathrm{k}_2}{2})
+\tag{2.3}
+$$$$
+\mathbf{k}_4 = h \mathbf{f}(t_n + h,\,
+                            \mathbf{y}_n + \mathrm{k}_3)
+\tag{2.4}
+$$
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">rk4_ivp</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">init_y</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">init_y</span><span class="p">)</span>
+
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">steps</span><span class="p">,</span> <span class="n">order</span><span class="p">))</span>
+    <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_y</span>
+
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+
+        <span class="n">k1</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>  <span class="c1"># 2.1</span>
+        <span class="n">k2</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+</span> <span class="n">k1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># 2.2</span>
+        <span class="n">k3</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+</span> <span class="n">k2</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># 2.3</span>
+        <span class="n">k4</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+</span> <span class="n">h</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+</span> <span class="n">k3</span><span class="p">)</span>  <span class="c1"># 2.4</span>
+
+        <span class="n">y</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">6</span> <span class="o">*</span> <span class="p">(</span><span class="n">k1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">k2</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">k3</span> <span class="o">+</span> <span class="n">k4</span><span class="p">)</span>  <span class="c1"># 2.0</span>
+
+    <span class="k">return</span> <span class="n">y</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's try this with the same grid as before:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">100</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">rk4_ivp</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">[</span><span class="n">x_max</span><span class="p">,</span> <span class="n">v_0</span><span class="p">],</span> <span class="n">ts</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ts</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">y</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;--&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&lt;matplotlib.lines.Line2D at 0x7f6ec32fbe10&gt;]</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/2_rk_18_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Bonus:-Performance-boost">Bonus: Performance boost<a class="anchor-link" href="#Bonus:-Performance-boost"> </a></h4>
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">1000</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">rk4_ivp</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">[</span><span class="n">x_max</span><span class="p">,</span> <span class="n">v_0</span><span class="p">],</span> <span class="n">ts</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>27 ms ± 729 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's JIT both of these functions, and see if we can get a speedup!</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numba</span>
+
+<span class="n">f_jit</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">njit</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="n">rk4_ivp_jit</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">njit</span><span class="p">(</span><span class="n">rk4_ivp</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">1000</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">rk4_ivp_jit</span><span class="p">(</span><span class="n">f_jit</span><span class="p">,</span> <span class="p">[</span><span class="n">x_max</span><span class="p">,</span> <span class="n">v_0</span><span class="p">],</span> <span class="n">ts</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>/usr/share/miniconda/envs/compclass/lib/python3.7/site-packages/numba/ir_utils.py:2041: NumbaPendingDeprecationWarning: 
+Encountered the use of a type that is scheduled for deprecation: type &#39;reflected list&#39; found for argument &#39;init_y&#39; of function &#39;rk4_ivp&#39;.
+
+For more information visit http://numba.pydata.org/numba-doc/latest/reference/deprecation.html#deprecation-of-reflection-for-list-and-set-types
+
+File &#34;&lt;ipython-input-8-4a023190d09d&gt;&#34;, line 1:
+def rk4_ivp(f, init_y, t):
+^
+
+  warnings.warn(NumbaPendingDeprecationWarning(msg, loc=loc))
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>914 µs ± 120 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>How's that for almost 0 effort!</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="RK-4(5)">RK 4(5)<a class="anchor-link" href="#RK-4(5)"> </a></h3><p>This is the "adaptive" step solver from the book. It's a bit more readable, and a logical error was fixed. The definition of the tolerance seems to be different than scipy.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">rk45_ivp</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">init_y</span><span class="p">,</span> <span class="n">t_range</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">attempt_steps</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">init_y</span><span class="p">)</span>  <span class="c1"># Number of equations</span>
+
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">init_y</span><span class="p">)]</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="p">[</span><span class="n">t_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="n">err_sum</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Step size and limits to step size</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">attempt_steps</span>
+    <span class="n">hmin</span> <span class="o">=</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">64</span>
+    <span class="n">hmax</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="mi">64</span>
+
+    <span class="k">while</span> <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">t_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+
+        <span class="c1"># Last step should just be exactly what is needed to finish</span>
+        <span class="k">if</span> <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">h</span> <span class="o">&gt;</span> <span class="n">t_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">t_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Compute k1 - k6 for evaluation and error estimate</span>
+        <span class="n">k1</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">k2</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">k1</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">k3</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">8</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">k1</span> <span class="o">/</span> <span class="mi">32</span> <span class="o">+</span> <span class="mi">9</span> <span class="o">*</span> <span class="n">k2</span> <span class="o">/</span> <span class="mi">32</span><span class="p">)</span>
+        <span class="n">k4</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span>
+            <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">13</span><span class="p">,</span>
+            <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1932</span> <span class="o">*</span> <span class="n">k1</span> <span class="o">/</span> <span class="mi">2197</span> <span class="o">-</span> <span class="mi">7200</span> <span class="o">*</span> <span class="n">k2</span> <span class="o">/</span> <span class="mi">2197</span> <span class="o">+</span> <span class="mi">7296</span> <span class="o">*</span> <span class="n">k3</span> <span class="o">/</span> <span class="mi">2197</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">k5</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span>
+            <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">h</span><span class="p">,</span>
+            <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">439</span> <span class="o">*</span> <span class="n">k1</span> <span class="o">/</span> <span class="mi">216</span> <span class="o">-</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">k2</span> <span class="o">+</span> <span class="mi">3680</span> <span class="o">*</span> <span class="n">k3</span> <span class="o">/</span> <span class="mi">513</span> <span class="o">-</span> <span class="mi">845</span> <span class="o">*</span> <span class="n">k4</span> <span class="o">/</span> <span class="mi">4104</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">k6</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span>
+            <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="o">+</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">k1</span> <span class="o">/</span> <span class="mi">27</span>
+            <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">k2</span>
+            <span class="o">-</span> <span class="mi">3544</span> <span class="o">*</span> <span class="n">k3</span> <span class="o">/</span> <span class="mi">2565</span>
+            <span class="o">+</span> <span class="mi">1859</span> <span class="o">*</span> <span class="n">k4</span> <span class="o">/</span> <span class="mi">4104</span>
+            <span class="o">-</span> <span class="mi">11</span> <span class="o">*</span> <span class="n">k5</span> <span class="o">/</span> <span class="mi">40</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Compute error from higher order RK calculation</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span>
+            <span class="n">k1</span> <span class="o">/</span> <span class="mi">360</span> <span class="o">-</span> <span class="mi">128</span> <span class="o">*</span> <span class="n">k3</span> <span class="o">/</span> <span class="mi">4275</span> <span class="o">-</span> <span class="mi">2197</span> <span class="o">*</span> <span class="n">k4</span> <span class="o">/</span> <span class="mi">75240</span> <span class="o">+</span> <span class="n">k5</span> <span class="o">/</span> <span class="mi">50</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">k6</span> <span class="o">/</span> <span class="mi">55</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Compute factor to see if step size should be changed</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">err</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">err</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.84</span> <span class="o">*</span> <span class="p">(</span><span class="n">tol</span> <span class="o">*</span> <span class="n">h</span> <span class="o">/</span> <span class="n">err</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mf">0.25</span>
+
+        <span class="n">lower_step</span> <span class="o">=</span> <span class="n">s</span> <span class="o">&lt;</span> <span class="mf">0.75</span> <span class="ow">and</span> <span class="n">h</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">hmin</span>
+        <span class="n">raise_step</span> <span class="o">=</span> <span class="n">s</span> <span class="o">&gt;</span> <span class="mf">1.5</span> <span class="ow">and</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">h</span> <span class="o">&lt;</span> <span class="n">hmax</span>
+        <span class="n">no_change</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">raise_step</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">lower_step</span>
+
+        <span class="c1"># Accept step and move on</span>
+        <span class="k">if</span> <span class="n">err</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">tol</span> <span class="ow">or</span> <span class="n">err</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">tol</span> <span class="ow">or</span> <span class="n">no_change</span><span class="p">:</span>
+            <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">25</span> <span class="o">*</span> <span class="n">k1</span> <span class="o">/</span> <span class="mi">216</span> <span class="o">+</span> <span class="mi">1408</span> <span class="o">*</span> <span class="n">k3</span> <span class="o">/</span> <span class="mi">2565</span> <span class="o">+</span> <span class="mi">2197</span> <span class="o">*</span> <span class="n">k4</span> <span class="o">/</span> <span class="mi">4104</span> <span class="o">-</span> <span class="n">k5</span> <span class="o">/</span> <span class="mi">5</span>
+            <span class="p">)</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">h</span><span class="p">)</span>
+
+        <span class="c1"># Grow or shrink the step size if needed</span>
+        <span class="k">if</span> <span class="n">lower_step</span><span class="p">:</span>
+            <span class="n">h</span> <span class="o">/=</span> <span class="mi">2</span>
+        <span class="k">elif</span> <span class="n">raise_step</span><span class="p">:</span>
+            <span class="n">h</span> <span class="o">*=</span> <span class="mi">2</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">1000</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">t</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">rk45_ivp</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">[</span><span class="n">x_max</span><span class="p">,</span> <span class="n">v_0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span> <span class="mf">0.005</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ts</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&lt;matplotlib.lines.Line2D at 0x7f6ebc0f4910&gt;]</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/2_rk_27_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's compare it with the scipy algorithm:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">scipy.integrate</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">r45</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">integrate</span><span class="o">.</span><span class="n">solve_ivp</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span> <span class="p">[</span><span class="n">x_max</span><span class="p">,</span> <span class="n">v_0</span><span class="p">],</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">0.00001</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">r45</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ts</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">r45</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">r45</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&lt;matplotlib.lines.Line2D at 0x7f6ebcb87450&gt;]</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/week10/2_rk_31_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+ 
+
+
+    </main>
+    

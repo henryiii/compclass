@@ -1,0 +1,985 @@
+---
+redirect_from:
+  - "/week1/1-programmingbasics"
+interact_link: content/week1/1_ProgrammingBasics.ipynb
+kernel_name: compclass
+kernel_path: content/week1
+has_widgets: false
+title: |-
+  Basics of Programming
+pagenum: 3
+prev_page:
+  url: /week1/0_IntroductionAndLogin.html
+next_page:
+  url: /week2/0_ObjectOriented.html
+suffix: .ipynb
+search: python x y objects object start not types functions why programming ipython cant only data set code syntax special try strings likethis also jupyter very variables above variable operators classes program same too key f just language pow yourself used builtins methods class type important case int index good pythons notebook value such does real work note new further things name might control keywords changed numbers members names end built true none list values should immutable mutable items item later odd overriden range design basics learn understand system interpreted line loop cell library useful notebooks kernel step nice environment themselves
+
+comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
+---
+
+    <main class="jupyter-page">
+    <div id="page-info"><div id="page-title">Basics of Programming</div>
+</div>
+    <div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Programming-basics">Programming basics<a class="anchor-link" href="#Programming-basics"> </a></h1><h2 id="Objectives:">Objectives:<a class="anchor-link" href="#Objectives:"> </a></h2><ul>
+<li>Learn the 5 components of the Python Syntax</li>
+<li>Understand Python's object system</li>
+<li>Learn to interact with the IPython prompt in the Jupyter notebook</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Jupyter,-IPython,-Python,-oh-my!">Jupyter, IPython, Python, oh my!<a class="anchor-link" href="#Jupyter,-IPython,-Python,-oh-my!"> </a></h2><p>Just to keep the computational model straight, we are using:</p>
+<ul>
+<li>Python 3.6, a interpreted programming language</li>
+<li>A REPL, which <strong>R</strong>eads a line, <strong>E</strong>valuates it, then <strong>P</strong>rints it (in a <strong>L</strong>oop)<ul>
+<li><code>print</code> not needed to see the last un-captured value in a cell</li>
+</ul>
+</li>
+<li>IPython, which is an enhancement to make Python more <strong>I</strong>nteractive<ul>
+<li>You can't use these enhancements in a library, but they generally are only useful interactivally anyway</li>
+</ul>
+</li>
+<li>Jupyter notebooks, which is a web based display of a Kernel, such as IPython (or many other language kernels).</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+<pre><code>Jupyter notebook  -&gt;      IPython       -&gt;      Python
+-----------------    ------------------    ------------------
+This is what you     Checks for special    Does the real work
+see                  syntax, then sends
+                     it on</code></pre>
+<blockquote><p>Note: The very new JupyterLab takes this one step further, by providing an nice environment for notebooks, which themselves are an environment for IPython... It's really nice and beautiful, though.</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Basics-of-programming">Basics of programming<a class="anchor-link" href="#Basics-of-programming"> </a></h2><p>Computing can be broken down to two things:</p>
+<ul>
+<li>Variables: These hold data</li>
+<li>Functions: These are procedures (usually operating on variables)</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># This is a variable</span>
+<span class="n">variable</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="c1"># This is a function</span>
+<span class="k">def</span> <span class="nf">function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">function</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>9</pre>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Don't worry about the details of the Python syntax quite yet, just focus on the two concepts: <em>data</em> and <em>procedures</em>. And, yes, <code>x**2</code> is nicer than <code>pow(x,2)</code>.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Try-it-yourself">Try it yourself<a class="anchor-link" href="#Try-it-yourself"> </a></h4><p>The <em>great</em> thing about programming in an interpreted language like Python is that <em>you can try everything</em> yourself, in real time. Play around with the above variables and answer these questions:</p>
+<ul>
+<li>Can you name a variable <code>def</code>? Why or why not?</li>
+<li>Can you name a variable <code>pow</code>? Why or why not?</li>
+<li>Why might you not want to make a variable named <code>pow</code>?</li>
+<li>How can you get rid of your variable named <code>pow</code>? (Hint: Try <code>del</code> or restarting your kernel (top menu)).</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Python's-syntax">Python's syntax<a class="anchor-link" href="#Python's-syntax"> </a></h2><ul>
+<li><strong>Operators</strong>: special symbols or words that have a specific meaning. You can usually control what they do in classes. Some general parts of the syntax, like whitespace, commas, colons, and brackets, are not called operators.</li>
+<li><strong>Keywords</strong>: special words that have language level meaning and cannot be used elsewhere or changed.</li>
+<li><strong>Builtins</strong>: functions and objects that are pre-defined, but not special.</li>
+<li><strong>Numbers</strong>: several different number types available</li>
+<li><strong>Strings</strong>: add text to the program or help</li>
+<li><strong>Comments</strong>: start with a <code>#</code> and are ignored by Python</li>
+</ul>
+<blockquote><p>Note: Builtins can't be undefined due to the way the Python lookup system works.</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Does not take anything or return anything</span>
+<span class="k">def</span> <span class="nf">funct</span><span class="p">():</span>
+    <span class="s2">&quot;This is the function documentation&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Called f&quot;</span><span class="p">,</span> <span class="mi">1</span> <span class="o">*</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Operators</strong>, <strong>Keywords</strong>, <strong>Builtins</strong>, <strong>Numbers</strong>, <strong>Strings</strong>, <strong>Comments</strong></p>
+<h4 id="Answer-this:">Answer this:<a class="anchor-link" href="#Answer-this:"> </a></h4><ul>
+<li>What color is each of these in your notebook?</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Objects-and-Types/Classes">Objects and Types/Classes<a class="anchor-link" href="#Objects-and-Types/Classes"> </a></h2><p>We can go one step further from variables and functions: objects and classes.</p>
+<ul>
+<li>Object: A related collection of data and functions for that data<ul>
+<li>Members: Variables that hold the data for the object</li>
+<li>Methods: Functions that operate on the object data</li>
+</ul>
+</li>
+<li>Class: The "type" of an object; objects that have the same methods/members have the same class</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Why are objects so important in Python? Because unlike many other languages, <em>everything</em> in Python is an object! This is <strong>very powerful</strong>.</p>
+<hr>
+<blockquote><p>Note: Syntax such as keywords are not objects. (though builtins are)</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">number</span> <span class="o">=</span> <span class="mf">1.5</span>
+<span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;hello world&quot;</span>
+<span class="n">complex_number</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span><span class="n">j</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Try running some of the methods and look at the members of the objects defined above.</p>
+<p>IPython + Jupyter keyboard hints:</p>
+<ul>
+<li>Use <strong>Tab</strong> to see completions, either when typing a word or after a <code>.</code></li>
+<li>Use <strong>Shift-Tab</strong> to see the help for a function after typing it</li>
+<li>Use <strong>Shift-Enter</strong> to execute a cell</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can use <code>type</code> to see the class of an object:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>float</pre>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Names">Names<a class="anchor-link" href="#Names"> </a></h2><p>There are certain conventions for the names of objects and classes:</p>
+<table>
+<thead><tr>
+<th>Case</th>
+<th>Convention</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Objects and methods</td>
+<td>start with lower case letter</td>
+<td><code>like_this</code></td>
+</tr>
+<tr>
+<td>Classes</td>
+<td>Start with upper case letter</td>
+<td><code>LikeThis</code></td>
+</tr>
+<tr>
+<td>Globals</td>
+<td>all uppercase</td>
+<td><code>LIKE_THIS</code></td>
+</tr>
+<tr>
+<td>Hidden</td>
+<td>start with underscore</td>
+<td><code>_like_this</code></td>
+</tr>
+<tr>
+<td>In one class only</td>
+<td>start with two underscores (rarely used)</td>
+<td><code>__like_this</code></td>
+</tr>
+<tr>
+<td>Special python names</td>
+<td>start and end with two underscores</td>
+<td><code>__like_this__</code></td>
+</tr>
+</tbody>
+</table>
+<p>Exceptions for some Python built-in types, which are all lowercase. And <code>True</code>, <code>False</code>, <code>None</code>, and <code>Ellipsis</code>, which are objects but are capitalized.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Built-in-Python-Types">Built in Python Types<a class="anchor-link" href="#Built-in-Python-Types"> </a></h1><p>The following are a mostly comprehensive list of built-in Python types</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Basic-types">Basic types<a class="anchor-link" href="#Basic-types"> </a></h3>
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">py_int</span> <span class="o">=</span> <span class="mi">101</span>
+<span class="n">py_float</span> <span class="o">=</span> <span class="mf">3.7</span>
+<span class="n">py_complex</span> <span class="o">=</span> <span class="mi">1</span><span class="n">j</span>
+<span class="n">py_str</span> <span class="o">=</span> <span class="s2">&quot;Unicode string: Python 3 is 😀&quot;</span>
+<span class="n">py_bytes</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;Binary string&quot;</span>
+<span class="n">py_bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">py_none</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>These types are all also constructible by calling the name of the type, such as <code>int(1)</code>. A few interesting notes:</p>
+<ul>
+<li>Numbers can be constructed from strings too, like <code>int("1")</code></li>
+<li>Strings can start with special characters, like <code>b</code>. We'll see this again someday.</li>
+<li>Strings use <code>"</code> or <code>'</code>. Three quotes can be used to include new lines.</li>
+<li><code>None</code> is the only none type. How lonely.</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Try-it-yourself:">Try it yourself:<a class="anchor-link" href="#Try-it-yourself:"> </a></h4><ul>
+<li>How large is the largest int value allowed?</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Compond-types">Compond types<a class="anchor-link" href="#Compond-types"> </a></h3><p>These are composed, but are also very important</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">py_tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">py_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+
+<span class="n">py_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Python 3&quot;</span><span class="p">:</span> <span class="s2">&quot;😍&quot;</span><span class="p">,</span> <span class="s2">&quot;Python 2&quot;</span><span class="p">:</span> <span class="s2">&quot;😖&quot;</span><span class="p">}</span>
+
+<span class="n">py_set</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;duplicates&quot;</span><span class="p">,</span> <span class="s2">&quot;in&quot;</span><span class="p">,</span> <span class="s2">&quot;here&quot;</span><span class="p">}</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Accessing values is done with brackets:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">py_tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">py_dict</span><span class="p">[</span><span class="s2">&quot;Python 3&quot;</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>1
+😍
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ul>
+<li>Indexing starts from 0, <a href="http://developeronline.blogspot.com/2008/04/why-array-index-should-start-from-0.html">as it should</a></li>
+<li>A tuple is just like a list, but can't be changed: immutable</li>
+</ul>
+<table>
+<thead><tr>
+<th>Mutable</th>
+<th>Immutable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Can be changed</td>
+<td>Can only be replaced</td>
+</tr>
+<tr>
+<td>Can be a key or in a set</td>
+<td>Can't be a key or in a set</td>
+</tr>
+<tr>
+<td><code>list</code>, <code>dict</code>, <code>set</code></td>
+<td><code>tuple</code>, <code>str</code>, <code>int</code>, etc.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>A set does not have an order (so you can't use <code>[]</code> to get items from it)</li>
+<li>Dictionaries are ordered before Python 3.6 (even now you still only have direct access to keys)</li>
+</ul>
+<p>There are other types in the standard library, but we'll restrict ourselves to talking about these for now.</p>
+<blockquote><p>If you could put a mutable item in as a key or set item, you could then change it later and have two identical key items or set items!</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Try-it-out:-Mutation-vs.-replacement">Try it out: Mutation vs. replacement<a class="anchor-link" href="#Try-it-out:-Mutation-vs.-replacement"> </a></h4><p>Can you guess what the final value of <code>a</code> is? What about <code>b</code>?</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">a</span>
+<span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;😡&quot;</span>
+<span class="n">b</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1, 2, &#39;😡&#39;, 4] [3, 2, None, 3]
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Key points to understanding this example:</p>
+<ul>
+<li>Normal assignment <em>replaces</em> the variable on the left</li>
+<li>Python never copies, but with immutable values and the above statement, it might seem that way</li>
+</ul>
+<p>There are a limited number of expressions allowed on the left (but they can be chained):</p>
+<ul>
+<li>An object (replaces): <code>a =</code></li>
+<li>An index into an object (mutate) <code>a[x] =</code></li>
+<li>An object attribute (mutate): <code>a.x =</code></li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Slicing">Slicing<a class="anchor-link" href="#Slicing"> </a></h3><p>One of the most important things in computation is indexing, and Python is really good at it. You've already seen integers being used to index lists (strings work the same way too), but let's peek at another way to index lists and tuples: slicing.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="s2">&quot;abcdefg&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">7</span><span class="p">:</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># start : stop (not included) : step</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">7</span><span class="p">])</span>  <span class="c1"># step not needed</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>  <span class="c1"># you can leave out values</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># like indexing, - means from end</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">[::</span><span class="mi">2</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>abcdefg
+abcdefg
+abcdefg
+bcdefg
+abcdef
+aceg
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Operators">Operators<a class="anchor-link" href="#Operators"> </a></h1><p>Python's operators are pretty standard. Here are the ones that tend to be a little odd:</p>
+<ul>
+<li><code>x**y</code>: Raise <code>x</code> to a power <code>y</code></li>
+<li><code>x == y</code>: See if <code>x</code> is equal to <code>y</code></li>
+<li><code>x is y</code>: See if <code>x</code> is the same object (in the same spot in memory) as <code>y</code>, can't be overriden</li>
+<li><code>~x</code>: Invert <code>x</code> (might be different than unary <code>-</code>)</li>
+<li><code>+x</code>: Python does have a unary <code>+</code> operator, too. Not sure why you'd want it.</li>
+<li><code>x += y</code>: Add y to x, in place only if mutable</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ul>
+<li><code>x / y</code>: True mathematical division (Py3 default, Py2 option)</li>
+<li><code>x // y</code>: Truncating division</li>
+<li><code>x @ y</code>: Matrix product of x and y (Python 3.5+, only in libraries)</li>
+<li><code>x and y</code>: Boolean operator, short-circuits and can't be overriden (<code>or</code> and <code>not</code> too)</li>
+<li><code>x &amp; y</code>: Bitwise and - this one can be overriden, but has odd precedence</li>
+<li><code>x | y</code>: Bitwise or</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Control">Control<a class="anchor-link" href="#Control"> </a></h1><p>We've already seen functions. What other control statements are out there for use to use?</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">if</span> <span class="n">x</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;x was true&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;x was not true&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>x was true
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The for each loop works on any <em>iterable</em>:</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="s2">&quot;abcdefg&quot;</span>
+<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">a</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>a
+b
+c
+d
+e
+f
+g
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>You can also use <code>for item in range(N)</code> to count over a range of values, or <code>while CONDITION:</code>.</p>
+<p>You can use <code>for</code> (and <code>if</code>) inside <code>[]</code>, <code>()</code>, or <code>{}</code> to build the data structures mentioned above inplace.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">bad_way_to_make_a_set_of_tens</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">}</span>
+<span class="n">bad_way_to_make_a_set_of_tens</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{0, 10, 20, 30, 40, 50, 60, 70, 80, 90}</pre>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="With">With<a class="anchor-link" href="#With"> </a></h3><p>There are other useful things in Python we will cover later, but the <code>with</code> statement is too good to wait. With lets you take code like this:</p>
+<div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+<span class="n">txt</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span> <span class="c1"># Don&#39;t forget me!</span>
+</pre></div>
+<p>and write instead:</p>
+<div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">txt</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="c1"># File automatically closed here!</span>
+</pre></div>
+<p>With simply runs code at the start and at the end of a block. It also promises the code at the end runs, even if there's an error! (More about errors later)</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Isn't-all-of-this-restrictive?">Isn't all of this restrictive?<a class="anchor-link" href="#Isn't-all-of-this-restrictive?"> </a></h1><p>You may have noticed that each new concept in programming <em>restricts</em> rather than <em>enables</em>. If we went further into topics like functional program, this would continue to be the case. This is odd but true: we could write any program with a very small set of constructs. However, the most important feature of programming is <em>organization</em> (also called design).</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Compare this hypothetical pseudo-code:</p>
+<div class="highlight"><pre><span></span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">label</span> <span class="n">start</span>
+<span class="n">compute</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span> <span class="n">goto</span> <span class="n">start</span>
+</pre></div>
+<p>Verses real code:</p>
+<div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">compute</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now imagine a complex program with 1,000 of <code>goto</code> statements; you would have to work through every line of code to understand it. But if you restrict yourself to common structures, like loops, objects, functions, etc., you no longer have to look at the whole program, but just parts you recognize.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Design-in-programming">Design in programming<a class="anchor-link" href="#Design-in-programming"> </a></h2><p>You should:</p>
+<ul>
+<li>Make small, understandable pieces <em>that can be run by themselves</em> (Easier to de<strong>bug</strong> and test)</li>
+<li>Write similar code once (fewer places for <strong>bugs</strong>)</li>
+<li>Reuse existing functions or libraries when possible (let someone else design and de<strong>bug</strong> what they are good at)</li>
+</ul>
+<p>Objects are very good for the second two points (and so-so for the first).</p>
+<p>Also notice the running theme above?</p>
+
+</div>
+</div>
+</div>
+</div>
+
+ 
+
+
+    </main>
+    
