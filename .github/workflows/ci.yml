@@ -22,9 +22,10 @@ jobs:
       run: >
         cat runnable.txt |
         xargs jupyter nbconvert
-        --InlineBackend.figure_formats={'retina', 'pdf'}
-        --InlineBackend.rc={'figure.dpi': 96}
+        --InlineBackend.figure_formats="{'retina','pdf'}"
+        --InlineBackend.rc="{'figure.dpi':96}"
         --ExecutePreprocessor.timeout=90
+        --ExecutePreprocessor.kernel_name=python3
         --execute
         --inplace
       shell: bash -l {0}

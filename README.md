@@ -4,7 +4,7 @@ Welcome to computational physics! This is the repository with the [syllabus](./s
 
 * [JupyterBook](https://henryiii.github.io/compclass)
 * [This repository official location](https://github.com/henryiii/compclass)
-* [Course lecture recordings](https://mailuc-my.sharepoint.com/:f:/g/personal/schreihf_ucmail_uc_edu/EgrKNRgtwTNEi6NGDOMFKZsBAmugjchAT-MetLXUszI_lg?e=LN22dH)
+* [Course lecture recordings](https://mailuc-my.sharepoint.com/:f:/g/personal/schreihf_ucmail_uc_edu/EgrKNRgtwTNEi6NGDOMFKZsBAmugjchAT-MetLXUszI_lg?e=Fd65aD)
 * [UC Blackboard](https://canopy.uc.edu/) (look for `meta_schreihf_2962 (Meta 18FS-Full) TOPICS IN PHYSICS (001)`)
 * [My public blog, ISciNumPy](https://iscinumpy.gitlab.io)
 
